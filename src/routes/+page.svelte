@@ -1,12 +1,66 @@
 <script>
-	export let data;
-	//console.log(data);
+  import { onMount } from "svelte";
+  import { fetchCommunities, fetchRiskColors } from "$lib/loadData.js";
+  import Map from "@components/Map.svelte";
+  import PageInfo from "@components/PageInfo.svelte";
+
+  let communities = [];
+  let riskColors = {};
+  let error = null;
+  let selectedCommunity = null;
+
+  onMount(async () => {
+    try {
+      const [communitiesData, riskColorsData] = await Promise.all([
+        fetchCommunities(),
+        fetchRiskColors(),
+      ]);
+      communities = communitiesData.result || communitiesData;
+
+      const riskArray = riskColorsData.result || riskColorsData;
+      riskColors = {};
+      if (Array.isArray(riskArray)) {
+        riskArray.forEach((item) => {
+          riskColors[item.riskvalue] = item.riskcolor;
+        });
+      } else {
+        riskColors[riskArray.riskvalue] = riskArray.riskcolor;
+      }
+    } catch (err) {
+      console.error("Error fetching data:", err);
+      error = err;
+    }
+  });
+
+  function handleMapClick(event) {
+    selectedCommunity = event.detail;
+  }
+
+  function closePageInfo() {
+    selectedCommunity = null;
+  }
 </script>
 
-<div>
-	{#if data.posts.status == "error"}
-		<p>404</p>
-	{:else}
-		<p>{data.posts.result.title}</p>
-	{/if}
-</div>
+{#if error}
+  <p>Error loading communities: {error.message}</p>
+{:else if communities.length === 0}
+  <p>Loading communities...</p>
+{:else}
+  <section class="full-screen">
+    <!-- Map fills the entire section -->
+    <Map {communities} {riskColors} on:dotClick={handleMapClick} />
+
+    {#if selectedCommunity}
+      <PageInfo community={selectedCommunity} on:close={closePageInfo} />
+    {/if}
+  </section>
+{/if}
+
+<style>
+  .full-screen {
+    width: 100vw;
+    height: 100vh;
+    overflow: hidden;
+    position: relative;
+  }
+</style>

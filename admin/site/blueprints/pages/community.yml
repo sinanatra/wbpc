@@ -1,0 +1,172 @@
+title: Community
+num: '{{ page.created.toDate("Ymd") }}'
+status:
+  draft:
+    label: Unpublished
+    text: Page is not published and doesn't appear on the website.
+  listed:
+    label: Published
+    text: Page is published.
+options:
+  changeTemplate:
+    admin: true
+    researcher: true
+    guest: false
+  changeTitle:
+    admin: true
+    researcher: true
+    guest: false
+  create:
+    admin: true
+    researcher: true
+    guest: false 
+  delete:
+    admin: true
+    researcher: true
+    guest: false
+  update:
+    admin: true
+    researcher: true
+    guest: false
+
+tabs:
+  metadata:
+    label: Metadata
+    icon: home
+    columns:
+      - width: 1/1
+        sections:
+          metaSection:
+            type: fields
+            fields:
+              title:
+                label: Title
+                type: textarea
+                width: 1/1
+              coordinates:
+                label: Coordinates
+                type: locator
+                width: 1/1
+                marker: dark
+                geocoding: nominatim
+                center:
+                  lat: 31.904950082190478
+                  lon: 35.205097633232725
+                required: false
+              risk:
+                label: Risk Category
+                type: select
+                width: 1/2
+                options: query
+                query: site.riskValues.toStructure.pluck('riskValue', 'riskValue')
+                help: "This reflects the risk level visually (color wash) on the website."
+              tags:
+                label: Tags
+                type: multiselect
+                width: 1/2
+                options: query
+                query: site.tags.split
+              alternativeNames:
+                label: Alternative Names
+                type: tags
+                width: 1/1
+                help: "Enter alternative spellings as comma-separated values."
+  keyfacts:
+    label: Key Facts
+    icon: info
+    columns:
+      - width: 1/1
+        sections:
+          keyfactsSection:
+            type: fields
+            fields:
+              keyfacts:
+                label: Key Facts List
+                type: structure
+                entry: '{{ keyinfoDescription }}'
+                fields:
+                  keyinfoDescription:
+                    label: Description
+                    type: textarea
+                    width: 1/1
+
+  history:
+    label: History
+    icon: clock
+    columns:
+      - width: 1/1
+        sections:
+          historySection:
+            type: fields
+            fields:
+              history:
+                label: History
+                type: textarea
+                width: 1/1
+
+  alerts:
+    label: Alerts
+    icon: alert
+    columns:
+      - width: 1/1
+        sections:
+          alertsSection:
+            type: fields
+            fields:
+              alerts:
+                label: Alerts List
+                type: structure
+                entry: '{{ alertDate }} - {{ alertDescription }}'
+                fields:
+                  alertDate:
+                    label: Date
+                    type: date
+                    width: 1/3
+                    display: YYYY-MM-DD
+                  alertDescription:
+                    label: Description
+                    type: textarea
+                    width: 2/3
+
+  standards:
+    label: Standards of Living
+    icon: chart
+    columns:
+      - width: 1/1
+        sections:
+          standardsSection:
+            type: fields
+            fields:
+              standardOfLiving:
+                label: Standard of Living
+                type: textarea
+                width: 1/1
+
+  media:
+    label: Media
+    icon: folder
+    columns:
+      - width: 1/1
+        sections:
+          mediaFiles:
+            type: files
+            label: Images
+            layout: cards
+            template: image
+            accept:
+              extension: jpg, png, gif
+
+  grants:
+    label: Government Grants
+    icon: money
+    columns:
+      - width: 1/1
+        sections:
+          grantsSection:
+            type: fields
+            fields:
+              governmentMoneySpent:
+                label: Government Grants
+                type: number
+                width: 1/1
+                unit: "€"

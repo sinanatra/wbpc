@@ -1,0 +1,48 @@
+Title: test
+
+----
+
+Coordinates:
+
+lat: 32.0030538
+lon: 35.2072129
+city: Attara
+country: Palestinian Territory
+countryCode: ps
+osm: 333120032
+
+----
+
+Risk: low
+
+----
+
+Tags: 
+
+----
+
+Alternativenames: 
+
+----
+
+Keyfacts: 
+
+----
+
+History: 
+
+----
+
+Alerts: 
+
+----
+
+Standardofliving: 
+
+----
+
+Governmentmoneyspent: 
+
+----
+
+Uuid: F5c7JGaOncV9kVU2

@@ -1,0 +1,41 @@
+Title: WBPC
+
+----
+
+Riskvalues:
+
+- 
+  riskvalue: high
+  riskdescription: ""
+  riskcolor: '#F05056'
+- 
+  riskvalue: medium
+  riskdescription: ""
+  riskcolor: '#F0AB50'
+- 
+  riskvalue: low
+  riskdescription: ""
+  riskcolor: '#50F054'
+- 
+  riskvalue: no risk
+  riskdescription: blab abla
+  riskcolor: '#B3B3B3'
+
+----
+
+Tags: military operations, another tag, etc
+
+----
+
+Descriptionseo: 
+
+----
+
+Imageseo: 
+
+----
+
+Categories:
+
+- 
+  category: low

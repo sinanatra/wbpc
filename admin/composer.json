@@ -1,0 +1,38 @@
+{
+    "name": "sinanatra/kirby-headless-starterkit",
+    "description": "Starterkit for Kirby 3 headless",
+    "type": "project",
+    "keywords": [
+      "kirby",
+      "cms",
+      "starterkit",
+      "headless"
+    ],
+    "homepage": "https://github.com/sinanatra/kirby-headless",
+    "authors": [
+      {
+        "name": "Giacomo Nanni",
+        "email": "hello@giacomonanni.info",
+        "homepage": "https://giacomonanni.info"
+      }
+    ],
+    "require": {
+        "php": ">=8.1",
+        "getkirby/cms": "^4.6",
+        "getkirby/kql": "^2.0",
+        "timoetting/kirby-color": "^1.0",
+        "sylvainjule/locator": "^2.0"
+    },
+    "scripts": {
+        "start": [
+            "Composer\\Config::disableProcessTimeout",
+            "@php -S localhost:8000 kirby/router.php"
+        ]
+    },
+    "config": {
+        "optimize-autoloader": true,
+        "allow-plugins": {
+            "getkirby/composer-installer": true
+        }
+    }
+}

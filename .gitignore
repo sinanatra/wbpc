@@ -12,4 +12,4 @@ _backup
 /package
 package-lock.json
 .env
-admin/*
+# admin/*

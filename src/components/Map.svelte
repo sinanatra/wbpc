@@ -7,7 +7,7 @@
   export let riskColors = {};
 
   mapboxgl.accessToken =
-    "pk.eyJ1Ijoic2ltb25zZXJ2ZWFuZHZvbGxleSIsImEiOiJjbGUyb3R0OG4wMDE0M3BzMGEyNDZ3N2xrIn0.evNhIFMBcNUdhzYST9gKHg";
+    "pk.eyJ1Ijoic2luYW5hdHJhIiwiYSI6ImNpcTloaTlocjAwNWFodm0yODJjODF5MXYifQ.urgyj3bpfbG3dX4uTOOZtQ";
 
   let map;
   let mapContainer;
@@ -36,9 +36,14 @@
   onMount(() => {
     map = new mapboxgl.Map({
       container: mapContainer,
-      style: "mapbox://styles/mapbox/streets-v11",
-      center: [35.205097633232725, 31.904950082190478],
-      zoom: 8,
+      style: "mapbox://styles/sinanatra/cm7yteg6x00ty01sc85aqduv2",
+      center: [35.2621, 31.95],
+      zoom: 9,
+      minZoom: 8,
+      maxBounds: [
+        [34.45395548496137, 31.509751808262436],
+        [36.85691410858303, 32.845684499585985],
+      ],
     });
 
     map.on("load", () => {

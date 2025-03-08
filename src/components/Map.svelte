@@ -13,26 +13,6 @@
   let mapContainer;
   const dispatch = createEventDispatcher();
 
-  function addMarkers() {
-    communities.forEach((community) => {
-      if (
-        community.coordinates &&
-        community.coordinates.lat &&
-        community.coordinates.lon
-      ) {
-        const color = riskColors[community.risk] || "#000000";
-        console.log(riskColors, community.risk);
-        const marker = new mapboxgl.Marker({ color })
-          .setLngLat([community.coordinates.lon, community.coordinates.lat])
-          .addTo(map);
-
-        marker.getElement().addEventListener("click", () => {
-          dispatch("dotClick", community);
-        });
-      }
-    });
-  }
-
   onMount(() => {
     map = new mapboxgl.Map({
       container: mapContainer,
@@ -47,7 +27,57 @@
     });
 
     map.on("load", () => {
-      addMarkers();
+      map.addSource("communities", {
+        type: "geojson",
+        data: {
+          type: "FeatureCollection",
+          features: communities.map((community) => ({
+            type: "Feature",
+            geometry: {
+              type: "Point",
+              coordinates: [
+                community.coordinates.lon,
+                community.coordinates.lat,
+              ],
+            },
+            properties: {
+              risk: community.risk,
+              title: community.title,
+            },
+          })),
+        },
+      });
+
+      map.addLayer({
+        id: "community-dots",
+        type: "circle",
+        source: "communities",
+        paint: {
+          "circle-radius": 6,
+          "circle-color": [
+            "match",
+            ["get", "risk"],
+            ...Object.entries(riskColors).flat(),
+            "#000000",
+          ],
+          "circle-stroke-width": 1,
+          "circle-stroke-color": "#ffffff",
+        },
+      });
+
+      map.on("click", "community-dots", (event) => {
+        const features = event.features[0];
+        if (features) {
+          dispatch("dotClick", features.properties);
+        }
+      });
+
+      map.on("mouseenter", "community-dots", () => {
+        map.getCanvas().style.cursor = "pointer";
+      });
+      map.on("mouseleave", "community-dots", () => {
+        map.getCanvas().style.cursor = "";
+      });
     });
   });
 

@@ -1,3 +1,3 @@
 <header>
-	Hello there
+	<!-- Hello there -->
 </header>

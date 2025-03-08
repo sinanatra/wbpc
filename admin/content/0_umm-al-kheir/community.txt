@@ -1,0 +1,176 @@
+Title: Umm al Kheir
+
+----
+
+Coordinates:
+
+lat: 31.427417
+lon: 35.195648
+number: null
+city: null
+region: null
+country: null
+countryCode: null
+postcode: null
+address: null
+osm: null
+
+----
+
+Risk: Imminent Risk
+
+----
+
+Tags: 
+
+----
+
+Alternativenames: 
+
+----
+
+Keyfacts:
+
+- 
+  keyinfodescription: ""
+
+----
+
+History: 
+
+----
+
+Alerts:
+
+- 
+  alertdate: 2024-04-20
+  alertdescription: >
+    The ICA entered the Palestinian
+    community of Um Al-Khair in South Hebron
+    and issued stop work orders for the
+    donor-funded CCTV network installed by
+    Comet-ME. Israeli settlers wearing
+    military uniforms have been relentlessly
+    attacking the community, escalating
+    after 7 October. The CCTV network was
+    intended to allow the community to have
+    a sense of security and to provide more
+    protection against settler attacks. The
+    ICA issued the orders against the poles
+    that were installed within the
+    community, where cameras were installed.
+    Most structures in the community of Um
+    al-Khair have Israeli-issued demolition
+    orders, on the basis that they do not
+    have Israeli building permits, which are
+    impossible for Palestinians to obtain.
+- 
+  alertdate: 2025-08-03
+  alertdescription: >
+    Israeli military and settlers in
+    military uniform entered the community
+    during the evening, on the pretense of
+    arresting foreign activists. An elderly
+    woman, Aida Al-Hathaleen, became ill and
+    suffered a heart attack due to the
+    stress of the Israeli military presence
+    and continued harassment by settlers and
+    soldiers. She was transferred to a
+    hospital in Hebron but unfortunately
+    passed away on Saturday, 6 April. She
+    was a well-loved local activist who had
+    dedicated her life to fighting for
+    Palestinian rights, and was the sister
+    of Suleiman al-Hathaleen, a well-known
+    activist who was fatally injured on 5
+    January 2022 when an Israeli tow truck
+    hit him during an Israeli military raid
+    on the village to confiscate
+    unregistered vehicles.
+- 
+  alertdate: 2025-08-06
+  alertdescription: "Aida Al-Hathaleen passed away after suffering a heart attack due to the stress caused by the Israeli military and settlers' harassment."
+- 
+  alertdate: 2024-08-27
+  alertdescription: >
+    According to Btselem field researcher,
+    Nasser Nawajeh, two settlers in military
+    uniforms stopped a car full of
+    Palestinians in Um al-Khair, forced them
+    out of the car, and shot the car’s
+    engine and its windows.
+- 
+  alertdate: 2024-08-30
+  alertdescription: |
+    Three days later, settlers returned to the village, collecting all the men at gunpoint, forcing them to stand along a wall and checking their phones. When they saw photos of a Palestinian policeman in uniform and with a gun, they attacked him. After finding a local activist, they forced him at gunpoint to make statements against his will on film.
+    Um al-Khair was also given a 24-hour ultimatum to vacate.
+- 
+  alertdate: 2025-08-05
+  alertdescription: |
+    Acceleration of destruction of Palestinian property throughout the West Bank
+    Israel’s illegal demolitions policy in the West Bank continues to escalate. In total, 138 demolitions were carried out in June 2024, marking June with the highest monthly rate of demolitions since the beginning of 2024. This includes the demolitions of 12 structures in Um al Khair in South Hebron.
+- 
+  alertdate: 2025-08-03
+  alertdescription: |
+    Unfortunately, community members in Umm Al-Khair continue to face further violence from Israeli settlers nearby. Yesterday afternoon on 3 July, community members in Umm Al-Khair reported that the settler Shimon Atiya from the Shorashim settler outpost returned to the community accompanied by the Israeli military and set up a tent inside Umm Al-Khair right next to several homes. Later groups of settlers joined Atiyah still accompanied by the Israeli army. They played loud Israeli music from the tent and then held a group prayer outside on the land. After several hours of intense pressure and fear within the community (following the previous night’s settler attack injuring 12 residents including 2 women beaten and settlers firing live ammunition), the settlers dismantled the tent and left. The location of the new tent: https://maps.app.goo.gl/CnC7i9EuUCNtpfBS8
+    
+    A video of the incident is available here.
+    
+    Urgent intervention to remove the outpost and the settlers is needed  prevent a further escalation in settler attacks against the community.
+    Community members are reporting that they feel completely unprotected from the relentless settler violence accompanied by the Israeli army coupled with the Israeli authorities’ threats to destroy more of the village. Despite that the Israeli army is the occupying power and obligated to provide protection, the army enables both the settler violence and demolitions to continue. The Israeli army cannot be relied upon to protect this community and prevent forcible transfer. External protection bodies are needed.
+    Israeli ministers in the government support the settlers’ declarations aiming to annex Area C, expand their settlements and prevent the establishment of a Palestinian state in the West Bank.
+- 
+  alertdate: 2025-08-01
+  alertdescription: |
+    A few hours after diplomats conducted a donor solidarity visit to Umm Al-Khair on 1 July, armed settlers from a nearby outpost reportedly led by a settler known as Shimon Atiya, attacked Umm Al-Khair yesterday at approximately 17:30. Community members reported that the attack began when one Palestinian resident distributed fodder for his sheep, and the settler brought his own sheep to eat the fodder. The residents attempted to prevent this, and the settler called on other settlers to join and begin attacking. The settlers fired live ammunition in the air and attacked community members hitting them with sticks. Israeli Forces arrived and fired tear gas. Residents reported that settlers fired into the air when they entered the community and again while an ambulance was attempting to take injured residents to hospital. Settlers reportedly prevented the ambulance from leaving for around an hour and a half. Israeli forces eventually allowed the ambulance to leave.  After the attack, Israeli police and Israeli Civil Administration confiscated the community’s security cameras. One resident was asked to meet the Israeli police today in the illegal settlement, Kiryat Arba. However, his lawyer advised him to wait until being called for an interview.
+    
+    The community reports that during this attack on 1 July, 12 people were injured, including four women and one child. Residents reported that five people, including four women and one man were taken to hospital for treatment for their injuries. One woman suffered a leg fracture, and one of the women had a back injury, both were caused by settlers beating them. The remainder of those hospitalized suffered from tear gas inhalation. An additional seven men suffered from tear gas inhalation but did not seek medical attention at the hospital.
+- 
+  alertdate: 2025-08-29
+  alertdescription: >
+    Two days before on 29 June, settlers
+    attacked the community houses using
+    pepper spray and resulted in one injury
+    to a community member.
+- 
+  alertdate: 2025-08-26
+  alertdescription: |
+    Settler violence and Demolitions: Hand in Hand
+    
+    Just last week in Umm Al-Khair the community experienced severe violence when on June 26, 2024, the Israeli Civil Administration raided the community with bulldozers and demolished 14 structures, displacing over 50 people. The demolitions included shelters, kitchens, latrines, and an electricity network room, causing power outages. A tent belonging to the late Palestinian activist, Suleiman Al-Hathalin, along with solar cells, water tanks, fences, and extensive land and trees, was also destroyed. WBPC is conducting an assessment and a report with full details will be forthcoming.
+- 
+  alertdate: 2025-08-26
+  alertdescription: |
+    Update 1:
+    This is an initial update- facts and figures to be confirmed following the assessment.
+    
+    
+    The Israeli forces have left Um al Kheir.
+    Seven structures were destroyed: Five homes, the community center and the shelter for the generator. The latter structure hosting the generator contained the electricity systems, switches and cabinets for the community. This has all been destroyed. The community was able to remove the generator. Solar panels were also destroyed.
+    People are in shock. They fear that the Israeli authorities will return and continue the destruction.
+    We are working to provide urgent humanitarian assistance/shelter.
+    
+    Update 2:
+    
+    
+    Following our previous update, residents in Um al Khair have reported to WBPC partners the following damage to WBPC donor funded structures:
+    
+    
+    3 structures overall: 2 residential shelters + 1 kitchen
+    800 euros of electricity
+    Please note that this is an initial assessment, WBPC partners are carrying out detailed assessments, and these figures are likely to change as more information is verified.
+    The Israeli civil administration is currently demolishing Palestinian structures in Um al Kheir, South Hebron.  The targeted area right now is the Eastern neighborhood of Um Kheir, which is very close to the Carmel settlement. Five structures have already been demolished: the community shelter, a structure housing the community generator and 3 residential homes – one is a 200 m concrete house. These structures are part of a 2009 legal case challenging the demolition orders against 20+ structures. The community is fearful that all 20+ will be demolished today.  Such a large demolition could render this area of Um al Kheir almost completely destroyed and result in a large forcible transfer.
+    There are large Israeli forces in the area.
+    The structures already demolished are not WBPC structures, as they were built before the Consortium was established. However, Consortium partners are checking if subsequent assistance has been provided that is connected to the demolished and targeted structures.  WBPC partners were not representing these structures in the Israeli courts. As this is a developing story, more details and clarifications will be updated.
+
+----
+
+Standardofliving: 
+
+----
+
+Governmentmoneyspent: 
+
+----
+
+Uuid: DJAKnTkW7ktmrJNx

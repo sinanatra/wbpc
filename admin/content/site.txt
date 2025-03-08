@@ -5,21 +5,21 @@ Title: WBPC
 Riskvalues:
 
 - 
-  riskvalue: high
+  riskvalue: Imminent Risk
   riskdescription: ""
   riskcolor: '#F05056'
 - 
-  riskvalue: medium
+  riskvalue: High Risk
   riskdescription: ""
   riskcolor: '#F0AB50'
 - 
-  riskvalue: low
+  riskvalue: At Risk
   riskdescription: ""
   riskcolor: '#50F054'
 - 
-  riskvalue: no risk
-  riskdescription: blab abla
-  riskcolor: '#B3B3B3'
+  riskvalue: low
+  riskdescription: ""
+  riskcolor: '#50F0D7'
 
 ----
 

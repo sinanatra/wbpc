@@ -1,0 +1,91 @@
+Title: Wadi as Seeq
+
+----
+
+Coordinates:
+
+lat: 31.901138
+lon: 35.325035
+number: null
+city: null
+region: null
+country: null
+countryCode: null
+postcode: null
+address: null
+osm: null
+
+----
+
+Risk: Imminent Risk
+
+----
+
+Tags: 
+
+----
+
+Alternativenames: 
+
+----
+
+Keyfacts: 
+
+----
+
+History: 
+
+----
+
+Alerts:
+
+- 
+  alertdate: 2024-08-11
+  alertdescription: >
+    25 Palestinian households, comprising
+    142 Palestinians, including 66 children,
+    were forcibly transferred due to settler
+    violence. Armed settlers wearing
+    military uniform repeatedly attacked
+    residents, holding three Palestinians
+    (one resident and two members of CWRC)
+    hostage at gunpoint, beating and
+    urinating on them, and attempting sexual
+    assault.
+- 
+  alertdate: 2025-03-12
+  alertdescription: |
+    Following relentless settler attacks, WBPC raised the alarm about the forcible transfer of Wadi as-Seeq community, Ramallah governorate due to a lack of protection from such attacks. The entire community, comprising 144 residents, were forcibly transferred on 12 October, following an extremely serious and violent settler attack, which left the community members fearing for their lives.
+    According to Israeli media reports in Haaretz and The Times of Israel, during the 12 October attack:
+    Three Palestinians were bound, stripped, and beaten repeatedly by armed Israeli settlers/soldiers who held them at gunpoint. The attackers also burned and urinated on the Palestinian survivors.
+    One survivor reported that one settler/soldier attempted a sexual assault on him.
+    
+    The survivors of the attack reported that the settlers were wearing military uniform, some with faces covered, and they were accompanied by Israeli soldiers, who also participated in the attack.
+    
+    The Israeli army stated to the media that it had dismissed the commander of the unit and was investigating the incident. More details on the attack and the perpetrators are available here.
+    Wadi as-Seeq School: The school, which WBPC has supported for many years and which many diplomatic delegations have visited, has been vandalized. Like the school in Ein Samiya, following the settler vandalism, the school is very vulnerable to complete demolition.
+- 
+  alertdate: 2025-03-09
+  alertdescription: >
+    Settlers dressed in military uniforms,
+    with their faces covered, entered Wadi
+    Seeq community. They are reported to
+    have harassed residents. A video of
+    settlers in military uniform at the
+    entrance to Wadi Seeq community is
+    available here. Protective presence
+    groups are staying with the community
+    during the night, and in nearby Ein
+    Rashash 24/7.
+
+----
+
+Standardofliving: 
+
+----
+
+Governmentmoneyspent: 
+
+----
+
+Uuid: dSgaURRaM0pS9A9B

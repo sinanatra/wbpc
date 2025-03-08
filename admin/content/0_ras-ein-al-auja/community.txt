@@ -1,0 +1,96 @@
+Title: Ras 'Ein al 'Auja
+
+----
+
+Coordinates:
+
+lat: "31.943488459084"
+lon: "35.403959514741"
+city: Area C
+region: Judea and Samaria
+country: Palestinian Territory
+countryCode: ps
+osm: 37172574
+
+----
+
+Risk: low
+
+----
+
+Tags: 
+
+----
+
+Alternativenames: 
+
+----
+
+Keyfacts: 
+
+----
+
+History: 
+
+----
+
+Alerts:
+
+- 
+  alertdate: 2024-06-22
+  alertdescription: |
+    # Overview of Recent Violent Settlers Attacks Ras Ein Al Auja
+    
+    7:30 am: According to reports from community members and protective presence activists, Israeli settlers including three who have already been sanctioned by the US, UK and others - raided both the northern part of the community with a military and police escort, and the southern part without the escorts. The settlers accused Palestinian herders from the community of stealing their sheep. Israeli forces arrested three residents and left.
+    11:30 am: Settlers returned and stole around 40 sheep from the community.
+    14:30 am (approximately): Israeli forces and police returned and fired tear gas at the community. During the attack, settlers in military uniform fired live ammunition in the air, threatened community members, raided their houses and looted their livestock. According to eyewitness accounts from protective presence activists, the Israeli forces guarded the settlers as they carried out this attack and prevented the activists from approaching. However, the activists followed the trucks loaded with sheep, and reported that the sheep were taken to Zohar Sabah’s outpost. Video footage available here: https://x.com/Mistaclim/status/1804935489687826563
+- 
+  alertdate: 2024-06-23
+  alertdescription: 'Sunday 23 June: Settlers raided the community in the morning taking photos of the sheep and harassing community members. They stole two sheep.  The Israeli military returned, firing tear gas and live ammunition at residents. In the afternoon, settlers with Israeli forces, accompanied by an Israeli TV channel returned to the community.  During this attack, they attempted to shift the narrative and allege that they were the victims during this incident and were attacked by the community (contrary to all available footage and witness reports).'
+- 
+  alertdate: 2024-06-24
+  alertdescription: |
+    This morning, residents reported that the settlers prevented Palestinian herders and their tractors from reaching their nearby water resource.  They cut off the water pipes that provided the community with water. The settlers have been attempting to take over the nearby water spring with the support of the military and police members, for several months.
+    
+    As of 24 June, none of the arrested community members – including one woman – have been released.
+- 
+  alertdate: 2025-08-24
+  alertdescription: |
+    The WBPC-supported Palestinian community of Ras Ein Al Auja (Jericho), needs immediate protection to prevent further forcible transfer.  Urgent diplomatic intervention with the Israeli authorities is needed.
+    
+    After the establishment of additional outposts around Ras Ein Al Auja in the last few months, Israeli settlers have intensified their attacks on the community – they are subjected to relentless attacks and harassment. WBPC reported on prior attacks last month in this community. In the last three days Israeli settlers and army violently raided the community, fired live ammunition and tear gas and arrested community members including two women.  Israeli settlers involved in the attack claimed that the community members stole their sheep and threw rocks at them. However, this attack follows a familiar pattern replicated in other Palestinian communities, whereby settlers attack residents and steal their livestock, leading to forced displacement (examples below).
+    Video footage of the latest attack on 21 June:  https://x.com/Mistaclim/status/1804935489687826563
+    
+    Community members and protective presence activists reported that the attacks appeared to be well-planned and coordinated between settlers and Israeli forces, with Israeli forces appearing to take direction from the settlers. In April 2024, settlers burned four shelters belonging to residents. In May, settlers established additional outposts close to the community and prevented them from accessing their grazing lands.
+- 
+  alertdate: 2024-04-20
+  alertdescription: "Israeli settlers from a settler outpost near to Ras 'Ein al 'Auja community in Jericho burned and damaged four Palestinian shelter structures. According to local community sources and footage, a group of armed and masked Israeli settlers broke into the community, in the evening.  They set fire to four residential shelters, damaged the structures, and fled the scene. It's worth noting that the structures were empty during the attack, as the families were on their seasonal movement."
+- 
+  alertdate: 2025-08-06
+  alertdescription: "Israeli settlers coming from the nearby Israeli settlement outpost near Ras Ein al 'Auja in Jericho with their livestock, grazed their livestock on Palestinian land planted with barley. According to the affected family and footage, the settlers broke into 15 dunams of Palestinian land planted with barley and grazed their livestock there for more than a week, causing damage to the crops. The total damage is under assessment. As a result, one Palestinian household was affected by this attack."
+- 
+  alertdate: 2025-08-15
+  alertdescription: |
+    Israeli settlers destroyed at least three water pipes owned by Ras Ein Al Auja herding community in Jericho. According to the community, Israeli settlers cut off and damaged three 200-meter water pipes installed by the community to collect water from the natural spring. Following that, Israeli settlers known by the community to have come from the newly established nearby settler outpost raided the community in police outfits and a police vehicle, and toured around the residential tents, forcing the owners of the damaged pipes to remove them completely from the area.
+    Additionally, earlier in the morning of this same day, groups of Israeli settlers verbally and physically assaulted Palestinian workers coming from Ras Ein Al Auja while on their way to work.  The Israeli settlers who came from the newly erected settler outpost followed them and threw rocks and sticks at them, forcing them to leave the area. No injuries were reported.
+- 
+  alertdate: 2025-08-27
+  alertdescription: "A group of Israeli settlers from a settlement outpost near Ras 'Ein al 'Auja in Jericho attacked a Palestinian driver while he was filling his water tank at the Al 'Auja water spring and stole a water pipe. According to local community sources, the settlers used knives to threaten the driver, and when he fled, they threw stones at his agricultural tractor and stole the water pipe he was using to transfer the water from the spring to the tank."
+- 
+  alertdate: 2025-08-24
+  alertdescription: "A group of Israeli settlers from a settlement outpost near Ras 'Ein al 'Auja in Jericho stole beverages from a Palestinian seller and intimidated Palestinians picnicking around Al' Auja water springs. Additionally, another group of settlers intimidated Palestinian families by taking photos of their cars and faces and provoked them by swimming in the water spring unclothed in front of Palestinian women and children."
+- 
+  alertdate: 2025-08-22
+  alertdescription: "A group of Israeli settlers from outposts near Ras Ein 'Aluja in Jericho, broke into the community and threw stones at Palestinian vehicles nearby, causing damage. According to local sources, around 11:00 PM, Israeli settlers, who were shirtless, entered the community and toured the shelter area for at least two hours, intimidating the residents by blowing a horn at the doors and the windows of the shelters. They also threw stones at Palestinian vehicles passing by Al 'Auja Spring, damaging at least two vehicles. No injuries were reported."
+
+----
+
+Standardofliving: 
+
+----
+
+Governmentmoneyspent: 
+
+----
+
+Uuid: PccblNLn8bcYWi3s

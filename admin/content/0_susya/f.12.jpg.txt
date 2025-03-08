@@ -1,9 +1,0 @@
-Sort: 1
-
-----
-
-Uuid: cKcY9cnAmtlkgyem
-
-----
-
-Template: image

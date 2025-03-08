@@ -1,0 +1,72 @@
+Title: Umm At Tiran
+
+----
+
+Coordinates:
+
+lat: 31.382676
+lon: 34.9917
+number: null
+city: null
+region: null
+country: null
+countryCode: null
+postcode: null
+address: null
+osm: null
+
+----
+
+Risk: Imminent Risk
+
+----
+
+Tags: 
+
+----
+
+Alternativenames: 
+
+----
+
+Keyfacts: 
+
+----
+
+History: 
+
+----
+
+Alerts:
+
+- 
+  alertdate: 2025-08-11
+  alertdescription: >
+    On the morning of 11 November, armed
+    settlers from the Meitarim Farm outpost
+    broke into the community and threatened
+    two families. The settlers told the
+    families they would kill them if they
+    did not leave after 24 hours, in tactics
+    mirroring the forced expulsion of
+    neighbouring Khirbet Zanuta and Khirbet
+    Ratheem. Witnesses said that the
+    settlers held a gun to the head of a
+    Palestinian woman. Later in the day, the
+    settlers returned, including settlers
+    from the Yehuda Farm outpost. They
+    repeated the threat and set their dogs
+    on the community’s flock of sheep and
+    frightened the children, before leaving.
+
+----
+
+Standardofliving: 
+
+----
+
+Governmentmoneyspent: 
+
+----
+
+Uuid: mi5c4GLDOIyc5lYd

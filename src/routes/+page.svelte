@@ -47,7 +47,6 @@
   <p>Loading communities...</p>
 {:else}
   <section class="full-screen">
-    <!-- Map fills the entire section -->
     <Map {communities} {riskColors} on:dotClick={handleMapClick} />
 
     {#if selectedCommunity}
@@ -57,6 +56,10 @@
 {/if}
 
 <style>
+  :global(body) {
+    margin: 0;
+  }
+
   .full-screen {
     width: 100vw;
     height: 100vh;

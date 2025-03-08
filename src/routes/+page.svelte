@@ -3,8 +3,10 @@
   import { fetchCommunities, fetchRiskColors } from "$lib/loadData.js";
   import Map from "@components/Map.svelte";
   import PageInfo from "@components/PageInfo.svelte";
+  import Legend from "@components/Legend.svelte";
 
   let communities = [];
+  let riskArray = [];
   let riskColors = {};
   let error = null;
   let selectedCommunity = null;
@@ -17,7 +19,7 @@
       ]);
       communities = communitiesData.result || communitiesData;
 
-      const riskArray = riskColorsData.result || riskColorsData;
+      riskArray = riskColorsData.result || riskColorsData;
       riskColors = {};
       if (Array.isArray(riskArray)) {
         riskArray.forEach((item) => {
@@ -47,6 +49,7 @@
   <p>Loading communities...</p>
 {:else}
   <section class="full-screen">
+    <Legend {riskArray} />
     <Map {communities} {riskColors} on:dotClick={handleMapClick} />
 
     {#if selectedCommunity}

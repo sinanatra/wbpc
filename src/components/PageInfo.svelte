@@ -29,13 +29,16 @@
 <style>
   .pageinfo {
     position: absolute;
-    top: 10%;
-    left: 10%;
-    background: white;
-    padding: 1rem;
-    border: 1px solid #ccc;
-    z-index: 1000;
+    top: 10px;
+    right: 10px;
+    width: 100%;
+    max-width: 360px;
+    border-radius: 10px;
+    background-color: white;
+    padding: 10px;
+    z-index: 2;
   }
+
   button {
     float: right;
   }

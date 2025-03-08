@@ -12,6 +12,7 @@
   let map;
   let mapContainer;
   const dispatch = createEventDispatcher();
+  let selectedFeatureId = null;
 
   onMount(() => {
     map = new mapboxgl.Map({
@@ -21,31 +22,31 @@
       zoom: 9,
       minZoom: 8,
       maxBounds: [
-        [34.45395548496137, 31.509751808262436],
+        [34.319444154592674, 30.89330617859629],
         [36.85691410858303, 32.845684499585985],
       ],
     });
 
     map.on("load", () => {
+      const geojson = {
+        type: "FeatureCollection",
+        features: communities.map((community, i) => ({
+          id: community.id || i,
+          type: "Feature",
+          geometry: {
+            type: "Point",
+            coordinates: [community.coordinates.lon, community.coordinates.lat],
+          },
+          properties: {
+            risk: community.risk,
+            title: community.title,
+          },
+        })),
+      };
+
       map.addSource("communities", {
         type: "geojson",
-        data: {
-          type: "FeatureCollection",
-          features: communities.map((community) => ({
-            type: "Feature",
-            geometry: {
-              type: "Point",
-              coordinates: [
-                community.coordinates.lon,
-                community.coordinates.lat,
-              ],
-            },
-            properties: {
-              risk: community.risk,
-              title: community.title,
-            },
-          })),
-        },
+        data: geojson,
       });
 
       map.addLayer({
@@ -53,22 +54,44 @@
         type: "circle",
         source: "communities",
         paint: {
-          "circle-radius": 6,
+          "circle-radius": [
+            "case",
+            ["boolean", ["feature-state", "selected"], false],
+            10,
+            6,
+          ],
           "circle-color": [
             "match",
             ["get", "risk"],
             ...Object.entries(riskColors).flat(),
             "#000000",
           ],
+          //   "circle-opacity": [
+          //     "case",
+          //     ["boolean", ["feature-state", "selected"], false],
+          //     1,
+          //     0.5,
+          //   ],
           "circle-stroke-width": 1,
           "circle-stroke-color": "#ffffff",
         },
       });
 
       map.on("click", "community-dots", (event) => {
-        const features = event.features[0];
-        if (features) {
-          dispatch("dotClick", features.properties);
+        const feature = event.features[0];
+        if (feature) {
+          if (selectedFeatureId !== null && selectedFeatureId !== feature.id) {
+            map.setFeatureState(
+              { source: "communities", id: selectedFeatureId },
+              { selected: false }
+            );
+          }
+          selectedFeatureId = feature.id;
+          map.setFeatureState(
+            { source: "communities", id: feature.id },
+            { selected: true }
+          );
+          dispatch("dotClick", feature.properties);
         }
       });
 

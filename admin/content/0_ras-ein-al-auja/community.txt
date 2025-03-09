@@ -22,15 +22,20 @@ Tags:
 
 ----
 
-Alternativenames: 
+Alternativenames: alternative name
 
 ----
 
-Keyfacts: 
+Keyfacts:
+
+- 
+  keyinfodescription: a key fact
+- 
+  keyinfodescription: another one
 
 ----
 
-History: 
+History: the history
 
 ----
 
@@ -85,11 +90,11 @@ Alerts:
 
 ----
 
-Standardofliving: 
+Standardofliving: standards of living
 
 ----
 
-Governmentmoneyspent: 
+Governmentmoneyspent: 12
 
 ----
 

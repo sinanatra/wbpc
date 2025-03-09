@@ -22,26 +22,40 @@
       zoom: 9,
       minZoom: 8,
       maxBounds: [
-        [34.319444154592674, 30.89330617859629],
+        [34.45395548496137, 31.509751808262436],
         [36.85691410858303, 32.845684499585985],
       ],
     });
 
     map.on("load", () => {
+      const validCommunities = communities.filter(
+        (community) =>
+          community.coordinates &&
+          community.coordinates.lon &&
+          community.coordinates.lat
+      );
+
       const geojson = {
         type: "FeatureCollection",
-        features: communities.map((community, i) => ({
-          id: community.id || i,
-          type: "Feature",
-          geometry: {
-            type: "Point",
-            coordinates: [community.coordinates.lon, community.coordinates.lat],
-          },
-          properties: {
-            risk: community.risk,
-            title: community.title,
-          },
-        })),
+        features: validCommunities.map((community, i) => {
+          const id = (community.id || i).toString();
+          return {
+            id,
+            type: "Feature",
+            geometry: {
+              type: "Point",
+              coordinates: [
+                community.coordinates.lon,
+                community.coordinates.lat,
+              ],
+            },
+            properties: {
+              id,
+              risk: community.risk,
+              title: community.title,
+            },
+          };
+        }),
       };
 
       map.addSource("communities", {
@@ -66,12 +80,6 @@
             ...Object.entries(riskColors).flat(),
             "#000000",
           ],
-          //   "circle-opacity": [
-          //     "case",
-          //     ["boolean", ["feature-state", "selected"], false],
-          //     1,
-          //     0.5,
-          //   ],
           "circle-stroke-width": 1,
           "circle-stroke-color": "#ffffff",
         },
@@ -79,19 +87,23 @@
 
       map.on("click", "community-dots", (event) => {
         const feature = event.features[0];
-        if (feature) {
-          if (selectedFeatureId !== null && selectedFeatureId !== feature.id) {
+
+        const featureId = feature.id || feature.properties.id;
+        if (feature && featureId !== undefined) {
+          if (selectedFeatureId !== null && selectedFeatureId !== featureId) {
             map.setFeatureState(
               { source: "communities", id: selectedFeatureId },
               { selected: false }
             );
           }
-          selectedFeatureId = feature.id;
+          selectedFeatureId = featureId;
           map.setFeatureState(
-            { source: "communities", id: feature.id },
+            { source: "communities", id: featureId },
             { selected: true }
           );
           dispatch("dotClick", feature.properties);
+        } else {
+          console.error("Feature id is undefined", feature);
         }
       });
 

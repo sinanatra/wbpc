@@ -4,17 +4,18 @@
   console.log(riskArray);
 </script>
 
-<section>
+<section class="risk-legend">
   {#each riskArray as risk}
-    <div>
-      <span style="background-color: {risk.riskcolor}"></span>
-      <span>{risk.riskvalue}</span>
+    <div class="risk-item">
+      <span class="risk-circle" style="background-color: {risk.riskcolor}"
+      ></span>
+      <span class="risk-label">{risk.riskvalue}</span>
     </div>
   {/each}
 </section>
 
 <style>
-  section {
+  .risk-legend {
     position: absolute;
     top: 10px;
     left: 10px;
@@ -24,5 +25,22 @@
     padding: 10px;
     width: 100%;
     max-width: 360px;
+    font-size: 14px;
+  }
+  .risk-item {
+    display: flex;
+    align-items: center;
+    margin-bottom: 6px;
+  }
+  .risk-circle {
+    display: inline-block;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    margin-right: 8px;
+    border: 1px solid white;
+  }
+  .risk-label {
+    flex: 1;
   }
 </style>

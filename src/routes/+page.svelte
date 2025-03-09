@@ -1,6 +1,10 @@
 <script>
   import { onMount } from "svelte";
-  import { fetchCommunities, fetchRiskColors } from "$lib/loadData.js";
+  import {
+    fetchCommunities,
+    fetchCommunitiesData,
+    fetchRiskColors,
+  } from "$lib/loadData.js";
   import Map from "@components/Map.svelte";
   import PageInfo from "@components/PageInfo.svelte";
   import Legend from "@components/Legend.svelte";
@@ -10,6 +14,15 @@
   let riskColors = {};
   let error = null;
   let selectedCommunity = null;
+
+  async function handleCommunitySelect(community) {
+    try {
+      const detailData = await fetchCommunitiesData(community.id);
+      selectedCommunity = detailData.result || detailData;
+    } catch (err) {
+      console.error("Error fetching community detail:", err);
+    }
+  }
 
   onMount(async () => {
     try {
@@ -35,11 +48,7 @@
   });
 
   function handleMapClick(event) {
-    selectedCommunity = event.detail;
-  }
-
-  function closePageInfo() {
-    selectedCommunity = null;
+    handleCommunitySelect(event.detail);
   }
 </script>
 
@@ -53,7 +62,7 @@
     <Map {communities} {riskColors} on:dotClick={handleMapClick} />
 
     {#if selectedCommunity}
-      <PageInfo community={selectedCommunity} on:close={closePageInfo} />
+      <PageInfo community={selectedCommunity} />
     {/if}
   </section>
 {/if}
@@ -61,6 +70,11 @@
 <style>
   :global(body) {
     margin: 0;
+    font-family: sans-serif;
+  }
+
+  p {
+    padding: 10px;
   }
 
   .full-screen {

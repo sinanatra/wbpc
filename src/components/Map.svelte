@@ -14,6 +14,28 @@
   const dispatch = createEventDispatcher();
   let selectedFeatureId = null;
 
+  function addAlertMarkers(geojson) {
+    geojson.features.forEach((feature) => {
+      const { lastAlertDate, lastAlertText } = feature.properties;
+      if (lastAlertDate && lastAlertText && lastAlertText.trim() !== "") {
+        const alertEl = document.createElement("div");
+        alertEl.className = "alert-box";
+        let displayText = lastAlertText;
+        if (displayText.length > 80) {
+          displayText = displayText.substring(0, 80) + "...";
+        }
+        alertEl.innerHTML = `<div class="alert-date">${lastAlertDate}</div><div class="alert-text">${displayText}</div>`;
+        new mapboxgl.Marker({
+          element: alertEl,
+          anchor: "left",
+          offset: [20, 20],
+        })
+          .setLngLat(feature.geometry.coordinates)
+          .addTo(map);
+      }
+    });
+  }
+
   onMount(() => {
     map = new mapboxgl.Map({
       container: mapContainer,
@@ -22,7 +44,7 @@
       zoom: 9,
       minZoom: 8,
       maxBounds: [
-        [34.45395548496137, 31.509751808262436],
+        [30.45395548496137, 29.509751808262436],
         [36.85691410858303, 32.845684499585985],
       ],
     });
@@ -53,6 +75,8 @@
               id,
               risk: community.risk,
               title: community.title,
+              lastAlertDate: community.lastAlertDate || "",
+              lastAlertText: community.lastAlertText || "",
             },
           };
         }),
@@ -85,9 +109,10 @@
         },
       });
 
+      addAlertMarkers(geojson);
+
       map.on("click", "community-dots", (event) => {
         const feature = event.features[0];
-
         const featureId = feature.id || feature.properties.id;
         if (feature && featureId !== undefined) {
           if (selectedFeatureId !== null && selectedFeatureId !== featureId) {
@@ -129,5 +154,23 @@
   .map-container {
     width: 100%;
     height: 100%;
+  }
+
+  :global(.alert-box) {
+    background: white;
+    border-radius: 10px;
+    padding: 5px;
+    max-width: 150px;
+    font-size: 10px;
+    line-height: 12px;
+  }
+
+  :global(.alert-date) {
+    font-weight: bold;
+  }
+
+  :global(.alert-text) {
+    white-space: pre-wrap;
+    word-wrap: break-word;
   }
 </style>

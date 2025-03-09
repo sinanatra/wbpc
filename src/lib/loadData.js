@@ -13,9 +13,7 @@ export const fetchRiskColors = async () => {
 export const fetchCommunities = async () => {
   const res = await fetch("/api/query", {
     method: "post",
-    headers: {
-      "content-type": "application/json",
-    },
+    headers: { "content-type": "application/json" },
     body: JSON.stringify({
       query: "site.children.template('community').filterBy('status', 'listed')",
       select: {
@@ -24,6 +22,8 @@ export const fetchCommunities = async () => {
         risk: "page.risk",
         alternativeNames: "page.alternativeNames.split(',')",
         coordinates: "page.coordinates.yaml()",
+        lastAlertDate: "page.alerts.toStructure().sortBy('alertDate', 'desc').first().alertDate",
+        lastAlertText: "page.alerts.toStructure().sortBy('alertDate', 'desc').first().alertDescription",
       },
     }),
   });
@@ -48,7 +48,7 @@ export const fetchCommunitiesData = async (id) => {
         tags: "page.tags.split(',')",
         history: "page.history",
         keyfacts: "page.keyfacts.toStructure()",
-        alerts: "page.alerts.toStructure()",
+        alerts: "page.alerts.toStructure().sortBy('alertDate', 'desc')",
         standardOfLiving: "page.standardOfLiving",
         images: {
           query: "page.images",

@@ -1,7 +1,7 @@
 <script>
   export let riskArray;
 
-  console.log(riskArray);
+  // console.log(riskArray);
 </script>
 
 <section class="risk-legend">

@@ -116,6 +116,7 @@ tabs:
               alerts:
                 label: Alerts List
                 type: structure
+                sort: "alertDate desc"
                 entry: '{{ alertDate }} - {{ alertDescription }}'
                 fields:
                   alertDate:
@@ -127,7 +128,6 @@ tabs:
                     label: Description
                     type: textarea
                     width: 2/3
-
   standards:
     label: Standards of Living
     icon: chart

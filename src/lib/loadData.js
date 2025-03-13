@@ -11,6 +11,10 @@ export const fetchRiskColors = async () => {
 };
 
 export const fetchCommunities = async () => {
+  const lastDate = new Date();
+  lastDate.setMonth(lastDate.getMonth() - 7);
+  const lastISOString = lastDate.toISOString();
+
   const res = await fetch("/api/query", {
     method: "post",
     headers: { "content-type": "application/json" },
@@ -22,8 +26,20 @@ export const fetchCommunities = async () => {
         risk: "page.risk",
         alternativeNames: "page.alternativeNames.split(',')",
         coordinates: "page.coordinates.yaml()",
-        lastAlertDate: "page.alerts.toStructure().sortBy('alertDate', 'desc').first().alertDate",
-        lastAlertText: "page.alerts.toStructure().sortBy('alertDate', 'desc').first().alertDescription",
+        // lastAlertDate: "page.alerts.toStructure().sortBy('alertDate', 'desc').first().alertDate",
+        // lastAlertText: "page.alerts.toStructure().sortBy('alertDate', 'desc').first().alertDescription",
+        lastAlertDate:
+          "page.alerts.toStructure().filterBy('alertDate', '>=', '" +
+          lastISOString +
+          "').sortBy('alertDate', 'desc').first() ? page.alerts.toStructure().filterBy('alertDate', '>=', '" +
+          lastISOString +
+          "').sortBy('alertDate', 'desc').first().alertDate : ''",
+        lastAlertText:
+          "page.alerts.toStructure().filterBy('alertDate', '>=', '" +
+          lastISOString +
+          "').sortBy('alertDate', 'desc').first() ? page.alerts.toStructure().filterBy('alertDate', '>=', '" +
+          lastISOString +
+          "').sortBy('alertDate', 'desc').first().alertDescription : ''",
       },
     }),
   });

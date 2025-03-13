@@ -55,7 +55,10 @@
 {#if error}
   <p>Error loading communities: {error.message}</p>
 {:else if communities.length === 0}
-  <p>Loading communities...</p>
+  <!-- <p>Loading communities...</p> -->
+  <section class="full-screen">
+    <Map />
+  </section>
 {:else}
   <section class="full-screen">
     <Legend {riskArray} />

@@ -103,27 +103,29 @@
         data: geojson,
       });
 
-      map.addLayer({
-        id: "community-dots",
-        type: "circle",
-        source: "communities",
-        paint: {
-          "circle-radius": [
-            "case",
-            ["boolean", ["feature-state", "selected"], false],
-            10,
-            6,
-          ],
-          "circle-color": [
-            "match",
-            ["get", "risk"],
-            ...Object.entries(riskColors).flat(),
-            "#000000",
-          ],
-          "circle-stroke-width": 1,
-          "circle-stroke-color": "#ffffff",
-        },
-      });
+      if (Object.entries(riskColors).length > 0) {
+        map.addLayer({
+          id: "community-dots",
+          type: "circle",
+          source: "communities",
+          paint: {
+            "circle-radius": [
+              "case",
+              ["boolean", ["feature-state", "selected"], false],
+              10,
+              6,
+            ],
+            "circle-color": [
+              "match",
+              ["get", "risk"],
+              ...Object.entries(riskColors).flat(),
+              "#000000",
+            ],
+            "circle-stroke-width": 1,
+            "circle-stroke-color": "#ffffff",
+          },
+        });
+      }
 
       addAlertMarkers(geojson);
 

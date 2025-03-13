@@ -25,10 +25,27 @@
           displayText = displayText.substring(0, 80) + "...";
         }
         alertEl.innerHTML = `<div class="alert-date">${lastAlertDate}</div><div class="alert-text">${displayText}</div>`;
+
+        alertEl.addEventListener("click", (e) => {
+          e.stopPropagation();
+          dispatch("dotClick", feature.properties);
+
+        });
+
+        const screenPos = map.project(feature.geometry.coordinates);
+        let anchor, offset;
+        if (screenPos.x < mapContainer.clientWidth / 2) {
+          anchor = "right";
+          offset = [-10, 20];
+        } else {
+          anchor = "left";
+          offset = [10, 20];
+        }
+
         new mapboxgl.Marker({
           element: alertEl,
-          anchor: "left",
-          offset: [20, 20],
+          anchor,
+          offset,
         })
           .setLngLat(feature.geometry.coordinates)
           .addTo(map);
@@ -45,7 +62,7 @@
       minZoom: 8,
       maxBounds: [
         [34.45395548496137, 30.509751808262436],
-        [36.85691410858303, 32.845684499585985],
+        [35.9947960976464, 32.48706528683205],
       ],
     });
 
@@ -163,6 +180,7 @@
     max-width: 150px;
     font-size: 10px;
     line-height: 12px;
+    cursor: pointer;
   }
 
   :global(.alert-date) {

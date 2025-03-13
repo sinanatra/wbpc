@@ -29,7 +29,6 @@
         alertEl.addEventListener("click", (e) => {
           e.stopPropagation();
           dispatch("dotClick", feature.properties);
-
         });
 
         const screenPos = map.project(feature.geometry.coordinates);
@@ -57,12 +56,12 @@
     map = new mapboxgl.Map({
       container: mapContainer,
       style: "mapbox://styles/sinanatra/cm7yteg6x00ty01sc85aqduv2",
-      center: [35.2621, 31.95],
-      zoom: 9,
-      minZoom: 8,
+      center: [35.31820317122984, 31.961345483167264],
+      zoom: 8.5,
+      minZoom: 1,
       maxBounds: [
-        [34.45395548496137, 30.509751808262436],
-        [35.9947960976464, 32.48706528683205],
+        [32.45395548496137, 30.509751808262436],
+        [36.9947960976464, 33.48706528683205],
       ],
     });
 

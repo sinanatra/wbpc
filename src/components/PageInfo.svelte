@@ -4,8 +4,6 @@
   const dispatch = createEventDispatcher();
 
   let selectedTab = "Key Facts";
-
-  console.log(community);
 </script>
 
 <div class="pageinfo">
@@ -16,32 +14,6 @@
       {community.alternativeNames.join(", ")}
     </p>
   {/if}
-  <div class="tabs">
-    <button
-      class:selected={selectedTab === "Key Facts"}
-      on:click={() => (selectedTab = "Key Facts")}>Key Facts</button
-    >
-    <button
-      class:selected={selectedTab === "History"}
-      on:click={() => (selectedTab = "History")}>History</button
-    >
-    <button
-      class:selected={selectedTab === "Alerts"}
-      on:click={() => (selectedTab = "Alerts")}>Alerts</button
-    >
-    <button
-      class:selected={selectedTab === "Standards"}
-      on:click={() => (selectedTab = "Standards")}>Standards of Living</button
-    >
-    <button
-      class:selected={selectedTab === "Images"}
-      on:click={() => (selectedTab = "Images")}>Images</button
-    >
-    <button
-      class:selected={selectedTab === "Grants"}
-      on:click={() => (selectedTab = "Grants")}>Government Grants</button
-    >
-  </div>
 
   <div class="tab-content">
     {#if selectedTab === "Key Facts"}
@@ -49,16 +21,12 @@
         {#if community.keyfacts && community.keyfacts.length}
           {#each community.keyfacts as keyfact}
             <div class="alert-item">
-              <p>
-                {keyfact.keyinfodescription}
-              </p>
+              <p>{keyfact.keyinfodescription}</p>
             </div>
           {/each}
         {:else}
           <p>No keyfacts available.</p>
         {/if}
-      </div>
-      <div class="tab-panel">
         {#if community.tags && community.tags.length}
           <p><strong>Tags:</strong> {community.tags.join(", ")}</p>
         {/if}
@@ -73,7 +41,6 @@
           {#each community.alerts as alert}
             <div class="alert-item">
               <strong>{alert.alertdate}:</strong>
-
               {@html alert.alertdescription}
             </div>
           {/each}
@@ -110,48 +77,78 @@
   </div>
 </div>
 
+<div class="side-tabs">
+  <button
+    class:selected={selectedTab === "Key Facts"}
+    on:click={() => (selectedTab = "Key Facts")}
+  >
+    Key Facts
+  </button>
+  <button
+    class:selected={selectedTab === "History"}
+    on:click={() => (selectedTab = "History")}
+  >
+    History
+  </button>
+  <button
+    class:selected={selectedTab === "Alerts"}
+    on:click={() => (selectedTab = "Alerts")}
+  >
+    Alerts
+  </button>
+  <button
+    class:selected={selectedTab === "Standards"}
+    on:click={() => (selectedTab = "Standards")}
+  >
+    Standards of Living
+  </button>
+  <button
+    class:selected={selectedTab === "Images"}
+    on:click={() => (selectedTab = "Images")}
+  >
+    Images
+  </button>
+  <button
+    class:selected={selectedTab === "Grants"}
+    on:click={() => (selectedTab = "Grants")}
+  >
+    Government Grants
+  </button>
+</div>
+
 <style>
   .pageinfo {
     position: absolute;
     top: 10px;
     right: 10px;
-    width: 100%;
-    max-width: 360px;
-    border-radius: 10px;
+    width: 360px;
     background-color: white;
     padding: 10px;
+    /* border-radius: 10px; */
+
     z-index: 2;
     font-family: sans-serif;
     font-size: 14px;
   }
 
-  .tabs {
-    display: flex;
-    flex-wrap: wrap;
-    margin-bottom: 10px;
-  }
-  .tabs button {
-    flex: 1;
-    padding: 6px 8px;
-    margin-right: 4px;
-    margin-bottom: 4px;
-    border: none;
-    background: #eee;
-    cursor: pointer;
-    border-radius: 4px;
-  }
-  .tabs button.selected {
-    background: #ddd;
-    font-weight: bold;
+  h1,
+  h2,
+  p {
+    margin: 0;
+    padding: 0 10px 0 0;
   }
 
   .tab-content {
-    border-top: 1px solid #ccc;
-    padding-top: 10px;
+    margin-top: 10px;
+    min-height: 500px;
+    max-height: 80vh;
+    overflow: scroll;
   }
+
   .tab-panel {
     margin-bottom: 10px;
   }
+
   .alert-item {
     padding: 4px;
     border: 1px solid #ccc;
@@ -162,5 +159,27 @@
     width: 100%;
     margin-bottom: 6px;
     border-radius: 4px;
+  }
+
+  .side-tabs {
+    position: absolute;
+    top: 10px;
+    right: 390px;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+  }
+
+  .side-tabs button {
+    writing-mode: sideways-lr;
+    background: white;
+    text-orientation: mixed;
+    border: none;
+    cursor: pointer;
+    font-size: 14px;
+    padding: 4px;
+  }
+  .side-tabs button.selected {
+    font-weight: bold;
   }
 </style>

@@ -14,37 +14,33 @@
   const dispatch = createEventDispatcher();
   let selectedFeatureId = null;
 
-  function addAlertMarkers(geojson) {
+  function addAlertPills(geojson) {
     geojson.features.forEach((feature) => {
       const { lastAlertDate, lastAlertText } = feature.properties;
       if (lastAlertDate && lastAlertText && lastAlertText.trim() !== "") {
-        const alertEl = document.createElement("div");
-        alertEl.className = "alert-box";
-        let displayText = lastAlertText;
-        if (displayText.length > 80) {
-          displayText = displayText.substring(0, 80) + "...";
+        const pillEl = document.createElement("div");
+        pillEl.className = "alert-pill";
+        const count = feature.properties.alertCount || 1;
+        if (count == 1) {
+          pillEl.textContent = count + " new alert";
+        } else {
+          pillEl.textContent = count + " new alerts";
         }
-        alertEl.innerHTML = `<div class="alert-date">${lastAlertDate}</div><div class="alert-text">${displayText}</div>`;
 
-        alertEl.addEventListener("click", (e) => {
+        const risk = feature.properties.risk;
+        const riskColor = riskColors[risk] || "#F05056";
+        pillEl.style.backgroundColor = riskColor;
+        // pillEl.style.color = "white";
+
+        pillEl.addEventListener("click", (e) => {
           e.stopPropagation();
           dispatch("dotClick", feature.properties);
         });
 
-        const screenPos = map.project(feature.geometry.coordinates);
-        let anchor, offset;
-        if (screenPos.x < mapContainer.clientWidth / 2) {
-          anchor = "right";
-          offset = [-10, 20];
-        } else {
-          anchor = "left";
-          offset = [10, 20];
-        }
-
+        const offset = [20, 0];
         new mapboxgl.Marker({
-          element: alertEl,
-          anchor,
-          offset,
+          element: pillEl,
+          offset: offset,
         })
           .setLngLat(feature.geometry.coordinates)
           .addTo(map);
@@ -93,6 +89,7 @@
               title: community.title,
               lastAlertDate: community.lastAlertDate || "",
               lastAlertText: community.lastAlertText || "",
+              alertCount: community.alertCount,
             },
           };
         }),
@@ -127,7 +124,7 @@
         });
       }
 
-      addAlertMarkers(geojson);
+      addAlertPills(geojson);
 
       map.on("click", "community-dots", (event) => {
         const feature = event.features[0];
@@ -174,22 +171,14 @@
     height: 100%;
   }
 
-  :global(.alert-box) {
-    background: white;
-    border-radius: 10px;
-    padding: 5px;
-    max-width: 150px;
+  :global(.alert-pill) {
+    color: black;
+    padding: 4px 10px;
     font-size: 10px;
     line-height: 12px;
+    border-radius: 25px;
     cursor: pointer;
-  }
-
-  :global(.alert-date) {
-    font-weight: bold;
-  }
-
-  :global(.alert-text) {
-    white-space: pre-wrap;
-    word-wrap: break-word;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+    white-space: nowrap;
   }
 </style>

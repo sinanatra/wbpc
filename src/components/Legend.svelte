@@ -1,7 +1,7 @@
 <script>
   export let riskArray;
 
-  // console.log(riskArray);
+  console.log(riskArray);
 </script>
 
 <section class="risk-legend">
@@ -11,6 +11,7 @@
       ></span>
       <span class="risk-label">{risk.riskvalue}</span>
     </div>
+    <p class="risk-description">{risk.riskdescription}</p>
   {/each}
 </section>
 
@@ -27,6 +28,13 @@
     max-width: 360px;
     font-size: 14px;
   }
+
+  .risk-description {
+    margin: 0;
+    padding: 0;
+    padding-bottom: 20px;
+  }
+
   .risk-item {
     display: flex;
     align-items: center;

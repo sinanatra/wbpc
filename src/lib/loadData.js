@@ -10,9 +10,24 @@ export const fetchRiskColors = async () => {
   return data;
 };
 
+export const fetchAlertRange = async () => {
+  const res = await fetch("/api/query", {
+    method: "post",
+    headers: { "content-type": "application/json" },
+    body: JSON.stringify({
+      query: "site.alertRange",
+    }),
+  });
+  const data = await res.json();
+  return data;
+};
+
 export const fetchCommunities = async () => {
+  const alertRangeConfig = await fetchAlertRange();
+  const alertRange = alertRangeConfig.result || 7; 
+  // console.log(alertRange)
   const lastDate = new Date();
-  lastDate.setMonth(lastDate.getMonth() - 7);
+  lastDate.setMonth(lastDate.getMonth() - alertRange);
   const lastISOString = lastDate.toISOString();
 
   const res = await fetch("/api/query", {
@@ -26,8 +41,6 @@ export const fetchCommunities = async () => {
         risk: "page.risk",
         alternativeNames: "page.alternativeNames.split(',')",
         coordinates: "page.coordinates.yaml()",
-        // lastAlertDate: "page.alerts.toStructure().sortBy('alertDate', 'desc').first().alertDate",
-        // lastAlertText: "page.alerts.toStructure().sortBy('alertDate', 'desc').first().alertDescription",
         lastAlertDate:
           "page.alerts.toStructure().filterBy('alertDate', '>=', '" +
           lastISOString +
@@ -46,6 +59,7 @@ export const fetchCommunities = async () => {
   const data = await res.json();
   return data;
 };
+
 
 export const fetchCommunitiesData = async (id) => {
   const res = await fetch("/api/query", {

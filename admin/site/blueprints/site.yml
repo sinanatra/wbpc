@@ -34,7 +34,7 @@ tabs:
               riskValues:
                 label: Risk Values
                 type: structure
-                entry: '{{ riskValue }} - {{ riskColor }}'
+                entry: "{{ riskValue }} - {{ riskColor }}"
                 fields:
                   riskValue:
                     label: Risk Value
@@ -57,6 +57,12 @@ tabs:
               tags:
                 label: Tags
                 type: tags
+                width: 1/2
+              alertRange:
+                label: Display alerts for the last N months
+                value: 7
+                type: number
+                width: 1/2
   highlight:
     label: Colophon
     icon: info
@@ -84,4 +90,3 @@ tabs:
                 label: Image for SEO
                 query: site.index.images
                 width: 1/2
-

@@ -167,6 +167,7 @@ tabs:
             fields:
               governmentMoneySpent:
                 label: Government Grants
-                type: number
+                # type: number
+                # unit: "€"
+                type: textarea
                 width: 1/1
-                unit: "€"

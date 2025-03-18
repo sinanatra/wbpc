@@ -2,17 +2,41 @@
   import { onMount, onDestroy } from "svelte";
   import mapboxgl from "mapbox-gl";
   import { createEventDispatcher } from "svelte";
-
   export let communities = [];
   export let riskColors = {};
-
   mapboxgl.accessToken =
     "pk.eyJ1Ijoic2luYW5hdHJhIiwiYSI6ImNpcTloaTlocjAwNWFodm0yODJjODF5MXYifQ.urgyj3bpfbG3dX4uTOOZtQ";
-
   let map;
   let mapContainer;
   const dispatch = createEventDispatcher();
   let selectedFeatureId = null;
+  let labelMarker;
+  const targetZoom = 12;
+
+  function showLabel(feature) {
+    if (labelMarker) labelMarker.remove();
+    const risk = feature.properties.risk;
+    const riskColor = riskColors[risk] || "#F05056";
+    const labelEl = document.createElement("div");
+    labelEl.className = "label-container";
+    labelEl.style.display = "flex";
+    labelEl.style.alignItems = "center";
+    labelEl.innerHTML = `
+      <svg class="label-line" width="50" height="50" viewBox="0 0 50 50">
+        <line x1="0" y1="50" x2="50" y2="0" stroke="${riskColor}" stroke-width="2"/>
+      </svg>
+      <div class="label-box" style="background-color: ${riskColor}; color: black;">
+        ${feature.properties.title}
+      </div>
+    `;
+    labelMarker = new mapboxgl.Marker({
+      element: labelEl,
+      anchor: "bottom-left",
+      offset: [0, 0],
+    })
+      .setLngLat(feature.geometry.coordinates)
+      .addTo(map);
+  }
 
   function addAlertPills(geojson) {
     geojson.features.forEach((feature) => {
@@ -21,33 +45,23 @@
         const pillEl = document.createElement("div");
         pillEl.className = "alert-pill";
         const count = feature.properties.alertCount || 1;
-        if (count == 1) {
-          pillEl.textContent = count + " new alert";
-        } else {
-          pillEl.textContent = count + " new alerts";
-        }
-
+        pillEl.textContent =
+          count + (count === 1 ? " new alert" : " new alerts");
         const risk = feature.properties.risk;
         const riskColor = riskColors[risk] || "#F05056";
         pillEl.style.backgroundColor = riskColor;
-        // pillEl.style.color = "white";
-
         pillEl.addEventListener("click", (e) => {
           e.stopPropagation();
           dispatch("dotClick", feature.properties);
+          showLabel(feature);
+          map.zoomTo(targetZoom, { center: feature.geometry.coordinates });
         });
-
-        const offset = [20, 0];
-        new mapboxgl.Marker({
-          element: pillEl,
-          offset: offset,
-        })
+        new mapboxgl.Marker({ element: pillEl, offset: [20, 0] })
           .setLngLat(feature.geometry.coordinates)
           .addTo(map);
       }
     });
   }
-
   onMount(() => {
     map = new mapboxgl.Map({
       container: mapContainer,
@@ -60,7 +74,6 @@
         [36.9947960976464, 33.48706528683205],
       ],
     });
-
     map.on("load", () => {
       const validCommunities = communities.filter(
         (community) =>
@@ -68,7 +81,6 @@
           community.coordinates.lon &&
           community.coordinates.lat
       );
-
       const geojson = {
         type: "FeatureCollection",
         features: validCommunities.map((community, i) => {
@@ -94,12 +106,7 @@
           };
         }),
       };
-
-      map.addSource("communities", {
-        type: "geojson",
-        data: geojson,
-      });
-
+      map.addSource("communities", { type: "geojson", data: geojson });
       if (Object.entries(riskColors).length > 0) {
         map.addLayer({
           id: "community-dots",
@@ -109,8 +116,8 @@
             "circle-radius": [
               "case",
               ["boolean", ["feature-state", "selected"], false],
-              10,
               6,
+              3,
             ],
             "circle-color": [
               "match",
@@ -118,14 +125,17 @@
               ...Object.entries(riskColors).flat(),
               "#000000",
             ],
-            "circle-stroke-width": 1,
-            "circle-stroke-color": "#ffffff",
+            "circle-stroke-width": 3,
+            "circle-stroke-color": [
+              "match",
+              ["get", "risk"],
+              ...Object.entries(riskColors).flat(),
+              "#000000",
+            ],
           },
         });
       }
-
       addAlertPills(geojson);
-
       map.on("click", "community-dots", (event) => {
         const feature = event.features[0];
         const featureId = feature.id || feature.properties.id;
@@ -142,11 +152,12 @@
             { selected: true }
           );
           dispatch("dotClick", feature.properties);
+          showLabel(feature);
+          map.zoomTo(targetZoom, { center: feature.geometry.coordinates });
         } else {
           console.error("Feature id is undefined", feature);
         }
       });
-
       map.on("mouseenter", "community-dots", () => {
         map.getCanvas().style.cursor = "pointer";
       });
@@ -155,7 +166,6 @@
       });
     });
   });
-
   onDestroy(() => {
     if (map) map.remove();
   });
@@ -165,12 +175,10 @@
 
 <style>
   @import "mapbox-gl/dist/mapbox-gl.css";
-
   .map-container {
     width: 100%;
     height: 100%;
   }
-
   :global(.alert-pill) {
     color: black;
     padding: 4px 10px;
@@ -178,7 +186,24 @@
     line-height: 12px;
     border-radius: 25px;
     cursor: pointer;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+    box-shadow: 0 0px 8px rgba(0, 0, 0, 0.3);
     white-space: nowrap;
+  }
+  :global(.label-container) {
+    display: flex;
+    align-items: center;
+    font-family: sans-serif;
+    font-size: 12px;
+  }
+  :global(.label-box) {
+    padding: 4px 8px;
+    border-radius: 4px;
+    white-space: nowrap;
+    box-shadow: 0 0px 8px rgba(0, 0, 0, 0.3);
+    margin-left: 0px;
+    margin-bottom: 30px;
+  }
+  :global(.label-line) {
+    flex-shrink: 0;
   }
 </style>

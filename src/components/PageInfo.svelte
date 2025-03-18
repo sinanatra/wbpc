@@ -4,6 +4,32 @@
   const dispatch = createEventDispatcher();
 
   let selectedTab = "Key Facts";
+
+  $: hasKeyFacts =
+    (community.keyfacts && community.keyfacts.length > 0) ||
+    (community.tags && community.tags.length > 0);
+  $: hasHistory = community.history && community.history.trim().length > 0;
+  $: hasAlerts = community.alerts && community.alerts.length > 0;
+  $: hasStandards =
+    community.standardOfLiving && community.standardOfLiving.trim().length > 0;
+  $: hasImages = community.images && community.images.length > 0;
+  $: hasGrants =
+    community.governmentMoneySpent !== undefined &&
+    community.governmentMoneySpent !== null &&
+    community.governmentMoneySpent !== "";
+
+  $: {
+    const availableTabs = [];
+    if (hasKeyFacts) availableTabs.push("Key Facts");
+    if (hasHistory) availableTabs.push("History");
+    if (hasAlerts) availableTabs.push("Alerts");
+    if (hasStandards) availableTabs.push("Standards");
+    if (hasImages) availableTabs.push("Images");
+    if (hasGrants) availableTabs.push("Grants");
+    if (!availableTabs.includes(selectedTab)) {
+      selectedTab = availableTabs[0] || "";
+    }
+  }
 </script>
 
 <div class="pageinfo">
@@ -16,7 +42,7 @@
   {/if}
 
   <div class="tab-content">
-    {#if selectedTab === "Key Facts"}
+    {#if selectedTab === "Key Facts" && hasKeyFacts}
       <div class="tab-panel">
         {#if community.keyfacts && community.keyfacts.length}
           {#each community.keyfacts as keyfact}
@@ -24,49 +50,39 @@
               <p>{keyfact.keyinfodescription}</p>
             </div>
           {/each}
-        {:else}
-          <p>No keyfacts available.</p>
         {/if}
         {#if community.tags && community.tags.length}
           <p><strong>Tags:</strong> {community.tags.join(", ")}</p>
         {/if}
       </div>
-    {:else if selectedTab === "History"}
+    {:else if selectedTab === "History" && hasHistory}
       <div class="tab-panel">
         <p>{community.history}</p>
       </div>
-    {:else if selectedTab === "Alerts"}
+    {:else if selectedTab === "Alerts" && hasAlerts}
       <div class="tab-panel">
-        {#if community.alerts && community.alerts.length}
-          {#each community.alerts as alert}
-            <div class="alert-item">
-              <strong>{alert.alertdate}:</strong>
-              {@html alert.alertdescription}
-            </div>
-          {/each}
-        {:else}
-          <p>No alerts available.</p>
-        {/if}
+        {#each community.alerts as alert}
+          <div class="alert-item">
+            <strong>{alert.alertdate}:</strong>
+            {@html alert.alertdescription}
+          </div>
+        {/each}
       </div>
-    {:else if selectedTab === "Standards"}
+    {:else if selectedTab === "Standards" && hasStandards}
       <div class="tab-panel">
         <p>{community.standardOfLiving}</p>
       </div>
-    {:else if selectedTab === "Images"}
+    {:else if selectedTab === "Images" && hasImages}
       <div class="tab-panel images-panel">
-        {#if community.images && community.images.length}
-          {#each community.images as image}
-            <img
-              src={image.url}
-              alt={image.alt || community.title}
-              class="community-image"
-            />
-          {/each}
-        {:else}
-          <p>No images available.</p>
-        {/if}
+        {#each community.images as image}
+          <img
+            src={image.url}
+            alt={image.alt || community.title}
+            class="community-image"
+          />
+        {/each}
       </div>
-    {:else if selectedTab === "Grants"}
+    {:else if selectedTab === "Grants" && hasGrants}
       <div class="tab-panel">
         <p>
           <strong>Government Grants:</strong>
@@ -78,42 +94,54 @@
 </div>
 
 <div class="side-tabs">
-  <button
-    class:selected={selectedTab === "Key Facts"}
-    on:click={() => (selectedTab = "Key Facts")}
-  >
-    Key Facts
-  </button>
-  <button
-    class:selected={selectedTab === "History"}
-    on:click={() => (selectedTab = "History")}
-  >
-    History
-  </button>
-  <button
-    class:selected={selectedTab === "Alerts"}
-    on:click={() => (selectedTab = "Alerts")}
-  >
-    Alerts
-  </button>
-  <button
-    class:selected={selectedTab === "Standards"}
-    on:click={() => (selectedTab = "Standards")}
-  >
-    Standards of Living
-  </button>
-  <button
-    class:selected={selectedTab === "Images"}
-    on:click={() => (selectedTab = "Images")}
-  >
-    Images
-  </button>
-  <button
-    class:selected={selectedTab === "Grants"}
-    on:click={() => (selectedTab = "Grants")}
-  >
-    Government Grants
-  </button>
+  {#if hasKeyFacts}
+    <button
+      class:selected={selectedTab === "Key Facts"}
+      on:click={() => (selectedTab = "Key Facts")}
+    >
+      Key Facts
+    </button>
+  {/if}
+  {#if hasHistory}
+    <button
+      class:selected={selectedTab === "History"}
+      on:click={() => (selectedTab = "History")}
+    >
+      History
+    </button>
+  {/if}
+  {#if hasAlerts}
+    <button
+      class:selected={selectedTab === "Alerts"}
+      on:click={() => (selectedTab = "Alerts")}
+    >
+      Alerts
+    </button>
+  {/if}
+  {#if hasStandards}
+    <button
+      class:selected={selectedTab === "Standards"}
+      on:click={() => (selectedTab = "Standards")}
+    >
+      Standards
+    </button>
+  {/if}
+  {#if hasImages}
+    <button
+      class:selected={selectedTab === "Images"}
+      on:click={() => (selectedTab = "Images")}
+    >
+      Images
+    </button>
+  {/if}
+  {#if hasGrants}
+    <button
+      class:selected={selectedTab === "Grants"}
+      on:click={() => (selectedTab = "Grants")}
+    >
+      Grants
+    </button>
+  {/if}
 </div>
 
 <style>
@@ -124,8 +152,6 @@
     width: 360px;
     background-color: white;
     padding: 10px;
-    /* border-radius: 10px; */
-
     z-index: 2;
     font-family: sans-serif;
     font-size: 14px;
@@ -137,18 +163,15 @@
     margin: 0;
     padding: 0 10px 0 0;
   }
-
   .tab-content {
     margin-top: 10px;
     min-height: 500px;
     max-height: 80vh;
-    overflow: scroll;
+    overflow: auto;
   }
-
   .tab-panel {
     margin-bottom: 10px;
   }
-
   .alert-item {
     padding: 4px;
     border: 1px solid #ccc;
@@ -161,19 +184,19 @@
     border-radius: 4px;
   }
 
+  /* Side tabs positioned outside the main container */
   .side-tabs {
     position: absolute;
     top: 10px;
-    right: 390px;
+    right: 390px; /* Positioned to the left of .pageinfo */
     display: flex;
     flex-direction: column;
     gap: 5px;
   }
-
   .side-tabs button {
-    writing-mode: sideways-lr;
-    background: white;
+    writing-mode: vertical-rl;
     text-orientation: mixed;
+    background: white;
     border: none;
     cursor: pointer;
     font-size: 14px;

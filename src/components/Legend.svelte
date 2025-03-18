@@ -20,7 +20,7 @@
     position: absolute;
     top: 10px;
     left: 10px;
-    border-radius: 10px;
+    /* border-radius: 10px; */
     z-index: 2;
     background-color: white;
     padding: 10px;

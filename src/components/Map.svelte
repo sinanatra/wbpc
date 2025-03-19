@@ -1,23 +1,31 @@
 <script>
-  import { onMount, onDestroy } from "svelte";
+  import { onMount, onDestroy, tick } from "svelte";
   import mapboxgl from "mapbox-gl";
   import { createEventDispatcher } from "svelte";
+
   export let communities = [];
   export let riskColors = {};
+
   mapboxgl.accessToken =
     "pk.eyJ1Ijoic2luYW5hdHJhIiwiYSI6ImNpcTloaTlocjAwNWFodm0yODJjODF5MXYifQ.urgyj3bpfbG3dX4uTOOZtQ";
+
   let map;
   let mapContainer;
   const dispatch = createEventDispatcher();
   let selectedFeatureId = null;
-  let labelMarker;
+  let labelMarker = null;
   const targetZoom = 12;
   let alertPillMarkers = [];
 
-  function showLabel(feature) {
-    if (labelMarker) labelMarker.remove();
+  async function showLabel(feature) {
+    if (labelMarker) {
+      labelMarker.remove();
+      labelMarker = null;
+    }
+    await tick();
     const risk = feature.properties.risk;
     const riskColor = riskColors[risk] || "#F05056";
+
     const labelEl = document.createElement("div");
     labelEl.className = "label-container";
     labelEl.style.display = "flex";
@@ -30,6 +38,7 @@
         ${feature.properties.title}
       </div>
     `;
+
     labelMarker = new mapboxgl.Marker({
       element: labelEl,
       anchor: "bottom-left",
@@ -43,17 +52,13 @@
     alertPillMarkers.forEach((marker) => marker.remove());
     alertPillMarkers = [];
 
-    if (!geojson || !geojson.features || geojson.features.length === 0) {
-      return;
-    }
+    if (!geojson || !geojson.features) return;
 
     geojson.features.forEach((feature) => {
       const { lastAlertDate, lastAlertText } = feature.properties;
-
       if (lastAlertDate && lastAlertText && lastAlertText.trim() !== "") {
         const pillEl = document.createElement("div");
         pillEl.className = "alert-pill";
-
         const count = feature.properties.alertCount || 1;
         pillEl.textContent =
           count + (count === 1 ? " new alert" : " new alerts");
@@ -66,13 +71,10 @@
           e.stopPropagation();
           dispatch("dotClick", feature.properties);
           showLabel(feature);
-          map.zoomTo(targetZoom, { center: feature.geometry.coordinates });
+          map.flyTo({ center: feature.geometry.coordinates, zoom: targetZoom });
         });
 
-        const marker = new mapboxgl.Marker({
-          element: pillEl,
-          offset: [20, 0],
-        })
+        const marker = new mapboxgl.Marker({ element: pillEl, offset: [20, 0] })
           .setLngLat(feature.geometry.coordinates)
           .addTo(map);
 
@@ -101,103 +103,50 @@
         [36.9947960976464, 33.48706528683205],
       ],
     });
-    map.on("load", () => {
-      const validCommunities = communities.filter(
-        (community) =>
-          community.coordinates &&
-          community.coordinates.lon &&
-          community.coordinates.lat
-      );
-      const geojson = {
-        type: "FeatureCollection",
-        features: validCommunities.map((community, i) => {
-          const id = (community.id || i).toString();
-          return {
-            id,
-            type: "Feature",
-            geometry: {
-              type: "Point",
-              coordinates: [
-                community.coordinates.lon,
-                community.coordinates.lat,
-              ],
-            },
-            properties: {
-              id,
-              risk: community.risk,
-              title: community.title,
-              lastAlertDate: community.lastAlertDate || "",
-              lastAlertText: community.lastAlertText || "",
-              alertCount: community.alertCount,
-            },
-          };
-        }),
-      };
-      map.addSource("communities", { type: "geojson", data: geojson });
-      if (Object.entries(riskColors).length > 0) {
-        map.addLayer({
-          id: "community-dots",
-          type: "circle",
-          source: "communities",
-          paint: {
-            "circle-radius": [
-              "case",
-              ["boolean", ["feature-state", "selected"], false],
-              10,
-              3,
-            ],
-            "circle-color": [
-              "match",
-              ["get", "risk"],
-              ...Object.entries(riskColors).flat(),
-              "#000000",
-            ],
-            "circle-stroke-width": 3,
-            "circle-stroke-color": [
-              "match",
-              ["get", "risk"],
-              ...Object.entries(riskColors).flat(),
-              "#000000",
-            ],
-          },
-        });
+
+    map.on("load", async () => {
+      await tick();
+      updateMap();
+    });
+
+    map.on("click", "community-dots", (event) => {
+      const feature = event.features[0];
+      if (!feature) return;
+      const featureId = feature.id || feature.properties.id;
+      if (selectedFeatureId !== null && selectedFeatureId !== featureId) {
+        map.setFeatureState(
+          { source: "communities", id: selectedFeatureId },
+          { selected: false }
+        );
       }
-      addAlertPills(geojson);
-      map.on("click", "community-dots", (event) => {
-        const feature = event.features[0];
-        const featureId = feature.id || feature.properties.id;
-        if (feature && featureId !== undefined) {
-          if (selectedFeatureId !== null && selectedFeatureId !== featureId) {
-            map.setFeatureState(
-              { source: "communities", id: selectedFeatureId },
-              { selected: false }
-            );
-          }
-          selectedFeatureId = featureId;
-          map.setFeatureState(
-            { source: "communities", id: featureId },
-            { selected: true }
-          );
-          dispatch("dotClick", feature.properties);
-          showLabel(feature);
-          map.zoomTo(targetZoom, { center: feature.geometry.coordinates });
-        } else {
-          console.error("Feature id is undefined", feature);
-        }
-      });
-      map.on("mouseenter", "community-dots", () => {
-        map.getCanvas().style.cursor = "pointer";
-      });
-      map.on("mouseleave", "community-dots", () => {
-        map.getCanvas().style.cursor = "";
-      });
+      selectedFeatureId = featureId;
+      map.setFeatureState(
+        { source: "communities", id: featureId },
+        { selected: true }
+      );
+      dispatch("dotClick", feature.properties);
+      showLabel(feature);
+      map.flyTo({ center: feature.geometry.coordinates, zoom: targetZoom });
+    });
+
+    map.on("mouseenter", "community-dots", () => {
+      map.getCanvas().style.cursor = "pointer";
+    });
+    map.on("mouseleave", "community-dots", () => {
+      map.getCanvas().style.cursor = "";
     });
   });
+
   onDestroy(() => {
     if (map) map.remove();
   });
 
   $: if (map && communities.length) {
+    updateMap();
+  }
+
+  async function updateMap() {
+    await tick();
     const validCommunities = communities.filter(
       (community) =>
         community.coordinates &&
@@ -230,8 +179,37 @@
 
     if (map.getSource("communities")) {
       map.getSource("communities").setData(geojson);
-
       addAlertPills(geojson);
+    } else {
+      map.addSource("communities", { type: "geojson", data: geojson });
+      if (Object.entries(riskColors).length > 0) {
+        map.addLayer({
+          id: "community-dots",
+          type: "circle",
+          source: "communities",
+          paint: {
+            "circle-radius": [
+              "case",
+              ["boolean", ["feature-state", "selected"], false],
+              10,
+              3,
+            ],
+            "circle-color": [
+              "match",
+              ["get", "risk"],
+              ...Object.entries(riskColors).flat(),
+              "#000000",
+            ],
+            "circle-stroke-width": 3,
+            "circle-stroke-color": [
+              "match",
+              ["get", "risk"],
+              ...Object.entries(riskColors).flat(),
+              "#000000",
+            ],
+          },
+        });
+      }
     }
   }
 </script>
@@ -265,7 +243,6 @@
     border-radius: 4px;
     white-space: nowrap;
     box-shadow: 0 0px 8px rgba(0, 0, 0, 0.3);
-    margin-left: 0px;
     margin-bottom: 30px;
   }
   :global(.label-line) {

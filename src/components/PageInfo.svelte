@@ -145,7 +145,7 @@
         class:selected={selectedTab === "Standards"}
         on:click={() => (selectedTab = "Standards")}
       >
-        Standards
+        Standards of Living
       </button>
     {/if}
 
@@ -163,7 +163,7 @@
         class:selected={selectedTab === "Grants"}
         on:click={() => (selectedTab = "Grants")}
       >
-        Grants
+        Goververnment Grants
       </button>
     {/if}
   </div>
@@ -218,7 +218,7 @@
     gap: 5px;
   }
   .side-tabs button {
-    writing-mode: vertical-rl;
+    writing-mode: sideways-lr;
     text-orientation: mixed;
     background: white;
     border: none;

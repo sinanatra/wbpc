@@ -1,59 +1,52 @@
 <script>
-  import { onMount, onDestroy, tick } from "svelte";
+  import { onMount, onDestroy } from "svelte";
   import mapboxgl from "mapbox-gl";
   import { createEventDispatcher } from "svelte";
-
   export let communities = [];
   export let riskColors = {};
-
   mapboxgl.accessToken =
     "pk.eyJ1Ijoic2luYW5hdHJhIiwiYSI6ImNpcTloaTlocjAwNWFodm0yODJjODF5MXYifQ.urgyj3bpfbG3dX4uTOOZtQ";
-
   let map;
   let mapContainer;
   const dispatch = createEventDispatcher();
   let selectedFeatureId = null;
-  let labelMarker = null;
+  let labelMarker;
   const targetZoom = 12;
   let alertPillMarkers = [];
 
-  async function showLabel(feature) {
-    if (labelMarker) {
-      labelMarker.remove();
-      labelMarker = null;
-    }
-    await tick();
-    const risk = feature.properties.risk;
-    const riskColor = riskColors[risk] || "#F05056";
-
-    const labelEl = document.createElement("div");
-    labelEl.className = "label-container";
-    labelEl.style.display = "flex";
-    labelEl.style.alignItems = "center";
-    labelEl.innerHTML = `
-      <svg class="label-line" width="50" height="50" viewBox="0 0 50 50">
-        <line x1="0" y1="50" x2="50" y2="0" stroke="${riskColor}" stroke-width="2"/>
-      </svg>
-      <div class="label-box" style="background-color: ${riskColor}; color: black;">
-        ${feature.properties.title}
-      </div>
-    `;
-
-    labelMarker = new mapboxgl.Marker({
-      element: labelEl,
-      anchor: "bottom-left",
-      offset: [0, 0],
-    })
-      .setLngLat(feature.geometry.coordinates)
-      .addTo(map);
+  function showLabel(feature) {
+    if (labelMarker) labelMarker.remove();
+   
+    setTimeout(() => {
+      const risk = feature.properties.risk;
+      const riskColor = riskColors[risk] || "#F05056";
+      const labelEl = document.createElement("div");
+      labelEl.className = "label-container";
+      labelEl.style.display = "flex";
+      labelEl.style.alignItems = "center";
+      labelEl.innerHTML = `
+        <svg class="label-line" width="50" height="50" viewBox="0 0 50 50">
+          <line x1="0" y1="50" x2="50" y2="0" stroke="${riskColor}" stroke-width="2"/>
+        </svg>
+        <div class="label-box" style="background-color: ${riskColor}; color: black;">
+          ${feature.properties.title}
+        </div>
+      `;
+      labelMarker = new mapboxgl.Marker({
+        element: labelEl,
+        anchor: "bottom-left",
+        offset: [0, 0],
+      })
+        .setLngLat(feature.geometry.coordinates)
+        .addTo(map);
+    }, 0);
   }
 
   function addAlertPills(geojson) {
+   
     alertPillMarkers.forEach((marker) => marker.remove());
     alertPillMarkers = [];
-
-    if (!geojson || !geojson.features) return;
-
+    if (!geojson || !geojson.features || geojson.features.length === 0) return;
     geojson.features.forEach((feature) => {
       const { lastAlertDate, lastAlertText } = feature.properties;
       if (lastAlertDate && lastAlertText && lastAlertText.trim() !== "") {
@@ -62,22 +55,24 @@
         const count = feature.properties.alertCount || 1;
         pillEl.textContent =
           count + (count === 1 ? " new alert" : " new alerts");
-
         const risk = feature.properties.risk;
         const riskColor = riskColors[risk] || "#F05056";
         pillEl.style.backgroundColor = riskColor;
-
         pillEl.addEventListener("click", (e) => {
           e.stopPropagation();
           dispatch("dotClick", feature.properties);
           showLabel(feature);
-          map.flyTo({ center: feature.geometry.coordinates, zoom: targetZoom });
+         
+          setTimeout(() => {
+            map.zoomTo(targetZoom, { center: feature.geometry.coordinates });
+          }, 100);
         });
-
-        const marker = new mapboxgl.Marker({ element: pillEl, offset: [20, 0] })
+        const marker = new mapboxgl.Marker({
+          element: pillEl,
+          offset: [20, 0],
+        })
           .setLngLat(feature.geometry.coordinates)
           .addTo(map);
-
         alertPillMarkers.push(marker);
       }
     });
@@ -103,84 +98,38 @@
         [36.9947960976464, 33.48706528683205],
       ],
     });
-
-    map.on("load", async () => {
-      await tick();
-      updateMap();
-    });
-
-    map.on("click", "community-dots", (event) => {
-      const feature = event.features[0];
-      if (!feature) return;
-      const featureId = feature.id || feature.properties.id;
-      if (selectedFeatureId !== null && selectedFeatureId !== featureId) {
-        map.setFeatureState(
-          { source: "communities", id: selectedFeatureId },
-          { selected: false }
-        );
-      }
-      selectedFeatureId = featureId;
-      map.setFeatureState(
-        { source: "communities", id: featureId },
-        { selected: true }
+    map.on("load", () => {
+      const validCommunities = communities.filter(
+        (community) =>
+          community.coordinates &&
+          community.coordinates.lon &&
+          community.coordinates.lat
       );
-      dispatch("dotClick", feature.properties);
-      showLabel(feature);
-      map.flyTo({ center: feature.geometry.coordinates, zoom: targetZoom });
-    });
-
-    map.on("mouseenter", "community-dots", () => {
-      map.getCanvas().style.cursor = "pointer";
-    });
-    map.on("mouseleave", "community-dots", () => {
-      map.getCanvas().style.cursor = "";
-    });
-  });
-
-  onDestroy(() => {
-    if (map) map.remove();
-  });
-
-  $: if (map && communities.length) {
-    updateMap();
-  }
-
-  async function updateMap() {
-    await tick();
-    const validCommunities = communities.filter(
-      (community) =>
-        community.coordinates &&
-        community.coordinates.lon &&
-        community.coordinates.lat
-    );
-
-    const geojson = {
-      type: "FeatureCollection",
-      features: validCommunities.map((community, i) => {
-        const id = (community.id || i).toString();
-        return {
-          id,
-          type: "Feature",
-          geometry: {
-            type: "Point",
-            coordinates: [community.coordinates.lon, community.coordinates.lat],
-          },
-          properties: {
+      const geojson = {
+        type: "FeatureCollection",
+        features: validCommunities.map((community, i) => {
+          const id = (community.id || i).toString();
+          return {
             id,
-            risk: community.risk,
-            title: community.title,
-            lastAlertDate: community.lastAlertDate || "",
-            lastAlertText: community.lastAlertText || "",
-            alertCount: community.alertCount,
-          },
-        };
-      }),
-    };
-
-    if (map.getSource("communities")) {
-      map.getSource("communities").setData(geojson);
-      addAlertPills(geojson);
-    } else {
+            type: "Feature",
+            geometry: {
+              type: "Point",
+              coordinates: [
+                community.coordinates.lon,
+                community.coordinates.lat,
+              ],
+            },
+            properties: {
+              id,
+              risk: community.risk,
+              title: community.title,
+              lastAlertDate: community.lastAlertDate || "",
+              lastAlertText: community.lastAlertText || "",
+              alertCount: community.alertCount,
+            },
+          };
+        }),
+      };
       map.addSource("communities", { type: "geojson", data: geojson });
       if (Object.entries(riskColors).length > 0) {
         map.addLayer({
@@ -210,6 +159,72 @@
           },
         });
       }
+      addAlertPills(geojson);
+      map.on("click", "community-dots", (event) => {
+        const feature = event.features[0];
+        const featureId = feature.id || feature.properties.id;
+        if (feature && featureId !== undefined) {
+          if (selectedFeatureId !== null && selectedFeatureId !== featureId) {
+            map.setFeatureState(
+              { source: "communities", id: selectedFeatureId },
+              { selected: false }
+            );
+          }
+          selectedFeatureId = featureId;
+          map.setFeatureState(
+            { source: "communities", id: featureId },
+            { selected: true }
+          );
+          dispatch("dotClick", feature.properties);
+          showLabel(feature);
+          map.zoomTo(targetZoom, { center: feature.geometry.coordinates });
+        } else {
+          console.error("Feature id is undefined", feature);
+        }
+      });
+      map.on("mouseenter", "community-dots", () => {
+        map.getCanvas().style.cursor = "pointer";
+      });
+      map.on("mouseleave", "community-dots", () => {
+        map.getCanvas().style.cursor = "";
+      });
+    });
+  });
+  onDestroy(() => {
+    if (map) map.remove();
+  });
+  $: if (map && communities.length) {
+    const validCommunities = communities.filter(
+      (community) =>
+        community.coordinates &&
+        community.coordinates.lon &&
+        community.coordinates.lat
+    );
+    const geojson = {
+      type: "FeatureCollection",
+      features: validCommunities.map((community, i) => {
+        const id = (community.id || i).toString();
+        return {
+          id,
+          type: "Feature",
+          geometry: {
+            type: "Point",
+            coordinates: [community.coordinates.lon, community.coordinates.lat],
+          },
+          properties: {
+            id,
+            risk: community.risk,
+            title: community.title,
+            lastAlertDate: community.lastAlertDate || "",
+            lastAlertText: community.lastAlertText || "",
+            alertCount: community.alertCount,
+          },
+        };
+      }),
+    };
+    if (map.getSource("communities")) {
+      map.getSource("communities").setData(geojson);
+      addAlertPills(geojson);
     }
   }
 </script>
@@ -243,6 +258,7 @@
     border-radius: 4px;
     white-space: nowrap;
     box-shadow: 0 0px 8px rgba(0, 0, 0, 0.3);
+    margin-left: 0px;
     margin-bottom: 30px;
   }
   :global(.label-line) {

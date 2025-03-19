@@ -10,8 +10,12 @@
     (community.tags && community.tags.length > 0);
   $: hasHistory = community.history && community.history.trim().length > 0;
   $: hasAlerts = community.alerts && community.alerts.length > 0;
+  // Updated: check separate fields for standards of living
   $: hasStandards =
-    community.standardOfLiving && community.standardOfLiving.trim().length > 0;
+    (community.protection && community.protection.trim().length > 0) ||
+    (community.access && community.access.trim().length > 0) ||
+    (community.threat && community.threat.trim().length > 0) ||
+    (community.safety && community.safety.trim().length > 0);
   $: hasImages = community.images && community.images.length > 0;
   $: hasGrants =
     community.governmentMoneySpent !== undefined &&
@@ -88,7 +92,22 @@
           </div>
         {:else if selectedTab === "Standards" && hasStandards}
           <div class="tab-panel">
-            <p>{community.standardOfLiving}</p>
+            <div>
+              <strong>Protection:</strong>
+              {community.protection}
+            </div>
+            <div>
+              <strong>Access:</strong>
+              {community.access}
+            </div>
+            <div>
+              <strong>Threat:</strong>
+              {community.threat}
+            </div>
+            <div>
+              <strong>Safety:</strong>
+              {community.safety}
+            </div>
           </div>
         {:else if selectedTab === "Images" && hasImages}
           <div class="tab-panel images-panel">
@@ -163,7 +182,7 @@
         class:selected={selectedTab === "Grants"}
         on:click={() => (selectedTab = "Grants")}
       >
-        Goververnment Grants
+        Government Grants
       </button>
     {/if}
   </div>

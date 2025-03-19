@@ -24,8 +24,7 @@ export const fetchAlertRange = async () => {
 
 export const fetchCommunities = async () => {
   const alertRangeConfig = await fetchAlertRange();
-  const alertRange = alertRangeConfig.result || 7; 
-  // console.log(alertRange)
+  const alertRange = alertRangeConfig.result || 7;
   const lastDate = new Date();
   lastDate.setMonth(lastDate.getMonth() - alertRange);
   const lastISOString = lastDate.toISOString();
@@ -60,7 +59,6 @@ export const fetchCommunities = async () => {
   return data;
 };
 
-
 export const fetchCommunitiesData = async (id) => {
   const res = await fetch("/api/query", {
     method: "post",
@@ -79,7 +77,10 @@ export const fetchCommunitiesData = async (id) => {
         history: "page.history",
         keyfacts: "page.keyfacts.toStructure()",
         alerts: "page.alerts.toStructure().sortBy('alertDate', 'desc')",
-        standardOfLiving: "page.standardOfLiving",
+        protection: "page.protection",
+        access: "page.access",
+        threat: "page.threat",
+        safety: "page.safety",
         images: {
           query: "page.images",
           select: {

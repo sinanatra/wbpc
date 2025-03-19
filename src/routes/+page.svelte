@@ -9,8 +9,10 @@
   import Map from "@components/Map.svelte";
   import PageInfo from "@components/PageInfo.svelte";
   import Legend from "@components/Legend.svelte";
+  import SearchBar from "@components/SearchBar.svelte";
 
   let communities = [];
+  $: filteredCommunities = [];
   let riskArray = [];
   let riskColors = {};
   let error = null;
@@ -33,10 +35,30 @@
 
   function handleClosePanel() {
     selectedCommunity = null;
-
     if (mapRef?.clearLabel) {
       mapRef.clearLabel();
     }
+  }
+
+  function handleSearch(term) {
+    const lowerTerm = term.toLowerCase().trim();
+
+    if (lowerTerm.length < 3) {
+      filteredCommunities = communities;
+      return;
+    }
+
+    filteredCommunities = communities.filter((community) => {
+      const titleMatch = community.title.toLowerCase().includes(lowerTerm);
+
+      const altMatch =
+        community.alternativeNames &&
+        community.alternativeNames.some((alt) =>
+          alt.toLowerCase().includes(lowerTerm)
+        );
+
+      return titleMatch || altMatch;
+    });
   }
 
   onMount(async () => {
@@ -47,6 +69,7 @@
       ]);
 
       communities = communitiesData.result || communitiesData;
+      filteredCommunities = communities;
 
       riskArray = riskColorsData.result || riskColorsData;
       riskColors = {};
@@ -75,9 +98,11 @@
   <section class="full-screen">
     <Legend {riskArray} />
 
+    <SearchBar on:search={(e) => handleSearch(e.detail)} />
+
     <Map
       bind:this={mapRef}
-      {communities}
+      communities={filteredCommunities}
       {riskColors}
       on:dotClick={handleMapClick}
     />

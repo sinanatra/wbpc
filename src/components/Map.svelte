@@ -12,6 +12,7 @@
   let selectedFeatureId = null;
   let labelMarker;
   const targetZoom = 12;
+  let alertPillMarkers = [];
 
   function showLabel(feature) {
     if (labelMarker) labelMarker.remove();
@@ -39,26 +40,43 @@
   }
 
   function addAlertPills(geojson) {
+    alertPillMarkers.forEach((marker) => marker.remove());
+    alertPillMarkers = [];
+
+    if (!geojson || !geojson.features || geojson.features.length === 0) {
+      return;
+    }
+
     geojson.features.forEach((feature) => {
       const { lastAlertDate, lastAlertText } = feature.properties;
+
       if (lastAlertDate && lastAlertText && lastAlertText.trim() !== "") {
         const pillEl = document.createElement("div");
         pillEl.className = "alert-pill";
+
         const count = feature.properties.alertCount || 1;
         pillEl.textContent =
           count + (count === 1 ? " new alert" : " new alerts");
+
         const risk = feature.properties.risk;
         const riskColor = riskColors[risk] || "#F05056";
         pillEl.style.backgroundColor = riskColor;
+
         pillEl.addEventListener("click", (e) => {
           e.stopPropagation();
           dispatch("dotClick", feature.properties);
           showLabel(feature);
           map.zoomTo(targetZoom, { center: feature.geometry.coordinates });
         });
-        new mapboxgl.Marker({ element: pillEl, offset: [20, 0] })
+
+        const marker = new mapboxgl.Marker({
+          element: pillEl,
+          offset: [20, 0],
+        })
           .setLngLat(feature.geometry.coordinates)
           .addTo(map);
+
+        alertPillMarkers.push(marker);
       }
     });
   }
@@ -125,7 +143,7 @@
             "circle-radius": [
               "case",
               ["boolean", ["feature-state", "selected"], false],
-              6,
+              10,
               3,
             ],
             "circle-color": [
@@ -178,6 +196,44 @@
   onDestroy(() => {
     if (map) map.remove();
   });
+
+  $: if (map && communities.length) {
+    const validCommunities = communities.filter(
+      (community) =>
+        community.coordinates &&
+        community.coordinates.lon &&
+        community.coordinates.lat
+    );
+
+    const geojson = {
+      type: "FeatureCollection",
+      features: validCommunities.map((community, i) => {
+        const id = (community.id || i).toString();
+        return {
+          id,
+          type: "Feature",
+          geometry: {
+            type: "Point",
+            coordinates: [community.coordinates.lon, community.coordinates.lat],
+          },
+          properties: {
+            id,
+            risk: community.risk,
+            title: community.title,
+            lastAlertDate: community.lastAlertDate || "",
+            lastAlertText: community.lastAlertText || "",
+            alertCount: community.alertCount,
+          },
+        };
+      }),
+    };
+
+    if (map.getSource("communities")) {
+      map.getSource("communities").setData(geojson);
+
+      addAlertPills(geojson);
+    }
+  }
 </script>
 
 <div bind:this={mapContainer} class="map-container"></div>

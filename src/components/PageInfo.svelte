@@ -172,7 +172,7 @@
 <style>
   .pageinfo {
     position: absolute;
-    top: 10px;
+    top: 50px;
     right: 10px;
     width: 360px;
     background-color: white;
@@ -211,7 +211,7 @@
 
   .side-tabs {
     position: absolute;
-    top: 10px;
+    top: 50px;
     right: 390px;
     display: flex;
     flex-direction: column;

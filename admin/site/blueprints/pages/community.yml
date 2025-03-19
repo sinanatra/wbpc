@@ -137,10 +137,35 @@ tabs:
           standardsSection:
             type: fields
             fields:
-              standardOfLiving:
-                label: Standard of Living
-                type: textarea
-                width: 1/1
+              protection:
+                label: Protection
+                type: select
+                options:
+                  Concerning: Concerning
+                  Critical: Critical
+                  Subpar: Subpar
+              access:
+                label: Access
+                type: select
+                options:
+                  Concerning: Concerning
+                  Critical: Critical
+                  Subpar: Subpar
+              threat:
+                label: Threat
+                type: select
+                options:
+                  Concerning: Concerning
+                  Critical: Critical
+                  Subpar: Subpar
+              safety:
+                label: Safety
+                type: select
+                options:
+                  Concerning: Concerning
+                  Critical: Critical
+                  Subpar: Subpar
+
 
   media:
     label: Media

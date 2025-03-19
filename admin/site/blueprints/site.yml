@@ -54,6 +54,24 @@ tabs:
                       - "#42B1E3"
                       - "#31E097"
                       - "#D2F417"
+          # standardOfLiving:
+          #   type: fields
+          #   fields:
+          #     standardOfLiving:
+          #       label: Standard Of Living
+          #       type: structure
+          #       entry: "{{ riskValue }} - {{ riskColor }}"
+          #       fields:
+          #         standardOfLivingCategory:
+          #           label: Category
+          #           type: text
+          #         riskDescription:
+          #           label: Description
+          #           type: textarea
+          #         standardOfLivingTags:
+          #           label: Tags
+          #           type: tags
+          #           width: 1/2
               tags:
                 label: Tags
                 type: tags

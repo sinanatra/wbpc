@@ -41,56 +41,58 @@
     </p>
   {/if}
 
-  <div class="tab-content">
-    {#if selectedTab === "Key Facts" && hasKeyFacts}
-      <div class="tab-panel">
-        {#if community.keyfacts && community.keyfacts.length}
-          {#each community.keyfacts as keyfact}
+  {#if hasKeyFacts || hasHistory || hasAlerts || hasStandards || hasImages || hasGrants}
+    <div class="tab-content">
+      {#if selectedTab === "Key Facts" && hasKeyFacts}
+        <div class="tab-panel">
+          {#if community.keyfacts && community.keyfacts.length}
+            {#each community.keyfacts as keyfact}
+              <div class="alert-item">
+                <p>{keyfact.keyinfodescription}</p>
+              </div>
+            {/each}
+          {/if}
+          {#if community.tags && community.tags.length}
+            <p><strong>Tags:</strong> {community.tags.join(", ")}</p>
+          {/if}
+        </div>
+      {:else if selectedTab === "History" && hasHistory}
+        <div class="tab-panel">
+          <p>{community.history}</p>
+        </div>
+      {:else if selectedTab === "Alerts" && hasAlerts}
+        <div class="tab-panel">
+          {#each community.alerts as alert}
             <div class="alert-item">
-              <p>{keyfact.keyinfodescription}</p>
+              <strong>{alert.alertdate}:</strong>
+              {@html alert.alertdescription}
             </div>
           {/each}
-        {/if}
-        {#if community.tags && community.tags.length}
-          <p><strong>Tags:</strong> {community.tags.join(", ")}</p>
-        {/if}
-      </div>
-    {:else if selectedTab === "History" && hasHistory}
-      <div class="tab-panel">
-        <p>{community.history}</p>
-      </div>
-    {:else if selectedTab === "Alerts" && hasAlerts}
-      <div class="tab-panel">
-        {#each community.alerts as alert}
-          <div class="alert-item">
-            <strong>{alert.alertdate}:</strong>
-            {@html alert.alertdescription}
-          </div>
-        {/each}
-      </div>
-    {:else if selectedTab === "Standards" && hasStandards}
-      <div class="tab-panel">
-        <p>{community.standardOfLiving}</p>
-      </div>
-    {:else if selectedTab === "Images" && hasImages}
-      <div class="tab-panel images-panel">
-        {#each community.images as image}
-          <img
-            src={image.url}
-            alt={image.alt || community.title}
-            class="community-image"
-          />
-        {/each}
-      </div>
-    {:else if selectedTab === "Grants" && hasGrants}
-      <div class="tab-panel">
-        <p>
-          <strong>Government Grants:</strong>
-          {community.governmentMoneySpent} €
-        </p>
-      </div>
-    {/if}
-  </div>
+        </div>
+      {:else if selectedTab === "Standards" && hasStandards}
+        <div class="tab-panel">
+          <p>{community.standardOfLiving}</p>
+        </div>
+      {:else if selectedTab === "Images" && hasImages}
+        <div class="tab-panel images-panel">
+          {#each community.images as image}
+            <img
+              src={image.url}
+              alt={image.alt || community.title}
+              class="community-image"
+            />
+          {/each}
+        </div>
+      {:else if selectedTab === "Grants" && hasGrants}
+        <div class="tab-panel">
+          <p>
+            <strong>Government Grants:</strong>
+            {community.governmentMoneySpent} €
+          </p>
+        </div>
+      {/if}
+    </div>
+  {/if}
 </div>
 
 <div class="side-tabs">

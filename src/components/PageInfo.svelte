@@ -30,9 +30,27 @@
       selectedTab = availableTabs[0] || "";
     }
   }
+
+  let pageInfoRef;
+
+  function handleClickOutside(event) {
+    if (pageInfoRef && !pageInfoRef.contains(event.target)) {
+      dispatch("close");
+    }
+  }
+
+  import { onMount, onDestroy } from "svelte";
+
+  onMount(() => {
+    document.addEventListener("click", handleClickOutside);
+  });
+
+  onDestroy(() => {
+    document.removeEventListener("click", handleClickOutside);
+  });
 </script>
 
-<div class="pageinfo">
+<div bind:this={pageInfoRef} class="pageinfo">
   <h2>{community.title}</h2>
   {#if community.alternativeNames && community.alternativeNames.length}
     <p>
@@ -186,11 +204,10 @@
     border-radius: 4px;
   }
 
-  /* Side tabs positioned outside the main container */
   .side-tabs {
     position: absolute;
     top: 10px;
-    right: 390px; /* Positioned to the left of .pageinfo */
+    right: 390px;
     display: flex;
     flex-direction: column;
     gap: 5px;

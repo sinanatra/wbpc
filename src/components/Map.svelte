@@ -62,6 +62,14 @@
       }
     });
   }
+
+  export function clearLabel() {
+    if (labelMarker) {
+      labelMarker.remove();
+      labelMarker = null;
+    }
+  }
+
   onMount(() => {
     map = new mapboxgl.Map({
       container: mapContainer,
@@ -69,6 +77,7 @@
       center: [35.31820317122984, 31.961345483167264],
       zoom: 8.5,
       minZoom: 8.5,
+      maxZoom: 15,
       maxBounds: [
         [32.45395548496137, 30.509751808262436],
         [36.9947960976464, 33.48706528683205],

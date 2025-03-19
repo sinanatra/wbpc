@@ -68,7 +68,7 @@
       style: "mapbox://styles/sinanatra/cm7yteg6x00ty01sc85aqduv2",
       center: [35.31820317122984, 31.961345483167264],
       zoom: 8.5,
-      minZoom: 1,
+      minZoom: 8.5,
       maxBounds: [
         [32.45395548496137, 30.509751808262436],
         [36.9947960976464, 33.48706528683205],

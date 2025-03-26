@@ -31,7 +31,7 @@ Tags: military operations, another tag, etc
 
 ----
 
-Alertrange: 12
+Alertrange: 1
 
 ----
 

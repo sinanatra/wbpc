@@ -134,7 +134,7 @@
             <ul>
               {#each community.risks as risk}
                 <li>
-                  <strong>{risk.riskDate}</strong>: {risk.riskValue}
+                  <strong>{risk.riskdate}</strong>: {risk.riskvalue}
                 </li>
               {/each}
             </ul>

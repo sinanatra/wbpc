@@ -6,24 +6,32 @@ Riskvalues:
 
 - 
   riskvalue: Imminent Risk
-  riskdescription: ""
+  riskdescription: The description of the risk
   riskcolor: '#F05056'
+  riskid: "1"
 - 
   riskvalue: High Risk
   riskdescription: ""
   riskcolor: '#F0AB50'
+  riskid: "2"
 - 
   riskvalue: At Risk
   riskdescription: ""
   riskcolor: '#50F054'
+  riskid: "3"
 - 
   riskvalue: low
   riskdescription: ""
-  riskcolor: '#50F0D7'
+  riskcolor: '#D2D2D2'
+  riskid: "4"
 
 ----
 
 Tags: military operations, another tag, etc
+
+----
+
+Alertrange: 12
 
 ----
 
@@ -32,6 +40,31 @@ Descriptionseo:
 ----
 
 Imageseo: 
+
+----
+
+Standardofliving:
+
+- 
+  standardoflivingcategory: Access
+  riskdescription: ""
+  standardoflivingtags: Concerning, Critical, Subpar
+  standardoflivingvalue: ""
+- 
+  standardoflivingcategory: Protection
+  riskdescription: ""
+  standardoflivingtags: Concerning, Critical, Subpar
+  standardoflivingvalue: ""
+- 
+  standardoflivingcategory: Threat
+  riskdescription: ""
+  standardoflivingtags: Concerning, Critical, Subpar
+  standardoflivingvalue: ""
+- 
+  standardoflivingcategory: Safety
+  riskdescription: ""
+  standardoflivingtags: Concerning, Critical, Subpar
+  standardoflivingvalue: ""
 
 ----
 

@@ -2,6 +2,14 @@ Title: Wadi as Seeq
 
 ----
 
+Alternativetitle: 
+
+----
+
+Alternativenames: 
+
+----
+
 Coordinates:
 
 lat: 31.901138
@@ -17,15 +25,15 @@ osm: null
 
 ----
 
-Risk: Imminent Risk
+Risks:
+
+- 
+  riskdate: 2025-03-26
+  riskvalue: Imminent Risk
 
 ----
 
 Tags: 
-
-----
-
-Alternativenames: 
 
 ----
 
@@ -77,6 +85,30 @@ Alerts:
     groups are staying with the community
     during the night, and in nearby Ein
     Rashash 24/7.
+
+----
+
+Protection: 
+
+----
+
+Access: 
+
+----
+
+Threat: 
+
+----
+
+Safety: 
+
+----
+
+Grantslist: 
+
+----
+
+Risk: Imminent Risk
 
 ----
 

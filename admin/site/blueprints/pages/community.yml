@@ -19,7 +19,7 @@ options:
   create:
     admin: true
     researcher: true
-    guest: false 
+    guest: false
   delete:
     admin: true
     researcher: true
@@ -43,9 +43,28 @@ tabs:
                 label: Title
                 type: textarea
                 width: 1/1
+              alternativeTitle:
+                label: Alternative Title
+                type: textarea
+                width: 1/2
+              alternativeNames:
+                label: Alternative Names
+                type: tags
+                width: 1/2
+                help: "Enter alternative spellings as comma-separated values."
               coordinates:
                 label: Coordinates
                 type: locator
+                display:
+                  - lat
+                  - lon
+                  - number
+                  - address
+                  - postcode
+                  - city
+                  # - region
+                  - country
+                  - countryCode
                 width: 1/1
                 marker: dark
                 geocoding: nominatim
@@ -53,24 +72,32 @@ tabs:
                   lat: 31.904950082190478
                   lon: 35.205097633232725
                 required: false
-              risk:
-                label: Risk Category
-                type: select
-                width: 1/2
-                options: query
-                query: site.riskValues.toStructure.pluck('riskValue', 'riskValue')
-                help: "This reflects the risk level visually (color wash) on the website."
+              risks:
+                label: Risks
+                type: structure
+                # sort: "{{riskDate}}"
+                entry: "{{ riskDate }} - {{ riskValue }}"
+                sortBy: riskdate asc
+                fields:
+                  riskDate:
+                    label: Date
+                    type: date
+                    width: 1/2
+                    display: MM/YYYY
+                  riskValue:
+                    label: Risk Category
+                    type: select
+                    width: 1/2
+                    options: query
+                    query: site.riskValues.toStructure.pluck('riskValue', 'riskValue')
+                    help: "Select the risk value for this entry."
               tags:
                 label: Tags
                 type: multiselect
                 width: 1/2
                 options: query
                 query: site.tags.split
-              alternativeNames:
-                label: Alternative Names
-                type: tags
-                width: 1/1
-                help: "Enter alternative spellings as comma-separated values."
+
   keyfacts:
     label: Key Facts
     icon: info
@@ -83,7 +110,7 @@ tabs:
               keyfacts:
                 label: Key Facts List
                 type: structure
-                entry: '{{ keyinfoDescription }}'
+                entry: "{{ keyinfoDescription }}"
                 fields:
                   keyinfoDescription:
                     label: Description
@@ -116,14 +143,14 @@ tabs:
               alerts:
                 label: Alerts List
                 type: structure
-                sort: "alertDate desc"
-                entry: '{{ alertDate }} - {{ alertDescription }}'
+                sortBy: "alertdate desc"
+                entry: "{{ alertDate }} - {{ alertDescription }}"
                 fields:
                   alertDate:
                     label: Date
                     type: date
                     width: 1/3
-                    display: YYYY-MM-DD
+                    display: DD/MM/YYYY
                   alertDescription:
                     label: Description
                     type: textarea
@@ -166,7 +193,6 @@ tabs:
                   Critical: Critical
                   Subpar: Subpar
 
-
   media:
     label: Media
     icon: folder
@@ -182,7 +208,7 @@ tabs:
               extension: jpg, png, gif
 
   grants:
-    label: Government Grants
+    label: Donor funded assistance
     icon: money
     columns:
       - width: 1/1
@@ -190,9 +216,18 @@ tabs:
           grantsSection:
             type: fields
             fields:
-              governmentMoneySpent:
-                label: Government Grants
-                # type: number
-                # unit: "€"
-                type: textarea
-                width: 1/1
+              grantsList:
+                label: Funding List
+                type: structure
+                sortBy: fundingdate desc
+                entry: "{{ fundingDate }} - {{ fundingDescription }}"
+                fields:
+                  fundingDate:
+                    label: Date
+                    type: date
+                    width: 1/3
+                    display: DD/MM/YYYY
+                  fundingDescription:
+                    label: Description
+                    type: textarea
+                    width: 2/3

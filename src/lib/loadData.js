@@ -24,7 +24,7 @@ export const fetchAlertRange = async () => {
 
 export const fetchCommunities = async () => {
   const alertRangeConfig = await fetchAlertRange();
-  const alertRange = alertRangeConfig.result || 7;
+  const alertRange = alertRangeConfig.result || 0;
   const lastDate = new Date();
   lastDate.setMonth(lastDate.getMonth() - alertRange);
   const lastISOString = lastDate.toISOString();
@@ -37,7 +37,8 @@ export const fetchCommunities = async () => {
       select: {
         id: "page.id",
         title: "page.title",
-        risk: "page.risk",
+        //  only the last N
+        risks: "page.risks.toStructure().sortBy('riskdate', 'desc').limit(3)",
         alternativeNames: "page.alternativeNames.split(',')",
         coordinates: "page.coordinates.yaml()",
         lastAlertDate:
@@ -59,6 +60,8 @@ export const fetchCommunities = async () => {
   return data;
 };
 
+
+
 export const fetchCommunitiesData = async (id) => {
   const res = await fetch("/api/query", {
     method: "post",
@@ -70,7 +73,7 @@ export const fetchCommunitiesData = async (id) => {
       select: {
         id: "page.id",
         title: "page.title",
-        risk: "page.risk",
+        risks: "page.risks.toStructure().sortBy('riskdate', 'desc')",
         alternativeNames: "page.alternativeNames.split(',')",
         coordinates: "page.coordinates.yaml()",
         tags: "page.tags.split(',')",
@@ -89,6 +92,7 @@ export const fetchCommunitiesData = async (id) => {
           },
         },
         governmentMoneySpent: "page.governmentMoneySpent",
+        donorFunding: "page.grantsList.toStructure().sortBy('fundingDate', 'asc')",
       },
     }),
   });

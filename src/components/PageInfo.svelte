@@ -21,6 +21,8 @@
     community.governmentMoneySpent !== undefined &&
     community.governmentMoneySpent !== null &&
     community.governmentMoneySpent !== "";
+  // New: check if risk history is available
+  $: hasRisks = community.risks && community.risks.length > 0;
 
   $: {
     const availableTabs = [];
@@ -30,6 +32,7 @@
     if (hasStandards) availableTabs.push("Standards");
     if (hasImages) availableTabs.push("Images");
     if (hasGrants) availableTabs.push("Grants");
+    if (hasRisks) availableTabs.push("Risks");
     if (!availableTabs.includes(selectedTab)) {
       selectedTab = availableTabs[0] || "";
     }
@@ -63,7 +66,7 @@
       </p>
     {/if}
 
-    {#if hasKeyFacts || hasHistory || hasAlerts || hasStandards || hasImages || hasGrants}
+    {#if hasKeyFacts || hasHistory || hasAlerts || hasStandards || hasImages || hasGrants || hasRisks}
       <div class="tab-content">
         {#if selectedTab === "Key Facts" && hasKeyFacts}
           <div class="tab-panel">
@@ -72,7 +75,6 @@
                 <p>{keyfact.keyinfodescription}</p>
               </div>
             {/each}
-
             {#if community.tags && community.tags.length}
               <p><strong>Tags:</strong> {community.tags.join(", ")}</p>
             {/if}
@@ -126,6 +128,17 @@
               {community.governmentMoneySpent} €
             </p>
           </div>
+        {:else if selectedTab === "Risks" && hasRisks}
+          <div class="tab-panel">
+            <h3>Risk History</h3>
+            <ul>
+              {#each community.risks as risk}
+                <li>
+                  <strong>{risk.riskDate}</strong>: {risk.riskValue}
+                </li>
+              {/each}
+            </ul>
+          </div>
         {/if}
       </div>
     {/if}
@@ -140,7 +153,6 @@
         Key Facts
       </button>
     {/if}
-
     {#if hasHistory}
       <button
         class:selected={selectedTab === "History"}
@@ -149,7 +161,6 @@
         History
       </button>
     {/if}
-
     {#if hasAlerts}
       <button
         class:selected={selectedTab === "Alerts"}
@@ -158,7 +169,6 @@
         Alerts
       </button>
     {/if}
-
     {#if hasStandards}
       <button
         class:selected={selectedTab === "Standards"}
@@ -167,7 +177,6 @@
         Standards of Living
       </button>
     {/if}
-
     {#if hasImages}
       <button
         class:selected={selectedTab === "Images"}
@@ -176,13 +185,20 @@
         Images
       </button>
     {/if}
-
     {#if hasGrants}
       <button
         class:selected={selectedTab === "Grants"}
         on:click={() => (selectedTab = "Grants")}
       >
         Government Grants
+      </button>
+    {/if}
+    {#if hasRisks}
+      <button
+        class:selected={selectedTab === "Risks"}
+        on:click={() => (selectedTab = "Risks")}
+      >
+        Risks
       </button>
     {/if}
   </div>
@@ -200,7 +216,6 @@
     font-family: sans-serif;
     font-size: 14px;
   }
-
   h1,
   h2,
   p {
@@ -227,7 +242,6 @@
     margin-bottom: 6px;
     border-radius: 4px;
   }
-
   .side-tabs {
     position: absolute;
     top: 50px;

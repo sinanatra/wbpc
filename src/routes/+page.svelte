@@ -12,12 +12,12 @@
   import SearchBar from "@components/SearchBar.svelte";
 
   let communities = [];
-  $: filteredCommunities = [];
+  let filteredCommunities = [];
   let riskArray = [];
   let riskColors = {};
   let error = null;
   let selectedCommunity = null;
-
+  
   let mapRef;
 
   async function handleCommunitySelect(community) {
@@ -42,15 +42,15 @@
 
   function handleSearch(term) {
     const lowerTerm = term.toLowerCase().trim();
-
+    
     if (lowerTerm.length < 3) {
       filteredCommunities = communities;
       return;
     }
-
+    
     filteredCommunities = communities.filter((community) => {
       const titleMatch = community.title.toLowerCase().includes(lowerTerm);
-
+      
       const altMatch =
         community.alternativeNames &&
         community.alternativeNames.some((alt) =>
@@ -90,17 +90,13 @@
 
 {#if error}
   <p>Error loading communities: {error.message}</p>
-{:else if communities.length === 0}
-  <section class="full-screen">
-    <Map />
-  </section>
 {:else}
   <section class="full-screen">
     <Legend {riskArray} />
 
     <SearchBar on:search={(e) => handleSearch(e.detail)} />
 
-    <Map
+      <Map
       bind:this={mapRef}
       communities={filteredCommunities}
       {riskColors}

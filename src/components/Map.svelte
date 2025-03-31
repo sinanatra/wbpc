@@ -328,6 +328,6 @@
   :global(.risk-marker) {
     width: 15px;
     height: 15px;
-    filter: drop-shadow(0px 1px 1px rgba(0, 0, 0, 0.5));
+    filter: drop-shadow(0px 1px 1px rgba(0, 0, 0, 0.1));
   }
 </style>

@@ -21,18 +21,14 @@
     if (labelMarker) labelMarker.remove();
     setTimeout(() => {
       let risk;
-
       if (feature.properties.risks && feature.properties.risks.length > 0) {
         risk =
-          feature.properties.risks[feature.properties.risks.length - 1]
+          feature.properties.risks[0]
             .riskvalue;
       } else {
         risk = feature.properties.risk || "default";
       }
-
-      const riskColor = riskColors[risk] || "#fff";
-
-      // console.log(feature.properties);
+      const riskColor = riskColors[risk] || "#fff0";
 
       const labelEl = document.createElement("div");
       labelEl.className = "label-container";
@@ -60,6 +56,7 @@
     alertPillMarkers.forEach((marker) => marker.remove());
     alertPillMarkers = [];
     if (!geojson || !geojson.features || geojson.features.length === 0) return;
+
     geojson.features.forEach((feature) => {
       const { lastAlertDate, lastAlertText } = feature.properties;
       if (lastAlertDate && lastAlertText && lastAlertText.trim() !== "") {
@@ -69,8 +66,9 @@
         pillEl.textContent =
           count + (count === 1 ? " new alert" : " new alerts");
         const risk = feature.properties.risk || "default";
-        const riskColor = riskColors[risk] || "#fff";
+        const riskColor = riskColors[risk] || "#fff0";
         pillEl.style.backgroundColor = riskColor;
+
         pillEl.addEventListener("click", (e) => {
           e.stopPropagation();
           dispatch("dotClick", feature.properties);
@@ -79,6 +77,7 @@
             map.zoomTo(targetZoom, { center: feature.geometry.coordinates });
           }, 100);
         });
+
         const marker = new mapboxgl.Marker({
           element: pillEl,
           offset: [20, 0],
@@ -102,29 +101,23 @@
     riskMarkers = [];
   }
 
-  const marker1Svg = `<?xml version="1.0" encoding="UTF-8"?>
-  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48.93 48.93">
-    <g>
-      <path class="cls-1" d="M24.46,20c2.46,0,4.46,2,4.46,4.46s-2,4.46-4.46,4.46-4.46-2-4.46-4.46,2-4.46,4.46-4.46M24.46,0C10.95,0,0,10.95,0,24.46s10.95,24.46,24.46,24.46,24.46-10.95,24.46-24.46S37.97,0,24.46,0"/>
-    </g>
-  </svg>`;
-
-  const marker2Svg = `<?xml version="1.0" encoding="UTF-8"?>
-  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48.93 48.93">
-    <g>
-      <path class="cls-1" d="M24.46,10c7.97,0,14.46,6.49,14.46,14.46s-6.49,14.46-14.46,14.46-14.46-6.49-14.46-14.46,6.49-14.46,14.46-14.46M24.46,0C10.95,0,0,10.95,0,24.46s10.95,24.46,24.46,24.46,24.46-10.95,24.46-24.46S37.97,0,24.46,0"/>
-    </g>
-  </svg>`;
-
-  const marker3Svg = `<?xml version="1.0" encoding="UTF-8"?>
-  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48.93 48.93">
-    <g>
-      <path class="cls-1" d="M24.46,5c10.73,0,19.46,8.73,19.46,19.46s-8.73,19.46-19.46,19.46S5,35.19,5,24.46,13.73,5,24.46,5M24.46,0C10.95,0,0,10.95,0,24.46s10.95,24.46,24.46,24.46,24.46-10.95,24.46-24.46S37.97,0,24.46,0"/>
-    </g>
+  const baseMarkerSvg = `<?xml version="1.0" encoding="UTF-8"?>
+  <svg 
+    xmlns="http://www.w3.org/2000/svg" 
+    viewBox="0 0 24 24"
+    width="24" height="24"
+  >
+    <!-- Outer circle -->
+    <circle cx="12" cy="12" r="12" class="circle-outer" />
+    <!-- Middle circle -->
+    <circle cx="12" cy="12" r="8" class="circle-middle" />
+    <!-- Inner circle -->
+    <circle cx="12" cy="12" r="4" class="circle-inner" />
   </svg>`;
 
   function renderRiskMarkers() {
     clearRiskMarkers();
+
     communities.forEach((community) => {
       if (
         community.coordinates &&
@@ -133,55 +126,57 @@
       ) {
         let risks = [];
         if (community.risks && community.risks.length > 0) {
-          risks = community.risks;
-        }
-        if (!risks.length) {
+          risks = community.risks
+            .slice()
+            .sort((a, b) => new Date(b.date) - new Date(a.date));
+        } else {
           risks = [{ riskvalue: community.risk || "default" }];
         }
-        risks = risks.reverse();
-        risks.forEach((risk, index) => {
-          let markerSvg;
-          if (index === 0) markerSvg = marker1Svg;
-          else if (index === 1) markerSvg = marker2Svg;
-          else if (index === 2) markerSvg = marker3Svg;
 
-          const color = riskColors[risk.riskvalue] || "#fff";
-          const el = document.createElement("div");
-          el.innerHTML = markerSvg;
-          el.className = "risk-marker";
-          const pathEl = el.querySelector("path.cls-1");
-          if (pathEl) {
-            pathEl.style.fill = color;
-          }
-          if (index === 0) {
-            el.style.cursor = "pointer";
-            el.addEventListener("click", (e) => {
-              e.stopPropagation();
-              dispatch("dotClick", community);
-              showLabel({
-                geometry: {
-                  coordinates: [
-                    community.coordinates.lon,
-                    community.coordinates.lat,
-                  ],
-                },
-                properties: community,
-              });
-              map.zoomTo(targetZoom, {
-                center: [community.coordinates.lon, community.coordinates.lat],
-              });
-            });
-          } else {
-            el.style.pointerEvents = "none";
-          }
-          const marker = new mapboxgl.Marker({
-            element: el,
-            anchor: "center",
-          })
-            .setLngLat([community.coordinates.lon, community.coordinates.lat])
-            .addTo(map);
-          riskMarkers.push(marker);
+        const el = document.createElement("div");
+        el.innerHTML = baseMarkerSvg;
+        el.className = "risk-marker";
+
+        const circleEls = el.querySelectorAll("circle");
+
+        for (let i = 0; i < Math.min(risks.length, 3); i++) {
+          circleEls[i].style.fill = riskColors[risks[i].riskvalue] || "#fff0";
+        }
+
+        for (let j = risks.length; j < 3; j++) {
+          circleEls[j].style.fill = "#fff0";
+        }
+
+        el.style.cursor = "pointer";
+        el.addEventListener("click", (e) => {
+          e.stopPropagation();
+          dispatch("dotClick", community);
+          showLabel({
+            geometry: {
+              coordinates: [
+                community.coordinates.lon,
+                community.coordinates.lat,
+              ],
+            },
+            properties: {
+              ...community,
+
+              risks,
+            },
+          });
+          map.zoomTo(targetZoom, {
+            center: [community.coordinates.lon, community.coordinates.lat],
+          });
         });
+
+        const marker = new mapboxgl.Marker({
+          element: el,
+          anchor: "center",
+        })
+          .setLngLat([community.coordinates.lon, community.coordinates.lat])
+          .addTo(map);
+
+        riskMarkers.push(marker);
       }
     });
   }
@@ -199,6 +194,7 @@
         [36.9947960976464, 33.48706528683205],
       ],
     });
+
     map.on("load", () => {
       const validCommunities = communities.filter(
         (community) =>
@@ -294,10 +290,12 @@
 
 <style>
   @import "mapbox-gl/dist/mapbox-gl.css";
+
   .map-container {
     width: 100%;
     height: 100%;
   }
+
   :global(.alert-pill) {
     color: black;
     padding: 4px 10px;
@@ -308,12 +306,14 @@
     box-shadow: 0 0px 8px rgba(0, 0, 0, 0.3);
     white-space: nowrap;
   }
+
   :global(.label-container) {
     display: flex;
     align-items: center;
     font-family: sans-serif;
     font-size: 12px;
   }
+
   :global(.label-box) {
     padding: 4px 8px;
     border-radius: 4px;
@@ -322,12 +322,18 @@
     margin-left: 0;
     margin-bottom: 30px;
   }
+
   :global(.label-line) {
     flex-shrink: 0;
   }
+
   :global(.risk-marker) {
     width: 15px;
     height: 15px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
     filter: drop-shadow(0px 1px 1px rgba(0, 0, 0, 0.1));
   }
 </style>

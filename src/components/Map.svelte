@@ -36,7 +36,7 @@
       labelEl.style.alignItems = "center";
       labelEl.innerHTML = `
         <svg class="label-line" width="50" height="50" viewBox="0 0 50 50">
-          <line x1="0" y1="50" x2="50" y2="0" stroke="${riskColor}" stroke-width="2"/>
+          <line x1="0" y1="48" x2="50" y2="0" stroke="${riskColor}" stroke-width="2"/>
         </svg>
         <div class="label-box" style="background-color: ${riskColor}; color: black;">
           ${feature.properties.title}

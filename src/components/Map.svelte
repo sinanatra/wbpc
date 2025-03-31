@@ -298,12 +298,12 @@
 
   :global(.alert-pill) {
     color: black;
-    padding: 4px 10px;
+    padding: 2px 5px;
     font-size: 10px;
-    line-height: 12px;
+    line-height: 10px;
     border-radius: 25px;
     cursor: pointer;
-    box-shadow: 0 0px 8px rgba(0, 0, 0, 0.3);
+    box-shadow: 0 0px 4px rgba(255, 255, 255, 0.8);
     white-space: nowrap;
   }
 
@@ -318,7 +318,9 @@
     padding: 4px 8px;
     border-radius: 4px;
     white-space: nowrap;
-    box-shadow: 0 0px 8px rgba(0, 0, 0, 0.3);
+
+    box-shadow: 0 0px 4px rgba(255, 255, 255, 0.8);
+
     margin-left: 0;
     margin-bottom: 30px;
   }
@@ -328,12 +330,12 @@
   }
 
   :global(.risk-marker) {
-    width: 15px;
-    height: 15px;
+    width: 12px;
+    height: 12px;
     display: flex;
     justify-content: center;
     align-items: center;
 
-    filter: drop-shadow(0px 1px 1px rgba(0, 0, 0, 0.1));
+    filter: drop-shadow(0px 0px 2px rgba(255, 255, 255, 0.2));
   }
 </style>

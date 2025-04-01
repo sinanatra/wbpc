@@ -3,14 +3,18 @@
   export let community;
   const dispatch = createEventDispatcher();
 
-  let selectedTab = "Key Facts";
+  let selectedTab = "Info";
 
-  $: hasKeyFacts =
-    (community.keyfacts && community.keyfacts.length > 0) ||
-    (community.tags && community.tags.length > 0);
-  $: hasHistory = community.history && community.history.trim().length > 0;
+  $: hasInfo =
+    (community.info && community.info.trim().length > 0) ||
+    (community.population && community.population.trim().length > 0) ||
+    community.yearEstablished ||
+    (community.mainThreat && community.mainThreat.trim().length > 0) ||
+    (community.keyfacts && community.keyfacts.length > 0);
+
+  $: console.log(hasInfo);
+
   $: hasAlerts = community.alerts && community.alerts.length > 0;
-  // Updated: check separate fields for standards of living
   $: hasStandards =
     (community.protection && community.protection.trim().length > 0) ||
     (community.access && community.access.trim().length > 0) ||
@@ -21,13 +25,11 @@
     community.governmentMoneySpent !== undefined &&
     community.governmentMoneySpent !== null &&
     community.governmentMoneySpent !== "";
-  // New: check if risk history is available
   $: hasRisks = community.risks && community.risks.length > 0;
 
   $: {
     const availableTabs = [];
-    if (hasKeyFacts) availableTabs.push("Key Facts");
-    if (hasHistory) availableTabs.push("History");
+    if (hasInfo) availableTabs.push("Info");
     if (hasAlerts) availableTabs.push("Alerts");
     if (hasStandards) availableTabs.push("Standards");
     if (hasImages) availableTabs.push("Images");
@@ -57,7 +59,9 @@
 
 <div bind:this={panelWrapperRef} class="panel-wrapper">
   <div class="pageinfo">
-    <h2>{community.title}</h2>
+    <a href="/{community.id}">
+      <h2>{community.title}</h2>
+    </a>
 
     {#if community.alternativeNames && community.alternativeNames.length}
       <p>
@@ -66,22 +70,38 @@
       </p>
     {/if}
 
-    {#if hasKeyFacts || hasHistory || hasAlerts || hasStandards || hasImages || hasGrants || hasRisks}
+    {#if hasInfo || hasAlerts || hasStandards || hasImages || hasGrants || hasRisks}
       <div class="tab-content">
-        {#if selectedTab === "Key Facts" && hasKeyFacts}
+        {#if selectedTab === "Info" && hasInfo}
           <div class="tab-panel">
-            {#each community.keyfacts as keyfact}
-              <div class="alert-item">
-                <p>{keyfact.keyinfodescription}</p>
-              </div>
-            {/each}
-            {#if community.tags && community.tags.length}
-              <p><strong>Tags:</strong> {community.tags.join(", ")}</p>
+            {#if community.info && community.info.trim().length > 0}
+              <p>{community.info}</p>
             {/if}
-          </div>
-        {:else if selectedTab === "History" && hasHistory}
-          <div class="tab-panel">
-            <p>{community.history}</p>
+            {#if community.population && community.population.trim().length > 0}
+              <p><strong>Population:</strong> {community.population}</p>
+            {/if}
+            {#if community.yearEstablished}
+              <p>
+                <strong>Year Established:</strong>
+                {community.yearEstablished}
+              </p>
+            {/if}
+            {#if community.mainThreat && community.mainThreat.trim().length > 0}
+              <p><strong>Main Threat:</strong> {community.mainThreat}</p>
+            {/if}
+            {#if community.isBedouin}
+              <p><strong>Bedouin Community</strong></p>
+            {/if}
+            {#if community.keyfacts && community.keyfacts.length > 0}
+              <div>
+                <h3>Key Facts</h3>
+                {#each community.keyfacts as keyfact}
+                  <div class="alert-item">
+                    <p>{keyfact.keyinfodescription}</p>
+                  </div>
+                {/each}
+              </div>
+            {/if}
           </div>
         {:else if selectedTab === "Alerts" && hasAlerts}
           <div class="tab-panel">
@@ -119,12 +139,15 @@
                 alt={image.alt || community.title}
                 class="community-image"
               />
+              {#if image.caption}
+                <p>{image.caption}</p>
+              {/if}
             {/each}
           </div>
         {:else if selectedTab === "Grants" && hasGrants}
           <div class="tab-panel">
             <p>
-              <strong>Government Grants:</strong>
+              <strong>Donor-Funded Assistance:</strong>
               {community.governmentMoneySpent} €
             </p>
           </div>
@@ -145,20 +168,12 @@
   </div>
 
   <div class="side-tabs">
-    {#if hasKeyFacts}
+    {#if hasInfo}
       <button
-        class:selected={selectedTab === "Key Facts"}
-        on:click={() => (selectedTab = "Key Facts")}
+        class:selected={selectedTab === "Info"}
+        on:click={() => (selectedTab = "Info")}
       >
-        Key Facts
-      </button>
-    {/if}
-    {#if hasHistory}
-      <button
-        class:selected={selectedTab === "History"}
-        on:click={() => (selectedTab = "History")}
-      >
-        History
+        Info
       </button>
     {/if}
     {#if hasAlerts}
@@ -190,7 +205,7 @@
         class:selected={selectedTab === "Grants"}
         on:click={() => (selectedTab = "Grants")}
       >
-        Government Grants
+        Donor-Funded Assistance
       </button>
     {/if}
     {#if hasRisks}

@@ -182,12 +182,20 @@ tabs:
                   alertDate:
                     label: Date
                     type: date
-                    width: 1/3
+                    width: 1/2
                     display: DD/MM/YYYY
+                  alertType:
+                    label: Type
+                    type: select
+                    width: 1/2
+                    options:
+                      legal: Legal Proceedings
+                      settler: Settler Violence
+                      militaryOrPolice: Military/police violence  
                   alertDescription:
                     label: Description
                     type: textarea
-                    width: 2/3
+                    width: 3/3
   standards:
     label: Standards of Living
     icon: chart

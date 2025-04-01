@@ -60,8 +60,6 @@ export const fetchCommunities = async () => {
   return data;
 };
 
-
-
 export const fetchCommunitiesData = async (id) => {
   const res = await fetch("/api/query", {
     method: "post",
@@ -77,7 +75,7 @@ export const fetchCommunitiesData = async (id) => {
         alternativeNames: "page.alternativeNames.split(',')",
         coordinates: "page.coordinates.yaml()",
         tags: "page.tags.split(',')",
-        history: "page.history",
+        info: "page.info",
         keyfacts: "page.keyfacts.toStructure()",
         alerts: "page.alerts.toStructure().sortBy('alertDate', 'desc')",
         protection: "page.protection",
@@ -85,14 +83,21 @@ export const fetchCommunitiesData = async (id) => {
         threat: "page.threat",
         safety: "page.safety",
         images: {
-          query: "page.images",
+          query: "page.images.sortBy('sort')",
           select: {
             url: true,
+            caption: "file.caption",
+            copyright: "file.copyright",
             alt: "file.alt",
           },
         },
         governmentMoneySpent: "page.governmentMoneySpent",
-        donorFunding: "page.grantsList.toStructure().sortBy('fundingDate', 'asc')",
+        donorFunding:
+          "page.grantsList.toStructure().sortBy('fundingDate', 'asc')",
+        population: "page.population",
+        yearEstablished: "page.yearEstablished",
+        mainThreat: "page.mainThreat",
+        isBedouin: "page.isBedouin",
       },
     }),
   });

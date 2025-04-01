@@ -13,7 +13,7 @@
   let mapContainer;
   const dispatch = createEventDispatcher();
   let labelMarker;
-  const targetZoom = 18;
+  const targetZoom = 15;
   let alertPillMarkers = [];
   let riskMarkers = [];
 
@@ -248,6 +248,33 @@
     if (map) map.remove();
   });
 
+  export function zoomToCommunity(
+    community,
+    zoomLevel = targetZoom,
+    duration = 500
+  ) {
+    if (map && community?.coordinates) {
+      map.flyTo({
+        center: [community.coordinates.lon, community.coordinates.lat],
+        zoom: zoomLevel,
+        duration,
+      });
+
+      const feature = {
+        geometry: {
+          coordinates: [community.coordinates.lon, community.coordinates.lat],
+        },
+        properties: {
+          title: community.title,
+          risks: community.risks,
+          risk: community.risk,
+        },
+      };
+
+      showLabel(feature);
+    }
+  }
+
   $: if (map && communities.length) {
     const validCommunities = communities.filter(
       (community) =>
@@ -333,8 +360,8 @@
   }
 
   :global(.risk-marker) {
-    width: 12px;
-    height: 12px;
+    width: 15px;
+    height: 15px;
     display: flex;
     justify-content: center;
     align-items: center;

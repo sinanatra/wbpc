@@ -31,7 +31,7 @@
     padding: 8px 12px;
     border-radius: 4px;
     border: 1px solid #ccc;
-    font-size: 14px;
+    font-size: 1rem;
     min-width: 250px;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
   }

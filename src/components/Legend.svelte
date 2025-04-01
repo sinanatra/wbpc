@@ -26,7 +26,7 @@
     padding: 10px;
     width: 100%;
     max-width: 360px;
-    font-size: 14px;
+    font-size: .9rem;
   }
 
   .risk-description {

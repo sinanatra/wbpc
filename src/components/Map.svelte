@@ -331,8 +331,8 @@
   :global(.alert-pill) {
     color: black;
     padding: 2px 5px;
-    font-size: 10px;
-    line-height: 10px;
+    font-size: .875rem;
+    line-height: .875rem;
     border-radius: 25px;
     cursor: pointer;
     box-shadow: 0 0px 8px rgba(0, 0, 0, 0.3);
@@ -343,7 +343,7 @@
     display: flex;
     align-items: center;
     font-family: sans-serif;
-    font-size: 12px;
+    font-size: 1rem;
   }
 
   :global(.label-box) {

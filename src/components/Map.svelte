@@ -13,7 +13,7 @@
   let mapContainer;
   const dispatch = createEventDispatcher();
   let labelMarker;
-  const targetZoom = 12;
+  const targetZoom = 18;
   let alertPillMarkers = [];
   let riskMarkers = [];
 
@@ -22,9 +22,7 @@
     setTimeout(() => {
       let risk;
       if (feature.properties.risks && feature.properties.risks.length > 0) {
-        risk =
-          feature.properties.risks[0]
-            .riskvalue;
+        risk = feature.properties.risks[0].riskvalue;
       } else {
         risk = feature.properties.risk || "default";
       }
@@ -74,8 +72,12 @@
           dispatch("dotClick", feature.properties);
           showLabel(feature);
           setTimeout(() => {
-            map.zoomTo(targetZoom, { center: feature.geometry.coordinates });
-          }, 100);
+            map.flyTo({
+              center: feature.geometry.coordinates,
+              zoom: targetZoom,
+              duration: 2000,
+            });
+          }, 50);
         });
 
         const marker = new mapboxgl.Marker({
@@ -164,8 +166,10 @@
               risks,
             },
           });
-          map.zoomTo(targetZoom, {
+          map.flyTo({
             center: [community.coordinates.lon, community.coordinates.lat],
+            zoom: targetZoom,
+            duration: 2000,
           });
         });
 
@@ -188,7 +192,7 @@
       center: [35.31820317122984, 31.961345483167264],
       zoom: 8.5,
       minZoom: 8.5,
-      maxZoom: 15,
+      maxZoom: 18,
       maxBounds: [
         [32.45395548496137, 30.509751808262436],
         [36.9947960976464, 33.48706528683205],
@@ -202,6 +206,7 @@
           community.coordinates.lon &&
           community.coordinates.lat
       );
+
       const geojson = {
         type: "FeatureCollection",
         features: validCommunities.map((community, i) => {
@@ -303,7 +308,7 @@
     line-height: 10px;
     border-radius: 25px;
     cursor: pointer;
-    box-shadow: 0 0px 4px rgba(255, 255, 255, 0.8);
+    box-shadow: 0 0px 8px rgba(0, 0, 0, 0.3);
     white-space: nowrap;
   }
 
@@ -318,9 +323,7 @@
     padding: 4px 8px;
     border-radius: 4px;
     white-space: nowrap;
-
-    box-shadow: 0 0px 4px rgba(255, 255, 255, 0.8);
-
+    box-shadow: 0 0px 8px rgba(0, 0, 0, 0.3);
     margin-left: 0;
     margin-bottom: 30px;
   }
@@ -336,6 +339,6 @@
     justify-content: center;
     align-items: center;
 
-    filter: drop-shadow(0px 0px 2px rgba(255, 255, 255, 0.2));
+    filter: drop-shadow(0px 1px 1px rgba(0, 0, 0, 0.1));
   }
 </style>

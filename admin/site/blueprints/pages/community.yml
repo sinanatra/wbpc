@@ -97,17 +97,64 @@ tabs:
                 width: 1/2
                 options: query
                 query: site.tags.split
+              isBeduin:
+                label: Is it a Bedouin community?
+                type: toggle
+                width: 1/2
+                options:
+                  true: Yes
+                  false: No
 
-  keyfacts:
-    label: Key Facts
+  # keyfacts:
+  #   label: Key Facts
+  #   icon: info
+  #   columns:
+  #     - width: 1/1
+  #       sections:
+  #         keyfactsSection:
+  #           type: fields
+  #           fields:
+  #             keyfacts:
+  #               label: Key Facts List
+  #               type: structure
+  #               entry: "{{ keyinfoDescription }}"
+  #               fields:
+  #                 keyinfoDescription:
+  #                   label: Description
+  #                   type: textarea
+  #                   width: 1/1
+
+  info:
+    label: Info
     icon: info
     columns:
       - width: 1/1
         sections:
-          keyfactsSection:
+          infoSection:
             type: fields
             fields:
+              info:
+                label: Info
+                type: textarea
+                width: 1/2
+              population:
+                width: 1/2
+                label: Population
+                type: textarea
+              yearEstablished:
+                label: Year Established
+                type: date
+                width: 1/2
+              mainThreat:
+                label: Main Threat
+                type: select
+                width: 1/2
+                options:
+                  settlerViolence: settler violence
+                  civilIncursion: civil incursion
+                  militaryOrPolice: military/police incursion
               keyfacts:
+                width: 1/1
                 label: Key Facts List
                 type: structure
                 entry: "{{ keyinfoDescription }}"
@@ -115,21 +162,7 @@ tabs:
                   keyinfoDescription:
                     label: Description
                     type: textarea
-                    width: 1/1
-
-  history:
-    label: History
-    icon: clock
-    columns:
-      - width: 1/1
-        sections:
-          historySection:
-            type: fields
-            fields:
-              history:
-                label: History
-                type: textarea
-                width: 1/1
+                    
 
   alerts:
     label: Alerts
@@ -167,6 +200,7 @@ tabs:
               protection:
                 label: Protection
                 type: select
+                width: 1/4
                 options:
                   Concerning: Concerning
                   Critical: Critical
@@ -174,6 +208,7 @@ tabs:
               access:
                 label: Access
                 type: select
+                width: 1/4
                 options:
                   Concerning: Concerning
                   Critical: Critical
@@ -181,6 +216,7 @@ tabs:
               threat:
                 label: Threat
                 type: select
+                width: 1/4
                 options:
                   Concerning: Concerning
                   Critical: Critical
@@ -188,11 +224,43 @@ tabs:
               safety:
                 label: Safety
                 type: select
+                width: 1/4
                 options:
                   Concerning: Concerning
                   Critical: Critical
                   Subpar: Subpar
-
+              shelter:
+                label: Shelter
+                type: select
+                width: 1/4
+                options:
+                  Concerning: Concerning
+                  Critical: Critical
+                  Subpar: Subpar
+              livelihood:
+                label: Livelihood
+                type: select
+                width: 1/4
+                options:
+                  Concerning: Concerning
+                  Critical: Critical
+                  Subpar: Subpar
+              education:
+                label: Education
+                type: select
+                width: 1/4
+                options:
+                  Concerning: Concerning
+                  Critical: Critical
+                  Subpar: Subpar
+              wash:
+                label: WASH
+                type: select
+                width: 1/4
+                options:
+                  Concerning: Concerning
+                  Critical: Critical
+                  Subpar: Subpar
   media:
     label: Media
     icon: folder
@@ -203,6 +271,7 @@ tabs:
             type: files
             label: Images
             layout: cards
+            sortable: true
             template: image
             accept:
               extension: jpg, png, gif
@@ -225,9 +294,15 @@ tabs:
                   fundingDate:
                     label: Date
                     type: date
-                    width: 1/3
+                    width: 1/1
                     display: DD/MM/YYYY
-                  fundingDescription:
-                    label: Description
+                  fundingMoney:
+                    label: Money Spent
                     type: textarea
-                    width: 2/3
+                    width: 1/1
+                  fundingDescription:
+                    label: items Destroyed
+                    type: textarea
+                    width: 1/1
+                 
+                    

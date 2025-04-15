@@ -22,6 +22,25 @@ tabs:
             type: pages
             status: draft
             templates: community
+  settlements:
+    label: Settlements and Outposts
+    icon: folder
+    columns:
+      - width: 1/2
+        sections:
+          publishedSettlement:
+            type: pages
+            headline: Published
+            templates: settlement
+            status: listed
+            sortBy: title
+      - width: 1/2
+        sections:
+          draftsSettlement:
+            headline: Drafts
+            type: pages
+            status: draft
+            templates: settlement
   metadata:
     label: Metrics
     icon: file
@@ -77,8 +96,8 @@ tabs:
                 type: tags
                 width: 1/2
               alertRange:
-                label: Display alerts for the last N months
-                value: 7
+                label: Display alerts for the last N days
+                value: 365
                 type: number
                 width: 1/2
   highlight:

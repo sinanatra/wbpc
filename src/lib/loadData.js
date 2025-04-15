@@ -25,8 +25,9 @@ export const fetchAlertRange = async () => {
 export const fetchCommunities = async () => {
   const alertRangeConfig = await fetchAlertRange();
   const alertRange = alertRangeConfig.result || 0;
+  const daysRange = alertRangeConfig.result || 0;
   const lastDate = new Date();
-  lastDate.setMonth(lastDate.getMonth() - alertRange);
+  lastDate.setDate(lastDate.getDate() - daysRange);
   const lastISOString = lastDate.toISOString();
 
   const res = await fetch("/api/query", {
@@ -98,6 +99,46 @@ export const fetchCommunitiesData = async (id) => {
         yearEstablished: "page.yearEstablished",
         mainThreat: "page.mainThreat",
         isBedouin: "page.isBedouin",
+      },
+    }),
+  });
+  const data = await res.json();
+  return data;
+};
+
+export const fetchSettlements = async () => {
+  const res = await fetch("/api/query", {
+    method: "post",
+    headers: { "content-type": "application/json" },
+    body: JSON.stringify({
+      query:
+        "site.children.template('settlement').filterBy('status', 'listed')",
+      select: {
+        id: "page.id",
+      title: "page.title",
+        alternativeNames: "page.alternativeNames.split(',')",
+        coordinates: "page.coordinates.yaml()",
+      },
+    }),
+  });
+  const data = await res.json();
+  return data;
+};
+
+export const fetchSettlementsData = async (id) => {
+  const res = await fetch("/api/query", {
+    method: "post",
+    headers: {
+      "content-type": "application/json",
+    },
+    body: JSON.stringify({
+      query: `page("${id}")`,
+      select: {
+        id: "page.id",
+        title: "page.title",
+        alternativeNames: "page.alternativeNames.split(',')",
+        coordinates: "page.coordinates.yaml()",
+        tags: "page.tags.split(',')",
       },
     }),
   });

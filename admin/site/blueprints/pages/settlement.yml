@@ -1,0 +1,106 @@
+title: Settlement and Outpost
+num: '{{ page.created.toDate("Ymd") }}'
+status:
+  draft:
+    label: Unpublished
+    text: Page is not published and doesn't appear on the website.
+  listed:
+    label: Published
+    text: Page is published.
+options:
+  changeTemplate:
+    admin: true
+    researcher: true
+    guest: false
+  changeTitle:
+    admin: true
+    researcher: true
+    guest: false
+  create:
+    admin: true
+    researcher: true
+    guest: false
+  delete:
+    admin: true
+    researcher: true
+    guest: false
+  update:
+    admin: true
+    researcher: true
+    guest: false
+
+tabs:
+  metadata:
+    label: Metadata
+    icon: home
+    columns:
+      - width: 1/1
+        sections:
+          metaSection:
+            type: fields
+            fields:
+              title:
+                label: Title
+                type: textarea
+                width: 1/1
+              alternativeTitle:
+                label: Alternative Title
+                type: textarea
+                width: 1/2
+              alternativeNames:
+                label: Alternative Names
+                type: tags
+                width: 1/2
+                help: "Enter alternative spellings as comma-separated values."
+              coordinates:
+                label: Coordinates
+                type: locator
+                display:
+                  - lat
+                  - lon
+                  - number
+                  - address
+                  - postcode
+                  - city
+                  # - region
+                  - country
+                  - countryCode
+                width: 1/1
+                marker: dark
+                geocoding: nominatim
+                center:
+                  lat: 31.904950082190478
+                  lon: 35.205097633232725
+                required: false
+             
+              tags:
+                label: Tags
+                type: multiselect
+                width: 1/2
+                options: query
+                query: site.tags.split
+              settlementType:
+                  label: Type
+                  type: text
+                  width: 1/2
+
+              establishment:
+                label: Establishment
+                type: text
+                width: 1/2
+
+              numberOfResidents:
+                label: Number of residents
+                type: number
+                width: 1/2
+
+              communityType:
+                label: Community Type
+                type: text
+                width: 1/2
+
+              legalized:
+                label: Legalized
+                type: toggle
+                text: "Yes"
+                width: 1/2

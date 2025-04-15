@@ -26,7 +26,7 @@
       } else {
         risk = feature.properties.risk || "default";
       }
-      const riskColor = riskColors[risk] || "#fff0";
+      const riskColor = riskColors[risk] || "rgb(171, 132, 33)";
 
       const labelEl = document.createElement("div");
       labelEl.className = "label-container";
@@ -117,57 +117,65 @@
     <circle cx="12" cy="12" r="4" class="circle-inner" />
   </svg>`;
 
+  const triangleMarkerSvg = `<?xml version="1.0" encoding="UTF-8"?>
+  <svg 
+    xmlns="http://www.w3.org/2000/svg" 
+    viewBox="0 0 24 24"
+    width="24" height="24"
+  >
+    <polygon points="12,0 24,24 0,24" class="triangle-marker" />
+  </svg>`;
+
   function renderRiskMarkers() {
     clearRiskMarkers();
 
-    communities.forEach((community) => {
-      if (
-        community.coordinates &&
-        community.coordinates.lon &&
-        community.coordinates.lat
-      ) {
+    communities.forEach((item) => {
+      if (item.coordinates && item.coordinates.lon && item.coordinates.lat) {
         let risks = [];
-        if (community.risks && community.risks.length > 0) {
-          risks = community.risks
+        if (item.risks && item.risks.length > 0) {
+          risks = item.risks
             .slice()
             .sort((a, b) => new Date(b.date) - new Date(a.date));
         } else {
-          risks = [{ riskvalue: community.risk || "default" }];
+          risks = [{ riskvalue: item.risk || "default" }];
         }
 
         const el = document.createElement("div");
-        el.innerHTML = baseMarkerSvg;
+
+        if (item.type === "settlement") {
+          el.innerHTML = triangleMarkerSvg;
+        } else {
+          el.innerHTML = baseMarkerSvg;
+        }
         el.className = "risk-marker";
 
-        const circleEls = el.querySelectorAll("circle");
-
-        for (let i = 0; i < Math.min(risks.length, 3); i++) {
-          circleEls[i].style.fill = riskColors[risks[i].riskvalue] || "#fff0";
-        }
-
-        for (let j = risks.length; j < 3; j++) {
-          circleEls[j].style.fill = "#fff0";
+        if (item.type === "settlement") {
+          const polygonEls = el.querySelectorAll("polygon");
+        } else {
+          const circleEls = el.querySelectorAll("circle");
+          for (let i = 0; i < Math.min(risks.length, 3); i++) {
+            circleEls[i].style.fill = riskColors[risks[i].riskvalue] || "#fff0";
+          }
+          for (let j = risks.length; j < 3; j++) {
+            circleEls[j].style.fill = "#fff0";
+          }
         }
 
         el.style.cursor = "pointer";
         el.addEventListener("click", (e) => {
           e.stopPropagation();
-          dispatch("dotClick", community);
+          dispatch("dotClick", item);
           showLabel({
             geometry: {
-              coordinates: [
-                community.coordinates.lon,
-                community.coordinates.lat,
-              ],
+              coordinates: [item.coordinates.lon, item.coordinates.lat],
             },
             properties: {
-              ...community,
-
+              ...item,
               risks,
             },
           });
           map.flyTo({
-            center: [community.coordinates.lon, community.coordinates.lat],
+            center: [item.coordinates.lon, item.coordinates.lat],
             zoom: targetZoom,
             duration: 2000,
           });
@@ -177,7 +185,7 @@
           element: el,
           anchor: "center",
         })
-          .setLngLat([community.coordinates.lon, community.coordinates.lat])
+          .setLngLat([item.coordinates.lon, item.coordinates.lat])
           .addTo(map);
 
         riskMarkers.push(marker);
@@ -200,40 +208,36 @@
     });
 
     map.on("load", () => {
-      const validCommunities = communities.filter(
-        (community) =>
-          community.coordinates &&
-          community.coordinates.lon &&
-          community.coordinates.lat
+      const validItems = communities.filter(
+        (item) =>
+          item.coordinates && item.coordinates.lon && item.coordinates.lat
       );
 
       const geojson = {
         type: "FeatureCollection",
-        features: validCommunities.map((community, i) => {
-          const id = (community.id || i).toString();
+        features: validItems.map((item, i) => {
+          const id = (item.id || i).toString();
           let riskValue;
-          if (community.risks && community.risks.length > 0) {
-            riskValue = community.risks[community.risks.length - 1].riskvalue;
+          if (item.risks && item.risks.length > 0) {
+            riskValue = item.risks[item.risks.length - 1].riskvalue;
           } else {
-            riskValue = community.risk || "default";
+            riskValue = item.risk || "default";
           }
           return {
             id,
             type: "Feature",
             geometry: {
               type: "Point",
-              coordinates: [
-                community.coordinates.lon,
-                community.coordinates.lat,
-              ],
+              coordinates: [item.coordinates.lon, item.coordinates.lat],
             },
             properties: {
               id,
               risk: riskValue,
-              title: community.title,
-              lastAlertDate: community.lastAlertDate || "",
-              lastAlertText: community.lastAlertText || "",
-              alertCount: community.alertCount,
+              title: item.title,
+              lastAlertDate: item.lastAlertDate || "",
+              lastAlertText: item.lastAlertText || "",
+              alertCount: item.alertCount,
+              type: item.type || "community",
             },
           };
         }),
@@ -276,36 +280,34 @@
   }
 
   $: if (map && communities.length) {
-    const validCommunities = communities.filter(
-      (community) =>
-        community.coordinates &&
-        community.coordinates.lon &&
-        community.coordinates.lat
+    const validItems = communities.filter(
+      (item) => item.coordinates && item.coordinates.lon && item.coordinates.lat
     );
     const geojson = {
       type: "FeatureCollection",
-      features: validCommunities.map((community, i) => {
-        const id = (community.id || i).toString();
+      features: validItems.map((item, i) => {
+        const id = (item.id || i).toString();
         let riskValue;
-        if (community.risks && community.risks.length > 0) {
-          riskValue = community.risks[community.risks.length - 1].riskvalue;
+        if (item.risks && item.risks.length > 0) {
+          riskValue = item.risks[item.risks.length - 1].riskvalue;
         } else {
-          riskValue = community.risk || "default";
+          riskValue = item.risk || "default";
         }
         return {
           id,
           type: "Feature",
           geometry: {
             type: "Point",
-            coordinates: [community.coordinates.lon, community.coordinates.lat],
+            coordinates: [item.coordinates.lon, item.coordinates.lat],
           },
           properties: {
             id,
             risk: riskValue,
-            title: community.title,
-            lastAlertDate: community.lastAlertDate || "",
-            lastAlertText: community.lastAlertText || "",
-            alertCount: community.alertCount,
+            title: item.title,
+            lastAlertDate: item.lastAlertDate || "",
+            lastAlertText: item.lastAlertText || "",
+            alertCount: item.alertCount,
+            type: item.type || "community",
           },
         };
       }),
@@ -331,8 +333,8 @@
   :global(.alert-pill) {
     color: black;
     padding: 2px 5px;
-    font-size: .875rem;
-    line-height: .875rem;
+    font-size: 0.875rem;
+    line-height: 0.875rem;
     border-radius: 25px;
     cursor: pointer;
     box-shadow: 0 0px 8px rgba(0, 0, 0, 0.3);
@@ -367,5 +369,9 @@
     align-items: center;
 
     filter: drop-shadow(0px 1px 1px rgba(0, 0, 0, 0.1));
+  }
+
+  :global(.triangle-marker) {
+    fill: rgb(171, 132, 33);
   }
 </style>

@@ -21,10 +21,10 @@
     (community.threat && community.threat.trim().length > 0) ||
     (community.safety && community.safety.trim().length > 0);
   $: hasImages = community.images && community.images.length > 0;
-  $: hasGrants =
-    community.governmentMoneySpent !== undefined &&
-    community.governmentMoneySpent !== null &&
-    community.governmentMoneySpent !== "";
+  // $: hasGrants =
+  //   community.governmentMoneySpent !== undefined &&
+  //   community.governmentMoneySpent !== null &&
+  //   community.governmentMoneySpent !== "";
   $: hasRisks = community.risks && community.risks.length > 0;
 
   $: {
@@ -33,7 +33,7 @@
     if (hasAlerts) availableTabs.push("Alerts");
     if (hasStandards) availableTabs.push("Standards");
     if (hasImages) availableTabs.push("Images");
-    if (hasGrants) availableTabs.push("Grants");
+    // if (hasGrants) availableTabs.push("Grants");
     if (hasRisks) availableTabs.push("Risks");
     if (!availableTabs.includes(selectedTab)) {
       selectedTab = availableTabs[0] || "";
@@ -70,7 +70,7 @@
       </p>
     {/if}
 
-    {#if hasInfo || hasAlerts || hasStandards || hasImages || hasGrants || hasRisks}
+    {#if hasInfo || hasAlerts || hasStandards || hasImages || hasRisks}
       <div class="tab-content">
         {#if selectedTab === "Info" && hasInfo}
           <div class="tab-panel">
@@ -144,13 +144,6 @@
               {/if}
             {/each}
           </div>
-        {:else if selectedTab === "Grants" && hasGrants}
-          <div class="tab-panel">
-            <p>
-              <strong>Donor-Funded Assistance:</strong>
-              {community.governmentMoneySpent} €
-            </p>
-          </div>
         {:else if selectedTab === "Risks" && hasRisks}
           <div class="tab-panel">
             <h3>Risk History</h3>
@@ -200,14 +193,14 @@
         Images
       </button>
     {/if}
-    {#if hasGrants}
+    <!-- {#if hasGrants}
       <button
         class:selected={selectedTab === "Grants"}
         on:click={() => (selectedTab = "Grants")}
       >
         Donor-Funded Assistance
       </button>
-    {/if}
+    {/if} -->
     {#if hasRisks}
       <button
         class:selected={selectedTab === "Risks"}

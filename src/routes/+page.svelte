@@ -3,6 +3,8 @@
   import {
     fetchCommunities,
     fetchCommunitiesData,
+    fetchSettlements,
+    fetchSettlementsData,
     fetchRiskColors,
   } from "$lib/loadData.js";
 
@@ -12,64 +14,79 @@
   import SearchBar from "@components/SearchBar.svelte";
 
   let communities = [];
-  let filteredCommunities = [];
+  let settlements = [];
+  let mapItems = [];
+  let filteredMapItems = [];
+
   let riskArray = [];
   let riskColors = {};
   let error = null;
-  let selectedCommunity = null;
-  
+  let selectedItem = null;
+
   let mapRef;
 
-  async function handleCommunitySelect(community) {
+  async function handleItemSelect(item) {
     try {
-      const detailData = await fetchCommunitiesData(community.id);
-      selectedCommunity = detailData.result || detailData;
+      if (item.type === "community") {
+        const detailData = await fetchCommunitiesData(item.id);
+        selectedItem = detailData.result || detailData;
+      } else if (item.type === "settlement") {
+        const detailData = await fetchSettlementsData(item.id);
+        selectedItem = detailData.result || detailData;
+      }
     } catch (err) {
-      console.error("Error fetching community detail:", err);
+      console.error("Error fetching detail:", err);
     }
   }
 
   function handleMapClick(event) {
-    handleCommunitySelect(event.detail);
+    handleItemSelect(event.detail);
   }
 
   function handleClosePanel() {
-    selectedCommunity = null;
-    if (mapRef?.clearLabel) {
-      mapRef.clearLabel();
-    }
+    selectedItem = null;
+    mapRef?.clearLabel && mapRef.clearLabel();
   }
 
   function handleSearch(term) {
     const lowerTerm = term.toLowerCase().trim();
-    
+
     if (lowerTerm.length < 3) {
-      filteredCommunities = communities;
+      filteredMapItems = mapItems;
       return;
     }
-    
-    filteredCommunities = communities.filter((community) => {
-      const titleMatch = community.title.toLowerCase().includes(lowerTerm);
-      
+
+    filteredMapItems = mapItems.filter((item) => {
+      const titleMatch = item.title.toLowerCase().includes(lowerTerm);
       const altMatch =
-        community.alternativeNames &&
-        community.alternativeNames.some((alt) =>
+        Array.isArray(item.alternativeNames) &&
+        item.alternativeNames.some((alt) =>
           alt.toLowerCase().includes(lowerTerm)
         );
-
       return titleMatch || altMatch;
     });
   }
 
   onMount(async () => {
     try {
-      const [communitiesData, riskColorsData] = await Promise.all([
-        fetchCommunities(),
-        fetchRiskColors(),
-      ]);
+      const [communitiesData, settlementsData, riskColorsData] =
+        await Promise.all([
+          fetchCommunities(),
+          fetchSettlements(),
+          fetchRiskColors(),
+        ]);
 
-      communities = communitiesData.result || communitiesData;
-      filteredCommunities = communities;
+      communities = (communitiesData.result || communitiesData).map((c) => ({
+        ...c,
+        type: "community",
+      }));
+      settlements = (settlementsData.result || settlementsData).map((s) => ({
+        ...s,
+        type: "settlement",
+      }));
+
+      mapItems = [...communities, ...settlements];
+      filteredMapItems = mapItems;
 
       riskArray = riskColorsData.result || riskColorsData;
       riskColors = {};
@@ -89,22 +106,22 @@
 </script>
 
 {#if error}
-  <p>Error loading communities: {error.message}</p>
+  <p>Error loading data: {error.message}</p>
 {:else}
   <section class="full-screen">
     <Legend {riskArray} />
 
     <SearchBar on:search={(e) => handleSearch(e.detail)} />
 
-      <Map
+    <Map
       bind:this={mapRef}
-      communities={filteredCommunities}
+      communities={filteredMapItems}
       {riskColors}
       on:dotClick={handleMapClick}
     />
 
-    {#if selectedCommunity}
-      <PageInfo community={selectedCommunity} on:close={handleClosePanel} />
+    {#if selectedItem}
+      <PageInfo community={selectedItem} on:close={handleClosePanel} />
     {/if}
   </section>
 {/if}

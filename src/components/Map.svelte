@@ -14,7 +14,7 @@
   let labelMarker;
   let alertPillMarkers = [];
   let riskMarkers = [];
-  const targetZoom = 15;
+  const targetZoom = 14;
 
   function showLabel(feature) {
     labelMarker?.remove();
@@ -81,8 +81,8 @@
     <circle cx="12" cy="12" r="4" class="circle-inner"/>
   </svg>`;
 
-  const settlementMarkerSvg = `<svg viewBox="0 0 10 10" width="10" height="10" xmlns="http://www.w3.org/2000/svg">
-    <circle cx="5" cy="5" r="5" class="settlement-circle" />
+  const settlementMarkerSvg = `<svg viewBox="0 0 8 8" width="8" height="8" xmlns="http://www.w3.org/2000/svg">
+    <circle cx="4" cy="4" r="4" class="settlement-circle" />
   </svg>`;
 
   function renderRiskMarkers() {

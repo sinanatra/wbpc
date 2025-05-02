@@ -67,6 +67,12 @@
     });
   }
 
+  function handleToggleSettlements(event) {
+    const show = event.detail;
+    mapItems = show ? [...communities, ...settlements] : [...communities];
+    filteredMapItems = mapItems;
+  }
+
   onMount(async () => {
     try {
       const [communitiesData, settlementsData, riskColorsData] =
@@ -85,12 +91,12 @@
         type: "settlement",
       }));
 
-      mapItems = [...communities, ...settlements];
+      // start with communities only
+      mapItems = [...communities];
       filteredMapItems = mapItems;
 
       riskArray = riskColorsData.result || riskColorsData;
       riskColors = {};
-
       if (Array.isArray(riskArray)) {
         riskArray.forEach((item) => {
           riskColors[item.riskvalue] = item.riskcolor;
@@ -109,8 +115,7 @@
   <p>Error loading data: {error.message}</p>
 {:else}
   <section class="full-screen">
-    <Legend {riskArray} />
-
+    <Legend {riskArray} on:toggleSettlements={handleToggleSettlements} />
     <SearchBar on:search={(e) => handleSearch(e.detail)} />
 
     <Map

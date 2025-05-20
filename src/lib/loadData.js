@@ -22,6 +22,18 @@ export const fetchAlertRange = async () => {
   return data;
 };
 
+export const fetchEditorial = async () => {
+  const res = await fetch("/api/query", {
+    method: "post",
+    headers: { "content-type": "application/json" },
+    body: JSON.stringify({
+      query: "site.slides.yaml()",
+    }),
+  });
+  const data = await res.json();
+  return data;
+};
+
 export const fetchCommunities = async () => {
   const alertRangeConfig = await fetchAlertRange();
   const alertRange = alertRangeConfig.result || 0;
@@ -41,6 +53,7 @@ export const fetchCommunities = async () => {
         //  only the last N
         risks: "page.risks.toStructure().sortBy('riskdate', 'desc').limit(3)",
         alternativeNames: "page.alternativeNames.split(',')",
+        alternativeTitle: "page.alternativeTitle",
         coordinates: "page.coordinates.yaml()",
         lastAlertDate:
           "page.alerts.toStructure().filterBy('alertDate', '>=', '" +
@@ -115,7 +128,8 @@ export const fetchSettlements = async () => {
         "site.children.template('settlement').filterBy('status', 'listed')",
       select: {
         id: "page.id",
-      title: "page.title",
+        title: "page.title",
+        size: "page.establishment",
         alternativeNames: "page.alternativeNames.split(',')",
         coordinates: "page.coordinates.yaml()",
       },
@@ -140,6 +154,20 @@ export const fetchSettlementsData = async (id) => {
         coordinates: "page.coordinates.yaml()",
         tags: "page.tags.split(',')",
       },
+    }),
+  });
+  const data = await res.json();
+  return data;
+};
+
+export const fetchTitle = async () => {
+  const res = await fetch("/api/query", {
+    method: "post",
+    headers: {
+      "content-type": "application/json",
+    },
+    body: JSON.stringify({
+      query: "site.title",
     }),
   });
   const data = await res.json();

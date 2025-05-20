@@ -3,271 +3,135 @@
   export let community;
   const dispatch = createEventDispatcher();
 
-  let selectedTab = "Info";
-
-  $: hasInfo =
-    (community.info && community.info.trim().length > 0) ||
-    (community.population && community.population.trim().length > 0) ||
-    community.yearEstablished ||
-    (community.mainThreat && community.mainThreat.trim().length > 0) ||
-    (community.keyfacts && community.keyfacts.length > 0);
-
-  $: console.log(hasInfo);
-
-  $: hasAlerts = community.alerts && community.alerts.length > 0;
-  $: hasStandards =
-    (community.protection && community.protection.trim().length > 0) ||
-    (community.access && community.access.trim().length > 0) ||
-    (community.threat && community.threat.trim().length > 0) ||
-    (community.safety && community.safety.trim().length > 0);
-  $: hasImages = community.images && community.images.length > 0;
-  // $: hasGrants =
-  //   community.governmentMoneySpent !== undefined &&
-  //   community.governmentMoneySpent !== null &&
-  //   community.governmentMoneySpent !== "";
-  $: hasRisks = community.risks && community.risks.length > 0;
-
-  $: {
-    const availableTabs = [];
-    if (hasInfo) availableTabs.push("Info");
-    if (hasAlerts) availableTabs.push("Alerts");
-    if (hasStandards) availableTabs.push("Standards");
-    if (hasImages) availableTabs.push("Images");
-    // if (hasGrants) availableTabs.push("Grants");
-    if (hasRisks) availableTabs.push("Risks");
-    if (!availableTabs.includes(selectedTab)) {
-      selectedTab = availableTabs[0] || "";
-    }
-  }
-
-  let panelWrapperRef;
-
-  function handleClickOutside(event) {
-    if (panelWrapperRef && !panelWrapperRef.contains(event.target)) {
+  let wrapper;
+  function handleClickOutside(e) {
+    if (wrapper && !wrapper.contains(e.target)) {
       dispatch("close");
     }
   }
+  onMount(() => document.addEventListener("click", handleClickOutside));
+  onDestroy(() => document.removeEventListener("click", handleClickOutside));
 
-  onMount(() => {
-    document.addEventListener("click", handleClickOutside);
-  });
-
-  onDestroy(() => {
-    document.removeEventListener("click", handleClickOutside);
-  });
+  function formatDate(dateStr) {
+    const date = new Date(dateStr);
+    if (isNaN(date)) return dateStr; 
+    return date.toLocaleDateString(undefined, {
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+    });
+  }
 </script>
 
-<div bind:this={panelWrapperRef} class="panel-wrapper">
-  <div class="pageinfo">
-    <a href="/{community.id}">
-      <h2>{community.title}</h2>
-    </a>
+<div bind:this={wrapper} class="panel-wrapper">
+  <h2>{community.title}</h2>
 
-    {#if community.alternativeNames && community.alternativeNames.length}
-      <p>
-        <strong>Alternative Names:</strong>
-        {community.alternativeNames.join(", ")}
-      </p>
-    {/if}
+  <div class="tab-content">
+    <div class="info-table">
+      {#if community.risks}
+        <div class="row">
+          <div class="label">Risk:</div>
+          <div class="value">{community.risks[0].riskvalue}</div>
+        </div>
+      {/if}
+      {#if community.population}
+        <div class="row">
+          <div class="label">Population:</div>
+          <div class="value">{community.population}</div>
+        </div>
+      {/if}
 
-    {#if hasInfo || hasAlerts || hasStandards || hasImages || hasRisks}
-      <div class="tab-content">
-        {#if selectedTab === "Info" && hasInfo}
-          <div class="tab-panel">
-            {#if community.info && community.info.trim().length > 0}
-              <p>{community.info}</p>
-            {/if}
-            {#if community.population && community.population.trim().length > 0}
-              <p><strong>Population:</strong> {community.population}</p>
-            {/if}
-            {#if community.yearEstablished}
-              <p>
-                <strong>Year Established:</strong>
-                {community.yearEstablished}
-              </p>
-            {/if}
-            {#if community.mainThreat && community.mainThreat.trim().length > 0}
-              <p><strong>Main Threat:</strong> {community.mainThreat}</p>
-            {/if}
-            {#if community.isBedouin}
-              <p><strong>Bedouin Community</strong></p>
-            {/if}
-            {#if community.keyfacts && community.keyfacts.length > 0}
-              <div>
-                <h3>Key Facts</h3>
-                {#each community.keyfacts as keyfact}
-                  <div class="alert-item">
-                    <p>{keyfact.keyinfodescription}</p>
-                  </div>
-                {/each}
-              </div>
-            {/if}
+      {#if community.yearEstablished}
+        <div class="row">
+          <div class="label">History:</div>
+          <div class="value">{community.yearEstablished}</div>
+        </div>
+      {/if}
+    </div>
+
+    {#if community.alerts?.length > 0}
+      <h3>Alerts</h3>
+      <div class="alerts-list">
+        {#each community.alerts as alert}
+          <div class="alert-item">
+            <div class="date">{formatDate(alert.alertdate)}</div>
+            <p>{@html alert.alertdescription}</p>
           </div>
-        {:else if selectedTab === "Alerts" && hasAlerts}
-          <div class="tab-panel">
-            {#each community.alerts as alert}
-              <div class="alert-item">
-                <strong>{alert.alertdate}:</strong>
-                {@html alert.alertdescription}
-              </div>
-            {/each}
-          </div>
-        {:else if selectedTab === "Standards" && hasStandards}
-          <div class="tab-panel">
-            <div>
-              <strong>Protection:</strong>
-              {community.protection}
-            </div>
-            <div>
-              <strong>Access:</strong>
-              {community.access}
-            </div>
-            <div>
-              <strong>Threat:</strong>
-              {community.threat}
-            </div>
-            <div>
-              <strong>Safety:</strong>
-              {community.safety}
-            </div>
-          </div>
-        {:else if selectedTab === "Images" && hasImages}
-          <div class="tab-panel images-panel">
-            {#each community.images as image}
-              <img
-                src={image.url}
-                alt={image.alt || community.title}
-                class="community-image"
-              />
-              {#if image.caption}
-                <p>{image.caption}</p>
-              {/if}
-            {/each}
-          </div>
-        {:else if selectedTab === "Risks" && hasRisks}
-          <div class="tab-panel">
-            <h3>Risk History</h3>
-            <ul>
-              {#each community.risks as risk}
-                <li>
-                  <strong>{risk.riskdate}</strong>: {risk.riskvalue}
-                </li>
-              {/each}
-            </ul>
-          </div>
-        {/if}
+        {/each}
       </div>
     {/if}
-  </div>
 
-  <div class="side-tabs">
-    {#if hasInfo}
-      <button
-        class:selected={selectedTab === "Info"}
-        on:click={() => (selectedTab = "Info")}
-      >
-        Info
-      </button>
-    {/if}
-    {#if hasAlerts}
-      <button
-        class:selected={selectedTab === "Alerts"}
-        on:click={() => (selectedTab = "Alerts")}
-      >
-        Alerts
-      </button>
-    {/if}
-    {#if hasStandards}
-      <button
-        class:selected={selectedTab === "Standards"}
-        on:click={() => (selectedTab = "Standards")}
-      >
-        Standards of Living
-      </button>
-    {/if}
-    {#if hasImages}
-      <button
-        class:selected={selectedTab === "Images"}
-        on:click={() => (selectedTab = "Images")}
-      >
-        Images
-      </button>
-    {/if}
-    <!-- {#if hasGrants}
-      <button
-        class:selected={selectedTab === "Grants"}
-        on:click={() => (selectedTab = "Grants")}
-      >
-        Donor-Funded Assistance
-      </button>
-    {/if} -->
-    {#if hasRisks}
-      <button
-        class:selected={selectedTab === "Risks"}
-        on:click={() => (selectedTab = "Risks")}
-      >
-        Risks
-      </button>
+    {#if community.images?.length > 0}
+      <h3>Images</h3>
+      <div class="images-panel">
+        {#each community.images as image}
+          <div class="image-wrapper">
+            <img src={image.url} alt={image.alt || community.title} />
+            {#if image.caption}
+              <p class="caption">{image.caption}</p>
+            {/if}
+          </div>
+        {/each}
+      </div>
     {/if}
   </div>
 </div>
 
 <style>
-  .pageinfo {
-    position: absolute;
-    top: 50px;
-    right: 10px;
-    width: 360px;
-    background-color: white;
+  .panel-wrapper {
+    background: #fff;
     padding: 10px;
-    z-index: 2;
-    font-family: sans-serif;
+    border-radius: 4px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
     font-size: 14px;
   }
-  h1,
-  h2,
-  p {
-    margin: 0;
-    padding: 0 10px 0 0;
+
+  h3 {
+    margin: 10px 0px;
   }
-  .tab-content {
-    margin-top: 10px;
-    min-height: 500px;
-    max-height: 80vh;
-    overflow: auto;
+
+  .info-table .row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    padding: 0.5rem 0;
+    border-bottom: 1px solid var(--color-primary);
+    align-items: start;
   }
-  .tab-panel {
-    margin-bottom: 10px;
+
+  .info-table .label {
+    color: var(--color-primary);
+  }
+  .info-table .value {
+    color: #333;
+  }
+
+  .alerts-list {
+    margin-top: 0.5rem;
   }
   .alert-item {
-    padding: 4px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    margin-bottom: 6px;
+    margin-bottom: 1rem;
   }
-  .images-panel img {
-    width: 100%;
-    margin-bottom: 6px;
-    border-radius: 4px;
+  .alert-item .date {
+    margin-bottom: 0.25rem;
+    color: var(--color-primary);
   }
-  .side-tabs {
-    position: absolute;
-    top: 50px;
-    right: 390px;
+  .alert-item p {
+    margin: 0;
+    color: #555;
+  }
+
+  .images-panel {
     display: flex;
     flex-direction: column;
-    gap: 5px;
+    gap: 1rem;
   }
-  .side-tabs button {
-    writing-mode: sideways-lr;
-    text-orientation: mixed;
-    background: white;
-    border: none;
-    cursor: pointer;
-    font-size: 14px;
-    padding: 4px;
+  .images-panel .image-wrapper img {
+    width: 100%;
+    border-radius: 4px;
   }
-  .side-tabs button.selected {
-    font-weight: bold;
+  .images-panel .caption {
+    margin: 0.25rem 0 0;
+    font-size: 12px;
+    color: #666;
   }
 </style>

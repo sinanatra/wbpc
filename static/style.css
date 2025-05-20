@@ -1,0 +1,49 @@
+html {
+  --color-primary: #9f22ff;
+  --color-secondary: #ccc;
+}
+
+body {
+  font-family: Ronzino, sans-serif;
+  font-size: 14px;
+  margin: 0;
+  padding: 0;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+p {
+  font-family: Ronzino, sans-serif;
+  font-weight: normal;
+  margin: 0;
+}
+
+blockquote {
+  border-left: 2px solid var(--color-primary);
+  padding: 0.2em 0.5em;
+  font-size: 1em;
+  line-height: 1.2em;
+  font-style: italic;
+}
+
+p {
+  margin: 0;
+}
+
+::selection {
+  background: var(--color-primary);
+  color: black;
+}
+
+@font-face {
+  font-family: Ronzino;
+  src: url("/fonts/Ronzino-Regular.woff2");
+  font-weight: normal;
+}

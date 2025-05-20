@@ -1,18 +1,9 @@
 <script>
   export let riskArray;
 
-  // console.log(riskArray);
-
   import { createEventDispatcher } from "svelte";
 
   const dispatch = createEventDispatcher();
-
-  let showSettlements = false;
-
-  function toggleSettlements(event) {
-    showSettlements = event.target.checked;
-    dispatch("toggleSettlements", showSettlements);
-  }
 </script>
 
 <section class="risk-legend">
@@ -24,26 +15,10 @@
     </div>
     <p class="risk-description">{risk.riskdescription}</p>
   {/each}
-
-  <div>
-    <input
-      type="checkbox"
-      name="settlements"
-      id="settlements"
-      on:change={toggleSettlements}
-    />
-    <label for="settlements">Display Settlements</label>
-  </div>
 </section>
 
 <style>
   .risk-legend {
-    position: absolute;
-    top: 10px;
-    left: 10px;
-    /* border-radius: 10px; */
-    z-index: 2;
-    background-color: white;
     padding: 10px;
     width: 100%;
     max-width: 360px;
@@ -53,7 +28,7 @@
   .risk-description {
     margin: 0;
     padding: 0;
-    padding-bottom: 20px;
+    padding-bottom: 10px;
   }
 
   .risk-item {

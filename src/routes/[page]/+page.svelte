@@ -122,11 +122,6 @@
 {/if}
 
 <style>
-  :global(body) {
-    margin: 0;
-    font-family: sans-serif;
-  }
-
   p {
     padding: 10px;
   }

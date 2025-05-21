@@ -129,7 +129,9 @@ export const fetchSettlements = async () => {
       select: {
         id: "page.id",
         title: "page.title",
-        size: "page.establishment",
+        year: "page.establishment",
+        size: "page.numberOfResidents",
+
         alternativeNames: "page.alternativeNames.split(',')",
         coordinates: "page.coordinates.yaml()",
       },

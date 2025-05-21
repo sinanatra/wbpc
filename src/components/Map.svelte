@@ -137,6 +137,7 @@
                 ...s,
                 type: "settlement",
                 size: Number(s.size) || 0,
+                year: Number(s.year),
               },
             })),
           ],
@@ -171,10 +172,12 @@
             "interpolate",
             ["linear", ["clamp", true]],
             ["coalesce", ["to-number", ["get", "size"]], 0],
-            0,
-            4,
-            100000,
+            100,
+            2,
+            1000,
             12,
+            10000,
+            20,
           ],
           "circle-color": "rgba(0, 0, 0, 0.1)",
           "circle-stroke-color": "black",
@@ -188,7 +191,7 @@
         type: "circle",
         source: "points",
         paint: {
-          "circle-radius": 5,
+          "circle-radius": 6,
           "circle-color": "#aaa",
         },
         filter: ["==", ["get", "type"], "community"],
@@ -218,7 +221,7 @@
   export function showSlide(id) {
     if (!map?.isStyleLoaded()) return;
     map.resize();
-    
+
     map.flyTo({
       center: [35.3182, 31.9613],
       zoom: 8.5,

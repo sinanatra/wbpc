@@ -1,6 +1,8 @@
 html {
   --color-primary: #9f22ff;
   --color-secondary: #ccc;
+  --color-tertiary: #666;
+  --color-fade: #c8cede;
 }
 
 body {

@@ -219,6 +219,12 @@
   export function showSlide(id) {
     if (!map?.isStyleLoaded()) return;
 
+    map.flyTo({
+      center: [35.3182, 31.9613],
+      zoom: 8.5,
+      duration: 500,
+    });
+
     clearLabel();
     clearPills();
 
@@ -299,6 +305,7 @@
     white-space: nowrap;
     box-shadow: 0 0 8px rgba(0, 0, 0, 0.3);
     margin-bottom: 30px;
+    font-family: Ronzino, sans-serif;
   }
 
   :global(.label-line) {

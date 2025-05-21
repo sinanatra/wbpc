@@ -35,12 +35,9 @@
     dispatch("dotClick", e.detail);
   }
 
-  // new: handle the select event from Glossary
   function handleGlossarySelect(e) {
     const community = e.detail;
-    // 1) zoom the map
-    mapComponent?.zoomToCommunity(community, 12, 1000);
-    // 2) then dispatch dotClick so +page.svelte fetches details
+    mapComponent?.zoomToCommunity(community, 10, 1000);
     dispatch("dotClick", community);
   }
 </script>
@@ -52,7 +49,6 @@
     <Legend {riskArray} />
     <SearchBar on:search={onSearch} />
 
-    <!-- listen for select instead of dotClick -->
     <Glossary
       {communities}
       {selectedItem}

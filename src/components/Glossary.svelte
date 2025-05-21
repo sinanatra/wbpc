@@ -1,24 +1,47 @@
 <script>
-  import { createEventDispatcher } from "svelte";
+  import { createEventDispatcher, afterUpdate } from "svelte";
   import PageInfo from "./PageInfo.svelte";
 
   export let communities = [];
   export let selectedItem = null;
   const dispatch = createEventDispatcher();
 
-  // dispatch a 'select' event instead of dotClick
+  let communityRefs = [];
+
+  function registerRef(node, index) {
+    communityRefs[index] = node;
+    return {
+      destroy() {
+        communityRefs[index] = null;
+      },
+    };
+  }
+
   function handleClick(community) {
     dispatch("select", community);
   }
-
   function handleClose() {
     dispatch("close");
   }
+
+  afterUpdate(() => {
+    if (selectedItem) {
+      const idx = communities.findIndex((c) => c.id === selectedItem.id);
+      const el = communityRefs[idx];
+      if (el) {
+        el.scrollIntoView({ behavior: "instant", block: "start" });
+      }
+    }
+  });
 </script>
 
 <article>
-  {#each communities as community}
-    <div class="community" on:click={() => handleClick(community)}>
+  {#each communities as community, i}
+    <div
+      class="community"
+      on:click={() => handleClick(community)}
+      use:registerRef={i}
+    >
       <h2 class="title">{community.title}</h2>
       <h2 class="alternative">{community.alternativeTitle}</h2>
     </div>

@@ -14,7 +14,7 @@
 
   function formatDate(dateStr) {
     const date = new Date(dateStr);
-    if (isNaN(date)) return dateStr; 
+    if (isNaN(date)) return dateStr;
     return date.toLocaleDateString(undefined, {
       year: "numeric",
       month: "long",
@@ -125,13 +125,15 @@
     flex-direction: column;
     gap: 1rem;
   }
+  
   .images-panel .image-wrapper img {
     width: 100%;
     border-radius: 4px;
   }
+
   .images-panel .caption {
     margin: 0.25rem 0 0;
     font-size: 12px;
-    color: #666;
+    color: var(--color-tertiary);
   }
 </style>

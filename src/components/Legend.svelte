@@ -1,50 +1,54 @@
 <script>
-  export let riskArray;
-
-  import { createEventDispatcher } from "svelte";
-
-  const dispatch = createEventDispatcher();
+  export let riskArray = [];
 </script>
 
 <section class="risk-legend">
   {#each riskArray as risk}
-    <div class="risk-item">
-      <span class="risk-circle" style="background-color: {risk.riskcolor}"
-      ></span>
-      <span class="risk-label">{risk.riskvalue}</span>
+    <div class="risk-row">
+      <div class="risk-key">
+        <span class="risk-circle" style="background-color: {risk.riskcolor}"
+        ></span>
+        <span class="risk-label">{risk.riskvalue}</span>
+      </div>
+      <div class="risk-description">{risk.riskdescription}</div>
     </div>
-    <p class="risk-description">{risk.riskdescription}</p>
   {/each}
 </section>
 
 <style>
   .risk-legend {
     padding: 10px;
-    width: 100%;
-    max-width: 360px;
-    font-size: 0.9rem;
+    font-size: 0.8em;
+    display: grid;
+    row-gap: 5px;
+    margin-top: 50px;
+    margin-bottom: 20px;
+  }
+
+  .risk-row {
+    display: grid;
+    grid-template-columns: 1fr 2fr;
+    column-gap: 5px;
+    align-items: start;
+    /* border-bottom: 1px dashed var(--color-primary); */
+  }
+
+  .risk-key {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+  }
+
+  .risk-circle {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    border: 1px solid #fff;
+    flex-shrink: 0;
   }
 
   .risk-description {
     margin: 0;
-    padding: 0;
-    padding-bottom: 10px;
-  }
-
-  .risk-item {
-    display: flex;
-    align-items: center;
-    margin-bottom: 6px;
-  }
-  .risk-circle {
-    display: inline-block;
-    width: 16px;
-    height: 16px;
-    border-radius: 50%;
-    margin-right: 8px;
-    border: 1px solid white;
-  }
-  .risk-label {
-    flex: 1;
+    color: #555;
   }
 </style>

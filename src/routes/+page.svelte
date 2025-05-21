@@ -23,11 +23,10 @@
 
   async function handleItemSelect(item) {
     try {
-      if (item.type === "community") {
+      if (item) {
+        // console.log("item selected:", item);
         const res = await fetchCommunitiesData(item.id);
         selectedItem = res.result || res;
-      } else {
-        selectedItem = null;
       }
     } catch (e) {
       console.error("detail fetch error:", e);

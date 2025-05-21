@@ -18,37 +18,38 @@
   const dispatch = createEventDispatcher();
   let mapComponent;
 
-  onMount(async () => {
-    await tick();
-    if (mapComponent?.showSlide && editorialData.length) {
-      mapComponent.showSlide(editorialData[0].id);
-    }
-  });
-
-  // function handleSlideEnter(e) {
-  //   mapComponent?.showSlide(e.detail.slide.id);
-  // }
-
-  let _slideTimeout;
-  function handleSlideEnter(e) {
-    clearTimeout(_slideTimeout);
-    _slideTimeout = setTimeout(() => {
-      mapComponent?.showSlide(e.detail.slide.id);
-    }, 100);
+  function debounce(fn, wait = 100) {
+    let timer;
+    return (...args) => {
+      clearTimeout(timer);
+      timer = setTimeout(() => fn(...args), wait);
+    };
   }
+
+  const handleSlideEnter = debounce((e) => {
+    mapComponent?.showSlide(e.detail.slide.id);
+  }, 100);
 
   function onSearch(e) {
     dispatch("search", e.detail);
   }
+
   function onDotClick(e) {
     dispatch("dotClick", e.detail);
   }
 
   function handleGlossarySelect(e) {
     const community = e.detail;
-    mapComponent?.zoomToCommunity(community, 10, 1000);
+    mapComponent?.zoomToCommunity(community, 12, 1000);
     dispatch("dotClick", community);
   }
+
+  onMount(async () => {
+    await tick();
+    if (mapComponent?.showSlide && editorialData.length) {
+      mapComponent.showSlide(editorialData[0].id);
+    }
+  });
 </script>
 
 <div class="container">
@@ -57,7 +58,6 @@
     <ScrollyText slides={editorialData} on:slideEnter={handleSlideEnter} />
     <Legend {riskArray} />
     <SearchBar on:search={onSearch} />
-
     <Glossary
       {communities}
       {selectedItem}

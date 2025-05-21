@@ -1,7 +1,6 @@
 <script>
-  import { onMount, onDestroy } from "svelte";
+  import { onMount, onDestroy, createEventDispatcher } from "svelte";
   import mapboxgl from "mapbox-gl";
-  import { createEventDispatcher } from "svelte";
 
   export let communities = [];
   export let settlements = [];

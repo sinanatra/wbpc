@@ -218,7 +218,8 @@
 
   export function showSlide(id) {
     if (!map?.isStyleLoaded()) return;
-
+    map.resize();
+    
     map.flyTo({
       center: [35.3182, 31.9613],
       zoom: 8.5,

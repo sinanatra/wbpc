@@ -25,9 +25,18 @@
     }
   });
 
+  // function handleSlideEnter(e) {
+  //   mapComponent?.showSlide(e.detail.slide.id);
+  // }
+
+  let _slideTimeout;
   function handleSlideEnter(e) {
-    mapComponent?.showSlide(e.detail.slide.id);
+    clearTimeout(_slideTimeout);
+    _slideTimeout = setTimeout(() => {
+      mapComponent?.showSlide(e.detail.slide.id);
+    }, 100);
   }
+
   function onSearch(e) {
     dispatch("search", e.detail);
   }

@@ -21,6 +21,14 @@
       day: "numeric",
     });
   }
+
+  function formatYear(dateStr) {
+    const date = new Date(dateStr);
+    if (isNaN(date)) return dateStr;
+    return date.toLocaleDateString(undefined, {
+      year: "numeric",
+    });
+  }
 </script>
 
 <div bind:this={wrapper} class="panel-wrapper">
@@ -44,7 +52,7 @@
       {#if community.yearEstablished}
         <div class="row">
           <div class="label">History:</div>
-          <div class="value">{community.yearEstablished}</div>
+          <div class="value">{formatYear(community.yearEstablished)}</div>
         </div>
       {/if}
     </div>
@@ -125,7 +133,7 @@
     flex-direction: column;
     gap: 1rem;
   }
-  
+
   .images-panel .image-wrapper img {
     width: 100%;
     border-radius: 4px;

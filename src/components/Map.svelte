@@ -179,8 +179,8 @@
             10000,
             20,
           ],
-          "circle-color": "rgba(0, 0, 0, 0.1)",
-          "circle-stroke-color": "black",
+          "circle-color": "rgba(100, 0, 0, 0.1)",
+          "circle-stroke-color": "red",
           "circle-stroke-width": 0.5,
         },
         layout: { visibility: "none" },
@@ -261,7 +261,7 @@
   export function zoomToCommunity(
     comm,
     zoomLevel = targetZoom,
-    duration = 500
+    duration = 1000
   ) {
     const { lon, lat } = comm.coordinates || {};
     if (lon == null || lat == null) return;

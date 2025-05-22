@@ -51,11 +51,20 @@
 
       {#if community.yearEstablished}
         <div class="row">
-          <div class="label">History:</div>
+          <div class="label">Established:</div>
           <div class="value">{formatYear(community.yearEstablished)}</div>
         </div>
       {/if}
     </div>
+
+    {#if community.info?.length > 0}
+      <h3>Info</h3>
+      <div class="info">
+        <div class="info-item">
+          <p>{@html community.info}</p>
+        </div>
+      </div>
+    {/if}
 
     {#if community.alerts?.length > 0}
       <h3>Alerts</h3>
@@ -113,6 +122,10 @@
     color: #333;
   }
 
+  .info {
+    font-size: 1.3em;
+  }
+
   .alerts-list {
     margin-top: 0.5rem;
   }
@@ -131,7 +144,6 @@
   .images-panel {
     display: flex;
     flex-direction: column;
-    gap: 1rem;
   }
 
   .images-panel .image-wrapper img {
@@ -140,7 +152,7 @@
   }
 
   .images-panel .caption {
-    margin: 0.25rem 0 0;
+    margin: 0 0 0.5em;
     font-size: 12px;
     color: var(--color-tertiary);
   }

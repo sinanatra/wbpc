@@ -61,6 +61,7 @@
 
   .community {
     display: flex;
+    gap: 5px;
     border-bottom: 1px dashed var(--color-primary);
     padding: 5px 10px;
     cursor: pointer;
@@ -76,7 +77,7 @@
     color: var(--color-primary);
     font-family: Arial, Helvetica, sans-serif;
     font-weight: 100;
-    margin-left: 10px;
-    line-height: 16px;
+    font-size: 0.8em;
+    margin-top: 0.4em;
   }
 </style>

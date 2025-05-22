@@ -24,6 +24,7 @@
     margin: 0;
     padding: 0;
     color: var(--color-primary);
+	text-transform: capitalize;
   }
 
   p {

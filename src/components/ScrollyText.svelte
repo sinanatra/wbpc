@@ -50,7 +50,7 @@
   }
 </script>
 
-<article>
+<article class="slides">
   <div class="skip-btn-container">
     <button class="skip-btn" on:click={goToCommunities}>
       Skip to Communities
@@ -74,6 +74,11 @@
   article {
     position: relative;
     padding: 10px;
+  }
+
+  :global(.slides strong) {
+    color: var(--color-primary);
+    font-weight: 400;
   }
 
   .skip-btn-container {

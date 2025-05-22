@@ -198,7 +198,7 @@
         layout: { visibility: "none" },
       });
 
-      ["oslo", "damage"].forEach((layerId) => {
+      ["oslo", "damage", "area-a", "area-b", "area-c"].forEach((layerId) => {
         if (map.getLayer(layerId)) {
           map.setLayoutProperty(layerId, "visibility", "none");
         }
@@ -231,9 +231,15 @@
     clearLabel();
     clearPills();
 
-    ["settlements-circle", "communities-circle", "oslo", "damage"].forEach(
-      (l) => map.setLayoutProperty(l, "visibility", "none")
-    );
+    [
+      "settlements-circle",
+      "communities-circle",
+      "oslo",
+      "damage",
+      "area-a",
+      "area-b",
+      "area-c",
+    ].forEach((l) => map.setLayoutProperty(l, "visibility", "none"));
 
     if (id === "communities") {
       map.setLayoutProperty("communities-circle", "visibility", "visible");
@@ -242,19 +248,26 @@
       map.setLayoutProperty("settlements-circle", "visibility", "visible");
     } else if (id === "damage") {
       map.setLayoutProperty("damage", "visibility", "visible");
-    } else if (["area-a", "area-b", "area-c"].includes(id)) {
-      map.setLayoutProperty("oslo", "visibility", "visible");
-      if (id === "area-a") {
-        map.setFilter("oslo", ["==", ["get", "CLASS"], "A"]);
-      } else if (id === "area-c") {
-        map.setFilter("oslo", ["==", ["get", "CLASS"], "C"]);
-      } else {
-        map.setFilter("oslo", [
-          "all",
-          ["!=", ["get", "CLASS"], "A"],
-          ["!=", ["get", "CLASS"], "C"],
-        ]);
-      }
+    }
+    // } else if (["area-a", "area-b", "area-c"].includes(id)) {
+    //   map.setLayoutProperty("oslo", "visibility", "visible");
+    //   if (id === "area-a") {
+    //     map.setFilter("oslo", ["==", ["get", "CLASS"], "A"]);
+    //   } else if (id === "area-c") {
+    //     map.setFilter("oslo", ["==", ["get", "CLASS"], "C"]);
+    //   } else {
+    //     map.setFilter("oslo", [
+    //       "all",
+    //       ["!=", ["get", "CLASS"], "A"],
+    //       ["!=", ["get", "CLASS"], "C"],
+    //     ]);
+    //   }
+    else if (id === "area-a") {
+      map.setLayoutProperty("area-a", "visibility", "visible");
+    } else if (id === "area-b") {
+      map.setLayoutProperty("area-b", "visibility", "visible");
+    } else if (id === "area-c") {
+      map.setLayoutProperty("area-c", "visibility", "visible");
     }
   }
 

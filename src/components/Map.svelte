@@ -11,7 +11,7 @@
 
   const STYLE_URL = "mapbox://styles/sinanatra/cm7yteg6x00ty01sc85aqduv2";
   const dispatch = createEventDispatcher();
-  const targetZoom = 15;
+  let targetZoom = 15;
 
   let map, mapContainer;
   let mapLoaded = false;
@@ -84,13 +84,20 @@
   }
 
   onMount(() => {
+    const isMobile = window.matchMedia("(max-width: 767px)").matches;
+
+    const initialPitch = isMobile ? 50 : 0;
+    const initialZoom = isMobile ? 8 : 8.5;
+
     map = new mapboxgl.Map({
       container: mapContainer,
       style: STYLE_URL,
-      center: [35.3182, 31.9613],
-      zoom: 8.5,
-      minZoom: 8.5,
+      center: [35.3182, 31.8613],
+      zoom: initialZoom,
+      minZoom: initialZoom,
       maxZoom: 18,
+      pitch: initialPitch,
+      bearing: 0,
     });
 
     map.on("load", () => {
@@ -144,6 +151,7 @@
         },
       });
 
+      // Your existing “click” / “mouseenter” / “mouseleave” handlers:
       map.on("click", "communities-circle", (e) => {
         if (!e.features?.length) return;
         const feat = e.features[0];
@@ -155,13 +163,14 @@
           duration: 1000,
         });
       });
-
       map.on("mouseenter", "communities-circle", () => {
         map.getCanvas().style.cursor = "pointer";
       });
       map.on("mouseleave", "communities-circle", () => {
         map.getCanvas().style.cursor = "";
       });
+
+      // Add your circle layers (initially hidden):
       map.addLayer({
         id: "settlements-circle",
         type: "circle",
@@ -226,6 +235,9 @@
       center: [35.3182, 31.9613],
       zoom: 8.5,
       duration: 500,
+      // Keep the same bearing and pitch when you “fly”
+      pitch: map.getPitch(),
+      bearing: map.getBearing(),
     });
 
     clearLabel();
@@ -248,21 +260,7 @@
       map.setLayoutProperty("settlements-circle", "visibility", "visible");
     } else if (id === "damage") {
       map.setLayoutProperty("damage", "visibility", "visible");
-    }
-    // } else if (["area-a", "area-b", "area-c"].includes(id)) {
-    //   map.setLayoutProperty("oslo", "visibility", "visible");
-    //   if (id === "area-a") {
-    //     map.setFilter("oslo", ["==", ["get", "CLASS"], "A"]);
-    //   } else if (id === "area-c") {
-    //     map.setFilter("oslo", ["==", ["get", "CLASS"], "C"]);
-    //   } else {
-    //     map.setFilter("oslo", [
-    //       "all",
-    //       ["!=", ["get", "CLASS"], "A"],
-    //       ["!=", ["get", "CLASS"], "C"],
-    //     ]);
-    //   }
-    else if (id === "area-a") {
+    } else if (id === "area-a") {
       map.setLayoutProperty("area-a", "visibility", "visible");
     } else if (id === "area-b") {
       map.setLayoutProperty("area-b", "visibility", "visible");
@@ -278,7 +276,14 @@
   ) {
     const { lon, lat } = comm.coordinates || {};
     if (lon == null || lat == null) return;
-    map.flyTo({ center: [lon, lat], zoom: zoomLevel, duration });
+    map.flyTo({
+      center: [lon, lat],
+      zoom: zoomLevel,
+      duration,
+      // preserve the existing pitch & bearing
+      pitch: map.getPitch(),
+      bearing: map.getBearing(),
+    });
     showLabel({
       geometry: { coordinates: [lon, lat] },
       properties: comm,
@@ -292,7 +297,6 @@
 
 <style>
   @import "mapbox-gl/dist/mapbox-gl.css";
-
   .map-container {
     width: 100%;
     height: 100%;

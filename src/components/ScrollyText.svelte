@@ -102,6 +102,11 @@
   article {
     padding-top: 60vh;
   }
+  @media screen and (max-width: 767px) {
+    article {
+      padding-top: 10vh;
+    }
+  }
 
   .slide {
     opacity: 0.3;

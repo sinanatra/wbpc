@@ -80,8 +80,9 @@
 <style>
   .container {
     display: flex;
-    height: 100vh;
     width: 100vw;
+    height: 100vh;
+    flex-direction: row;
   }
 
   .sidebar {
@@ -89,10 +90,43 @@
     max-width: 450px;
     overflow-y: auto;
     background: #f9f9f9;
+    position: relative;
   }
 
   .map-area {
     flex: 1;
     position: relative;
+  }
+  .map-area > :global(svg),
+  .map-area > :global(div) {
+    width: 100%;
+    height: 100%;
+  }
+
+  @media screen and (max-width: 767px) {
+    .container {
+      display: flex;
+      width: 100vw;
+      height: 100vh;
+      flex-direction: column-reverse;
+    }
+
+    .map-area {
+      flex: 0 0 60vh; 
+      position: relative;
+    }
+    .map-area > :global(svg),
+    .map-area > :global(div) {
+      width: 100%;
+      height: 100%;
+    }
+
+    .sidebar {
+      flex: 1;
+      width: 100%;
+      max-width: none;
+      overflow-y: auto;
+      background: #f9f9f9;
+    }
   }
 </style>

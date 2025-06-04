@@ -60,6 +60,10 @@
     font-size: 0.8em;
   }
 
+  a {
+    color: var(--color-primary);
+  }
+  
   h1 {
     font-size: 2em;
     margin: 0;

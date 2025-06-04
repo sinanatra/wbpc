@@ -175,3 +175,22 @@ export const fetchTitle = async () => {
   const data = await res.json();
   return data;
 };
+
+export const fetchCustomPageByUrl = async (url) => {
+  const res = await fetch("/api/query", {
+    method: "post",
+    headers: {
+      "content-type": "application/json",
+    },
+    body: JSON.stringify({
+      query: `page("${url}")`,
+      select: {
+        id: "page.id",
+        title: "page.title",
+        content: "page.content",
+      },
+    }),
+  });
+  const data = await res.json();
+  return data;
+};

@@ -14,9 +14,17 @@
   export let riskArray = [];
   export let selectedItem = null;
   export let title = "";
+  export let mapRef; // <- new
 
   const dispatch = createEventDispatcher();
   let mapComponent;
+
+  // Make internal ref bindable outside
+  $: mapRef = mapComponent;
+
+  const handleSlideEnter = debounce((e) => {
+    mapComponent?.showSlide(e.detail.slide.id);
+  }, 100);
 
   function debounce(fn, wait = 100) {
     let timer;
@@ -25,10 +33,6 @@
       timer = setTimeout(() => fn(...args), wait);
     };
   }
-
-  const handleSlideEnter = debounce((e) => {
-    mapComponent?.showSlide(e.detail.slide.id);
-  }, 100);
 
   function onSearch(e) {
     dispatch("search", e.detail);
@@ -97,6 +101,7 @@
     flex: 1;
     position: relative;
   }
+
   .map-area > :global(svg),
   .map-area > :global(div) {
     width: 100%;
@@ -105,28 +110,11 @@
 
   @media screen and (max-width: 767px) {
     .container {
-      display: flex;
-      width: 100vw;
-      height: 100vh;
       flex-direction: column-reverse;
     }
 
     .map-area {
-      flex: 0 0 60vh; 
-      position: relative;
-    }
-    .map-area > :global(svg),
-    .map-area > :global(div) {
-      width: 100%;
-      height: 100%;
-    }
-
-    .sidebar {
-      flex: 1;
-      width: 100%;
-      max-width: none;
-      overflow-y: auto;
-      background: #f9f9f9;
+      flex: 0 0 60vh;
     }
   }
 </style>

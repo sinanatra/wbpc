@@ -1,8 +1,15 @@
 html {
   --color-primary: #9f22ff;
+  --color-primary: #ff8222;
+
   --color-secondary: #ccc;
   --color-tertiary: #666;
   --color-fade: #c8cede;
+
+  --area-a: hsla(26, 100%, 57%, 0.28);
+  --area-b: hsla(26, 100%, 57%, 0.58);
+  --area-c: hsla(26, 24%, 52%, 0.62);
+
 }
 
 body {

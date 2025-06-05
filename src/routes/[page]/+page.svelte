@@ -1,135 +1,131 @@
 <script>
-  import { onMount } from "svelte";
+  import { onMount, tick } from "svelte";
+  import { page } from "$app/stores";
+  import { get } from "svelte/store";
+
   import {
     fetchCommunities,
     fetchCommunitiesData,
+    fetchSettlements,
     fetchRiskColors,
+    fetchEditorial,
+    fetchTitle,
   } from "$lib/loadData.js";
-  import { page } from "$app/stores";
 
-  import Map from "@components/Map.svelte";
-  import PageInfo from "@components/PageInfo.svelte";
-  import Legend from "@components/Legend.svelte";
-  import SearchBar from "@components/SearchBar.svelte";
+  import MapContainer from "@components/MapContainer.svelte";
 
   let communities = [];
-  let filteredCommunities = [];
+  let settlements = [];
+  let mapItems = [];
+  let filteredMapItems = [];
   let riskArray = [];
   let riskColors = {};
+  let selectedItem = null;
   let error = null;
-  let selectedCommunity = null;
-
+  let editorialData = [];
+  let title = null;
   let mapRef;
 
-  async function handleCommunitySelect(community) {
+  const pageParam = get(page).params.page;
+
+  async function handleItemSelect(item) {
     try {
-      const detailData = await fetchCommunitiesData(community.id);
-      selectedCommunity = detailData.result || detailData;
-    } catch (err) {
-      console.error("Error fetching community detail:", err);
+      if (item) {
+        const res = await fetchCommunitiesData(item.id);
+        selectedItem = res.result || res;
+      }
+    } catch (e) {
+      console.error("detail fetch error:", e);
     }
   }
 
-  function handleMapClick(event) {
-    handleCommunitySelect(event.detail);
-  }
-
-  function handleClosePanel() {
-    selectedCommunity = null;
-    if (mapRef?.clearLabel) {
-      mapRef.clearLabel();
-    }
-  }
-
-  function handleSearch(term) {
-    const lowerTerm = term.toLowerCase().trim();
-
-    if (lowerTerm.length < 3) {
-      filteredCommunities = communities;
-      return;
-    }
-
-    filteredCommunities = communities.filter((community) => {
-      const titleMatch = community.title.toLowerCase().includes(lowerTerm);
-
-      const altMatch =
-        community.alternativeNames &&
-        community.alternativeNames.some((alt) =>
-          alt.toLowerCase().includes(lowerTerm)
-        );
-
-      return titleMatch || altMatch;
-    });
+  function handleSearch(query) {
+    const q = query.toLowerCase().trim();
+    filteredMapItems =
+      q.length < 3
+        ? [...mapItems]
+        : mapItems.filter((item) => {
+            const t = item.title.toLowerCase();
+            const alt = Array.isArray(item.alternativeNames)
+              ? item.alternativeNames.some((a) => a.toLowerCase().includes(q))
+              : false;
+            return t.includes(q) || alt;
+          });
   }
 
   onMount(async () => {
     try {
-      const [communitiesData, riskColorsData] = await Promise.all([
+      const [comms, setts, rc, editorial, tt] = await Promise.all([
         fetchCommunities(),
+        fetchSettlements(),
         fetchRiskColors(),
+        fetchEditorial(),
+        fetchTitle(),
       ]);
 
-      communities = communitiesData.result || communitiesData;
-      filteredCommunities = communities;
+      title = tt.result;
 
-      riskArray = riskColorsData.result || riskColorsData;
+      // ✅ Make sure to store ALL communities
+      communities = (comms.result || comms).map((c) => ({
+        ...c,
+        type: "community",
+      }));
+
+      settlements = (setts.result || setts).map((s) => ({
+        ...s,
+        type: "settlement",
+      }));
+
+      mapItems = [...communities]; // All dots
+      filteredMapItems = [...mapItems];
+
+      riskArray = Array.isArray(rc.result)
+        ? rc.result
+        : rc.result
+          ? [rc.result]
+          : [];
       riskColors = {};
-
-      let communityPage = communities?.find((d) => {
-        return d.id == $page.params.page;
+      riskArray.forEach((r) => {
+        riskColors[r.riskvalue] = r.riskcolor;
       });
 
-      if (communityPage) {
-        handleCommunitySelect(communityPage);
-        if (mapRef && mapRef.zoomToCommunity) {
-          mapRef.zoomToCommunity(communityPage);
+      editorialData = editorial?.result;
+
+      // ✅ Select and zoom if landing on a specific community
+      if (pageParam) {
+        const target = communities.find((c) => c.id === pageParam);
+        if (target) {
+          await handleItemSelect(target);
+          await tick();
+          mapRef?.zoomToCommunity?.(target, 12, 1000);
         }
       }
-
-      if (Array.isArray(riskArray)) {
-        riskArray.forEach((item) => {
-          riskColors[item.riskvalue] = item.riskcolor;
-        });
-      } else if (riskArray?.riskvalue && riskArray?.riskcolor) {
-        riskColors[riskArray.riskvalue] = riskArray.riskcolor;
-      }
-    } catch (err) {
-      console.error("Error fetching data:", err);
-      error = err;
+    } catch (e) {
+      console.error(e);
+      error = e;
     }
   });
 </script>
 
 {#if error}
-  <p>Error loading communities: {error.message}</p>
-{:else}
-  <section class="full-screen">
-    <Legend {riskArray} />
-
-    <SearchBar on:search={(e) => handleSearch(e.detail)} />
-
-    <Map
-      bind:this={mapRef}
-      communities={filteredCommunities}
-      {riskColors}
-      on:dotClick={handleMapClick}
-    />
-
-    {#if selectedCommunity}
-      <PageInfo community={selectedCommunity} on:close={handleClosePanel} />
-    {/if}
-  </section>
+  <p>Error loading data: {error.message}</p>
+{:else if editorialData.length}
+  <MapContainer
+    bind:mapRef
+    bind:selectedItem
+    communities={filteredMapItems}
+    {settlements}
+    {riskColors}
+    {riskArray}
+    {editorialData}
+    {title}
+    on:dotClick={(e) => handleItemSelect(e.detail)}
+    on:search={(e) => handleSearch(e.detail)}
+  />
 {/if}
 
 <style>
   p {
     padding: 10px;
-  }
-
-  .full-screen {
-    width: 100vw;
-    height: 100vh;
-    overflow: hidden;
-    position: relative;
   }
 </style>

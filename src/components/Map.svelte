@@ -188,8 +188,8 @@
             10000,
             20,
           ],
-          "circle-color": "rgba(100, 0, 0, 0.1)",
-          "circle-stroke-color": "red",
+          "circle-color": "rgba(0, 0, 0, 0.1)",
+          "circle-stroke-color": "black",
           "circle-stroke-width": 0.5,
         },
         layout: { visibility: "none" },
@@ -263,6 +263,7 @@
     } else if (id === "area-a") {
       map.setLayoutProperty("area-a", "visibility", "visible");
     } else if (id === "area-b") {
+      map.setLayoutProperty("area-a", "visibility", "visible");
       map.setLayoutProperty("area-b", "visibility", "visible");
     } else if (id === "area-c") {
       map.setLayoutProperty("area-c", "visibility", "visible");

@@ -83,11 +83,12 @@
     labelMarker = null;
   }
 
+  
   onMount(() => {
     const isMobile = window.matchMedia("(max-width: 767px)").matches;
 
     const initialPitch = isMobile ? 50 : 0;
-    const initialZoom = isMobile ? 8 : 8.5;
+    const initialZoom = isMobile ? 8: 8;
 
     map = new mapboxgl.Map({
       container: mapContainer,

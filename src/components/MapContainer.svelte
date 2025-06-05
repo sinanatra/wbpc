@@ -14,17 +14,16 @@
   export let riskArray = [];
   export let selectedItem = null;
   export let title = "";
-  export let mapRef; // <- new
+  export let mapRef; 
 
   const dispatch = createEventDispatcher();
   let mapComponent;
 
-  // Make internal ref bindable outside
   $: mapRef = mapComponent;
 
   const handleSlideEnter = debounce((e) => {
     mapComponent?.showSlide(e.detail.slide.id);
-  }, 100);
+  }, 200);
 
   function debounce(fn, wait = 100) {
     let timer;

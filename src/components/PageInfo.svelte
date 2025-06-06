@@ -123,7 +123,7 @@
   }
 
   .info {
-    font-size: 1.3em;
+    font-size: 1.35em;
   }
 
   .alerts-list {

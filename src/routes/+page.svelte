@@ -90,7 +90,7 @@
 
 {#if error}
   <p>Error loading data: {error.message}</p>
-{:else if editorialData.length}
+{:else if editorialData.length > 0}
   <MapContainer
     bind:selectedItem
     communities={filteredMapItems}

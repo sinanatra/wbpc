@@ -10,6 +10,12 @@ html {
   --area-b: hsla(26, 100%, 57%, 0.58);
   --area-c: hsla(26, 24%, 52%, 0.62);
 }
+html,
+body {
+  margin: 0;
+  padding: 0;
+  overscroll-behavior: none;
+}
 
 .area-a {
   background-color: var(--area-a);

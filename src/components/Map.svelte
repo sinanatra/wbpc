@@ -83,12 +83,11 @@
     labelMarker = null;
   }
 
-  
   onMount(() => {
     const isMobile = window.matchMedia("(max-width: 767px)").matches;
 
     const initialPitch = isMobile ? 50 : 0;
-    const initialZoom = isMobile ? 8: 8;
+    const initialZoom = isMobile ? 8 : 8;
 
     map = new mapboxgl.Map({
       container: mapContainer,
@@ -99,8 +98,13 @@
       maxZoom: 18,
       pitch: initialPitch,
       bearing: 0,
+      scrollZoom: false,
     });
 
+    map.addControl(
+      new mapboxgl.NavigationControl({ showCompass: false }),
+      "top-right"
+    );
     map.on("load", () => {
       mapLoaded = true;
 

@@ -20,11 +20,11 @@
   let error = null;
   let editorialData = [];
   let title = null;
+  let loading = true;
 
   async function handleItemSelect(item) {
     try {
       if (item) {
-        // console.log("item selected:", item);
         const res = await fetchCommunitiesData(item.id);
         selectedItem = res.result || res;
       }
@@ -48,6 +48,7 @@
   }
 
   onMount(async () => {
+    loading = true;
     try {
       const [comms, setts, rc, editorial, tt] = await Promise.all([
         fetchCommunities(),
@@ -84,13 +85,20 @@
     } catch (e) {
       console.error(e);
       error = e;
+    } finally {
+      loading = false;
     }
   });
 </script>
 
-{#if error}
-  <p>Error loading data: {error.message}</p>
-{:else if editorialData.length > 0}
+{#if loading}
+  <div class="loader-container">
+    <div class="loader"></div>
+    <p>Loading...</p>
+  </div>
+{:else if error}
+  <p class="error">Error loading: {error.message}</p>
+{:else}
   <MapContainer
     bind:selectedItem
     communities={filteredMapItems}
@@ -105,7 +113,36 @@
 {/if}
 
 <style>
-  p {
+  .loader-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    text-align: center;
+  }
+  .loader {
+    border: 1px solid #f3f3f3;
+    border-top: 1px solid var(--color-primary);
+    border-radius: 50%;
+    width: 10px;
+    height: 10px;
+    animation: spin 1s linear infinite;
+    margin-bottom: 10px;
+  }
+
+  @keyframes spin {
+    0% {
+      transform: rotate(0deg);
+    }
+    100% {
+      transform: rotate(360deg);
+    }
+  }
+
+  .error {
+    color: #ff4d4f;
     padding: 10px;
+    text-align: center;
   }
 </style>

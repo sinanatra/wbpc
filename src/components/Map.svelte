@@ -193,7 +193,7 @@
             10000,
             20,
           ],
-          "circle-color": "rgba(0, 0, 0, 0.1)",
+          "circle-color": "rgba(255, 0, 0, .1)",
           "circle-stroke-color": "black",
           "circle-stroke-width": 0.5,
         },

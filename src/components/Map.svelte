@@ -109,6 +109,13 @@
     map.on("load", () => {
       mapLoaded = true;
 
+      addStaticLabel("Occupied West Bank", [35.4558374411592, 32.404], "#ccc");
+      addStaticLabel(
+        "Gaza Strip",
+        [34.55717960887084, 31.53758461986557],
+        "#ccc"
+      );
+
       map.addSource("points", {
         type: "geojson",
         data: {
@@ -157,7 +164,22 @@
         },
       });
 
-      // Your existing “click” / “mouseenter” / “mouseleave” handlers:
+      function addStaticLabel(text, coordinates, color = "#aaa") {
+        const el = document.createElement("div");
+        el.className = "label-container";
+        el.innerHTML = `
+    <svg class="label-line" width="50" height="50" viewBox="0 0 50 50">
+      <line x1="0" y1="50" x2="50" y2="0" stroke="${color}" stroke-width="2"/>
+    </svg>
+    <div class="label-box" style="background:${color};color:black">
+      ${text}
+    </div>
+  `;
+        return new mapboxgl.Marker({ element: el, anchor: "bottom-left" })
+          .setLngLat(coordinates)
+          .addTo(map);
+      }
+
       map.on("click", "communities-circle", (e) => {
         if (!e.features?.length) return;
         const feat = e.features[0];
@@ -176,7 +198,6 @@
         map.getCanvas().style.cursor = "";
       });
 
-      // Add your circle layers (initially hidden):
       map.addLayer({
         id: "settlements-circle",
         type: "circle",
@@ -245,7 +266,7 @@
       center: [35.3182, 31.9613],
       zoom: 8.5,
       duration: 500,
-      // Keep the same bearing and pitch when you “fly”
+
       pitch: map.getPitch(),
       bearing: map.getBearing(),
     });
@@ -291,7 +312,7 @@
       center: [lon, lat],
       zoom: zoomLevel,
       duration,
-      // preserve the existing pitch & bearing
+
       pitch: map.getPitch(),
       bearing: map.getBearing(),
     });

@@ -14,7 +14,7 @@
   export let riskArray = [];
   export let selectedItem = null;
   export let title = "";
-  export let mapRef; 
+  export let mapRef;
 
   const dispatch = createEventDispatcher();
   let mapComponent;
@@ -109,11 +109,22 @@
 
   @media screen and (max-width: 767px) {
     .container {
-      flex-direction: column-reverse;
+      overflow-x: auto;
+      height: 100vh;
     }
 
+    .sidebar {
+      flex: none;
+      width: 90vw;
+      min-width: 50vw;
+      max-width: 80vw;
+      height: 100vh;
+    }
     .map-area {
-      flex: 0 0 60vh;
+      flex: none;
+      width: 80vw;
+      min-width: 50vw;
+      height: 100vh;
     }
   }
 </style>

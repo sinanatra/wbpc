@@ -100,7 +100,7 @@
     padding: 10px;
     border-radius: 4px;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-    font-size: 14px;
+    font-size: 1em;
   }
 
   h3 {
@@ -153,7 +153,7 @@
 
   .images-panel .caption {
     margin: 0 0 0.5em;
-    font-size: 12px;
+    font-size: .875em;
     color: var(--color-tertiary);
   }
 </style>

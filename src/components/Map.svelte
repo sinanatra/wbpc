@@ -99,6 +99,7 @@
       pitch: initialPitch,
       bearing: 0,
       scrollZoom: false,
+      dragPan: isMobile ? false : true,
     });
 
     map.addControl(
@@ -230,6 +231,10 @@
     if (map.getLayer("communities-circle")) {
       map.setPaintProperty("communities-circle", "circle-color", colorExpr);
     }
+  }
+
+  export function resize() {
+    if (map) map.resize();
   }
 
   export function showSlide(id) {

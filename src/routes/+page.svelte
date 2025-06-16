@@ -192,7 +192,7 @@
     }
   }
   .error {
-    color: #ff4d4f;
+    color: var(--color-primary);
     padding: 10px;
     text-align: center;
   }

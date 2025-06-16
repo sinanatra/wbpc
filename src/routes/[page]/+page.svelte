@@ -65,7 +65,6 @@
 
       title = tt.result;
 
-      // ✅ Make sure to store ALL communities
       communities = (comms.result || comms).map((c) => ({
         ...c,
         type: "community",
@@ -91,7 +90,6 @@
 
       editorialData = editorial?.result;
 
-      // ✅ Select and zoom if landing on a specific community
       if (pageParam) {
         const target = communities.find((c) => c.id === pageParam);
         if (target) {

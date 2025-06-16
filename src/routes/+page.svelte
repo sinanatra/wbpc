@@ -8,7 +8,6 @@
     fetchEditorial,
     fetchTitle,
   } from "$lib/loadData.js";
-  import MapContainer from "@components/MapContainer.svelte";
 
   let communities = [];
   let settlements = [];
@@ -21,6 +20,24 @@
   let editorialData = [];
   let title = null;
   let loading = true;
+
+  let MapContainerPromise;
+  let MapContainer;
+
+  function retry(fn, retries = 3, delay = 500) {
+    let lastErr;
+    return new Promise(async (resolve, reject) => {
+      for (let i = 0; i < retries; i++) {
+        try {
+          return resolve(await fn());
+        } catch (e) {
+          lastErr = e;
+          await new Promise((res) => setTimeout(res, delay));
+        }
+      }
+      reject(lastErr);
+    });
+  }
 
   async function handleItemSelect(item) {
     try {
@@ -47,15 +64,16 @@
           });
   }
 
-  onMount(async () => {
+  async function loadEverything() {
     loading = true;
+    error = null;
     try {
       const [comms, setts, rc, editorial, tt] = await Promise.all([
-        fetchCommunities(),
-        fetchSettlements(),
-        fetchRiskColors(),
-        fetchEditorial(),
-        fetchTitle(),
+        retry(() => fetchCommunities()),
+        retry(() => fetchSettlements()),
+        retry(() => fetchRiskColors()),
+        retry(() => fetchEditorial()),
+        retry(() => fetchTitle()),
       ]);
 
       title = tt.result;
@@ -83,33 +101,68 @@
 
       editorialData = editorial?.result;
     } catch (e) {
-      console.error(e);
       error = e;
     } finally {
       loading = false;
     }
-  });
+  }
+
+  $: if (!loading && !error && !MapContainerPromise) {
+    MapContainerPromise = import("@components/MapContainer.svelte").then(
+      (mod) => (MapContainer = mod.default)
+    );
+  }
+
+  onMount(loadEverything);
 </script>
 
 {#if loading}
   <div class="loader-container">
     <div class="loader"></div>
-    <p>Loading...</p>
+    <p>Loading…</p>
   </div>
 {:else if error}
-  <p class="error">Error loading: {error.message}</p>
+  <div class="error">
+    Error loading: {error.message}
+    <br />
+    <button
+      on:click={() => {
+        MapContainerPromise = null;
+        loadEverything();
+      }}>Reload</button
+    >
+  </div>
 {:else}
-  <MapContainer
-    bind:selectedItem
-    communities={filteredMapItems}
-    {settlements}
-    {riskColors}
-    {riskArray}
-    {editorialData}
-    {title}
-    on:dotClick={(e) => handleItemSelect(e.detail)}
-    on:search={(e) => handleSearch(e.detail)}
-  />
+  {#await MapContainerPromise}
+    <div class="loader-container">
+      <div class="loader"></div>
+      <p>Loading map…</p>
+    </div>
+  {:then MapContainerComponent}
+    <svelte:component
+      this={MapContainerComponent}
+      bind:selectedItem
+      communities={filteredMapItems}
+      {settlements}
+      {riskColors}
+      {riskArray}
+      {editorialData}
+      {title}
+      on:dotClick={(e) => handleItemSelect(e.detail)}
+      on:search={(e) => handleSearch(e.detail)}
+    />
+  {:catch e}
+    <div class="error">
+      Could not load map UI: {e.message}
+      <br />
+      <button
+        on:click={() => {
+          MapContainerPromise = null;
+          loadEverything();
+        }}>Reload</button
+      >
+    </div>
+  {/await}
 {/if}
 
 <style>
@@ -130,7 +183,6 @@
     animation: spin 1s linear infinite;
     margin-bottom: 10px;
   }
-
   @keyframes spin {
     0% {
       transform: rotate(0deg);
@@ -139,7 +191,6 @@
       transform: rotate(360deg);
     }
   }
-
   .error {
     color: #ff4d4f;
     padding: 10px;

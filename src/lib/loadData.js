@@ -194,3 +194,15 @@ export const fetchCustomPageByUrl = async (url) => {
   const data = await res.json();
   return data;
 };
+
+export const fetchColophonSEO = async () => {
+  const res = await fetch("/api/query", {
+    method: "post",
+    headers: { "content-type": "application/json" },
+    body: JSON.stringify({
+      query: "site.descriptionSEO, site.imageSEO.toFile().url",
+    }),
+  });
+  const data = await res.json();
+  return data;
+};

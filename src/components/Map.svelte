@@ -21,11 +21,11 @@
   let showCommunitiesLayers = false;
 
   let layersToggles = {
-    "settlements-circle": false,
+    "settlements-circle": true,
     "settlement-jurisdiction-areas": false,
-    "demolition-orders": true,
+    "demolition-orders": false,
     "jordanian-state-land": false,
-    "closed-military-zones": false,
+    "closed-military-zones": true,
   };
 
   function clearPills() {

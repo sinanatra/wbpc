@@ -9,6 +9,7 @@ html {
   --area-a: hsla(26, 100%, 57%, 0.28);
   --area-b: hsla(26, 100%, 57%, 0.58);
   --area-c: hsla(26, 24%, 52%, 0.62);
+  --damage: #464544;
 }
 html,
 body {
@@ -29,6 +30,12 @@ body {
 }
 .area-c {
   background-color: var(--area-c);
+  padding: 0 2px;
+  border-radius: 3px;
+}
+
+.damage {
+  background-color: var(--damage);
   padding: 0 2px;
   border-radius: 3px;
 }

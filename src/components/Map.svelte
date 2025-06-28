@@ -304,7 +304,13 @@
       //   layout: { visibility: "none" },
       // });
 
-      ["oslo", "damage", "area-a", "area-b", "area-c"].forEach((layerId) => {
+      [
+        "oslo",
+        "closed-military-zones",
+        "area-a",
+        "area-b",
+        "area-c",
+      ].forEach((layerId) => {
         if (map.getLayer(layerId)) {
           map.setLayoutProperty(layerId, "visibility", "none");
         }
@@ -341,15 +347,15 @@
       bearing: map.getBearing(),
     });
 
-    if (id === "damage") {
-      map.flyTo({
-        center: [35.22, 31.85],
-        zoom: 11,
-        duration: 700,
-        pitch: 0,
-        bearing: 0,
-      });
-    }
+    // if (id === "damage") {
+    //   map.flyTo({
+    //     center: [35.22, 31.85],
+    //     zoom: 11,
+    //     duration: 700,
+    //     pitch: 0,
+    //     bearing: 0,
+    //   });
+    // }
 
     clearLabel();
     clearPills();
@@ -358,7 +364,7 @@
       "settlements-circle",
       "communities-circle",
       "oslo",
-      "damage",
+      "closed-military-zones",
       "area-a",
       "area-b",
       "area-c",
@@ -370,8 +376,8 @@
       addAlertPills(communities);
     } else if (id === "settlements") {
       map.setLayoutProperty("settlements-circle", "visibility", "visible");
-    } else if (id === "damage") {
-      map.setLayoutProperty("demolition-orders", "visibility", "visible");
+    } else if (id === "closed-military-zones") {
+      map.setLayoutProperty("closed-military-zones", "visibility", "visible");
     } else if (id === "area-a") {
       map.setLayoutProperty("area-a", "visibility", "visible");
     } else if (id === "area-b") {

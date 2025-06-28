@@ -17,6 +17,16 @@
   let mapLoaded = false;
   let alertPillMarkers = [];
   let labelMarker = null;
+  let showSettlementsLegend = false;
+  let showCommunitiesLayers = false;
+
+  let layersToggles = {
+    "settlements-circle": false,
+    "settlement-jurisdiction-areas": false,
+    "demolition-orders": true,
+    "jordanian-state-land": false,
+    "closed-military-zones": false,
+  };
 
   function clearPills() {
     alertPillMarkers.forEach((m) => m.remove());
@@ -106,6 +116,10 @@
       new mapboxgl.NavigationControl({ showCompass: false }),
       "top-right"
     );
+    map.on("zoom", () => {
+      toggleZoomLayers();
+    });
+
     map.on("load", () => {
       mapLoaded = true;
 
@@ -215,9 +229,21 @@
             10000,
             20,
           ],
-          "circle-color": "rgba(0, 0, 0, .1)",
+          "circle-color": "rgba(0, 0, 0, .2)",
           "circle-stroke-color": "black",
-          "circle-stroke-width": 0.5,
+          "circle-stroke-width": [
+            "interpolate",
+            ["linear"],
+            ["zoom"],
+            8,
+            0.5,
+            11,
+            2,
+            14,
+            2,
+            18,
+            4,
+          ],
         },
         layout: { visibility: "none" },
       });
@@ -233,6 +259,50 @@
         filter: ["==", ["get", "type"], "community"],
         layout: { visibility: "none" },
       });
+
+      // map.addLayer({
+      //   id: "settlement-jurisdiction-areas",
+      //   type: "fill",
+      //   source: "settlement-jurisdiction-areas",
+      //   paint: {
+      //     "fill-color": "#c4c2bb",
+      //     "fill-opacity": 0.4,
+      //   },
+      //   layout: { visibility: "none" },
+      // });
+
+      // map.addLayer({
+      //   id: "demolition-orders",
+      //   type: "fill",
+      //   source: "demolition-orders",
+      //   paint: {
+      //     "fill-color": "#f59e42",
+      //     "fill-opacity": 0.5,
+      //   },
+      //   layout: { visibility: "none" },
+      // });
+
+      // map.addLayer({
+      //   id: "jordanian-state-land",
+      //   type: "fill",
+      //   source: "jordanian-state-land",
+      //   paint: {
+      //     "fill-color": "##c4c2bb",
+      //     "fill-opacity": 0.5,
+      //   },
+      //   layout: { visibility: "none" },
+      // });
+
+      // map.addLayer({
+      //   id: "closed-military-zones",
+      //   type: "fill",
+      //   source: "closed-military-zones",
+      //   paint: {
+      //     "fill-color": "#A78B5D",
+      //     "fill-opacity": 0.3,
+      //   },
+      //   layout: { visibility: "none" },
+      // });
 
       ["oslo", "damage", "area-a", "area-b", "area-c"].forEach((layerId) => {
         if (map.getLayer(layerId)) {
@@ -271,6 +341,16 @@
       bearing: map.getBearing(),
     });
 
+    if (id === "damage") {
+      map.flyTo({
+        center: [35.22, 31.85],
+        zoom: 11,
+        duration: 700,
+        pitch: 0,
+        bearing: 0,
+      });
+    }
+
     clearLabel();
     clearPills();
 
@@ -285,12 +365,13 @@
     ].forEach((l) => map.setLayoutProperty(l, "visibility", "none"));
 
     if (id === "communities") {
+      map.scrollZoom.enable();
       map.setLayoutProperty("communities-circle", "visibility", "visible");
       addAlertPills(communities);
     } else if (id === "settlements") {
       map.setLayoutProperty("settlements-circle", "visibility", "visible");
     } else if (id === "damage") {
-      map.setLayoutProperty("damage", "visibility", "visible");
+      map.setLayoutProperty("demolition-orders", "visibility", "visible");
     } else if (id === "area-a") {
       map.setLayoutProperty("area-a", "visibility", "visible");
     } else if (id === "area-b") {
@@ -299,6 +380,33 @@
     } else if (id === "area-c") {
       map.setLayoutProperty("area-c", "visibility", "visible");
     }
+  }
+
+  function toggleZoomLayers() {
+    const zoom = map.getZoom();
+    const shouldShow = zoom >= 11;
+    showSettlementsLegend = shouldShow;
+    showCommunitiesLayers = shouldShow;
+
+    // if (shouldShow) {
+    //   map.setLayoutProperty("settlements-circle", "visibility", "visible");
+    // } else {
+    //   map.setLayoutProperty("settlements-circle", "visibility", "none");
+    // }
+
+    [
+      "settlements-circle",
+      "settlement-jurisdiction-areas",
+      "demolition-orders",
+      "jordanian-state-land",
+      "closed-military-zones",
+    ].forEach((id) => {
+      map.setLayoutProperty(
+        id,
+        "visibility",
+        shouldShow && layersToggles[id] ? "visible" : "none"
+      );
+    });
   }
 
   export function zoomToCommunity(
@@ -323,9 +431,106 @@
   }
 
   onDestroy(() => map && map.remove());
+
+  function toggleLayer(layerId) {
+    layersToggles[layerId] = !layersToggles[layerId];
+    if (map && map.getLayer(layerId)) {
+      map.setLayoutProperty(
+        layerId,
+        "visibility",
+        showCommunitiesLayers && layersToggles[layerId] ? "visible" : "none"
+      );
+    }
+  }
 </script>
 
-<div bind:this={mapContainer} class="map-container"></div>
+<div bind:this={mapContainer} class="map-container">
+  {#if showCommunitiesLayers}
+    <div class="map-legend">
+      <div
+        class="legend-item"
+        on:click={() => toggleLayer("settlements-circle")}
+      >
+        <span
+          class="legend-swatch"
+          style="background: rgba(255, 255, 255, .2);border-radius:100%; border: 1.5px solid black; opacity:{layersToggles[
+            'settlements-circle'
+          ]
+            ? 1
+            : 0.4};"
+        ></span>
+        <span class:legend-off={!layersToggles["settlements-circle"]}
+          >Settlements</span
+        >
+      </div>
+      <div
+        class="legend-item"
+        on:click={() => toggleLayer("demolition-orders")}
+      >
+        <span
+          class="legend-swatch"
+          style="background:#000000; border-radius:100%; border:1.5px solid #000000; opacity:{layersToggles[
+            'demolition-orders'
+          ]
+            ? 1
+            : 0.4};"
+        ></span>
+        <span class:legend-off={!layersToggles["demolition-orders"]}
+          >Demolition Orders</span
+        >
+      </div>
+      <div
+        class="legend-item"
+        on:click={() => toggleLayer("settlement-jurisdiction-areas")}
+      >
+        <span
+          class="legend-swatch"
+          style="background:#c4c2bb; border:1.5px solid #c4c2bb; opacity:{layersToggles[
+            'settlement-jurisdiction-areas'
+          ]
+            ? 1
+            : 0.4};"
+        ></span>
+        <span class:legend-off={!layersToggles["settlement-jurisdiction-areas"]}
+          >Settlement Jurisdiction Areas</span
+        >
+      </div>
+
+      <div
+        class="legend-item"
+        on:click={() => toggleLayer("jordanian-state-land")}
+      >
+        <span
+          class="legend-swatch"
+          style="background:#b5b5b5; border:1.5px solid #b5b5b5; opacity:{layersToggles[
+            'jordanian-state-land'
+          ]
+            ? 1
+            : 0.4};"
+        ></span>
+        <span class:legend-off={!layersToggles["jordanian-state-land"]}
+          >Jordanian State Land</span
+        >
+      </div>
+      <div
+        class="legend-item"
+        on:click={() => toggleLayer("closed-military-zones")}
+      >
+        <span
+          class="legend-swatch"
+          style="background:#464544; border:1.5px solid #464544; opacity:{layersToggles[
+            'closed-military-zones'
+          ]
+            ? 1
+            : 0.4};"
+        ></span>
+        <span class:legend-off={!layersToggles["closed-military-zones"]}
+          >Closed Military Zones</span
+        >
+      </div>
+    </div>
+  {/if}
+</div>
 
 <style>
   @import "mapbox-gl/dist/mapbox-gl.css";
@@ -362,5 +567,36 @@
 
   :global(.label-line) {
     flex-shrink: 0;
+  }
+
+  .map-legend {
+    position: absolute;
+    bottom: 10px;
+    left: 10px;
+    padding: 4px 8px;
+    background: rgba(255, 255, 255, 0.97);
+    font-size: 0.97rem;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+    z-index: 20;
+  }
+
+  .legend-item {
+    display: flex;
+    align-items: center;
+    margin-bottom: 6px;
+    cursor: pointer;
+    user-select: none;
+  }
+  .legend-swatch {
+    width: 18px;
+    height: 18px;
+    display: inline-block;
+    margin-right: 8px;
+    border: 1.5px solid #222;
+    transition: opacity 0.15s;
+  }
+  .legend-off {
+    opacity: 0.5;
+    text-decoration: line-through;
   }
 </style>

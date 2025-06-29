@@ -22,7 +22,8 @@
 
   let layersToggles = {
     "settlements-circle": true,
-    "settlement-jurisdiction-areas": false,
+    outposts: true,
+    "settlement-jurisdiction-areas": true,
     "demolition-orders": false,
     "jordanian-state-land": false,
     "closed-military-zones": true,
@@ -260,61 +261,44 @@
         layout: { visibility: "none" },
       });
 
-      // map.addLayer({
-      //   id: "settlement-jurisdiction-areas",
-      //   type: "fill",
-      //   source: "settlement-jurisdiction-areas",
-      //   paint: {
-      //     "fill-color": "#c4c2bb",
-      //     "fill-opacity": 0.4,
-      //   },
-      //   layout: { visibility: "none" },
-      // });
+      if (map.getLayer("outposts")) {
+        map.setPaintProperty("outposts", "circle-stroke-color", "#000");
+        map.setPaintProperty("outposts", "circle-stroke-width", 2);
+      }
 
-      // map.addLayer({
-      //   id: "demolition-orders",
-      //   type: "fill",
-      //   source: "demolition-orders",
-      //   paint: {
-      //     "fill-color": "#f59e42",
-      //     "fill-opacity": 0.5,
-      //   },
-      //   layout: { visibility: "none" },
-      // });
+      if (map.getLayer("demolition-orders")) {
+        map.setPaintProperty("demolition-orders", "fill-opacity", 0.1);
+        map.setPaintProperty("demolition-orders", "circle-radius", 4);
+      }
 
-      // map.addLayer({
-      //   id: "jordanian-state-land",
-      //   type: "fill",
-      //   source: "jordanian-state-land",
-      //   paint: {
-      //     "fill-color": "##c4c2bb",
-      //     "fill-opacity": 0.5,
-      //   },
-      //   layout: { visibility: "none" },
-      // });
+      if (map.getLayer("jordanian-state-land")) {
+        map.setPaintProperty("jordanian-state-land", "fill-opacity", 0.1);
+      }
 
-      // map.addLayer({
-      //   id: "closed-military-zones",
-      //   type: "fill",
-      //   source: "closed-military-zones",
-      //   paint: {
-      //     "fill-color": "#A78B5D",
-      //     "fill-opacity": 0.3,
-      //   },
-      //   layout: { visibility: "none" },
-      // });
+      if (map.getLayer("settlement-jurisdiction-areas")) {
+        map.setPaintProperty(
+          "settlement-jurisdiction-areas",
+          "fill-opacity",
+          0.1
+        );
+      }
 
-      [
-        "oslo",
-        "closed-military-zones",
-        "area-a",
-        "area-b",
-        "area-c",
-      ].forEach((layerId) => {
-        if (map.getLayer(layerId)) {
-          map.setLayoutProperty(layerId, "visibility", "none");
+      if (map.getLayer("closed-military-zones")) {
+        map.setPaintProperty("closed-military-zones", "fill-opacity", 0.1);
+        map.setPaintProperty(
+          "closed-military-zones",
+          "fill-outline-color",
+          "#000"
+        );
+      }
+
+      ["oslo", "closed-military-zones", "area-a", "area-b", "area-c"].forEach(
+        (layerId) => {
+          if (map.getLayer(layerId)) {
+            map.setLayoutProperty(layerId, "visibility", "none");
+          }
         }
-      });
+      );
     });
   });
 
@@ -402,6 +386,7 @@
 
     [
       "settlements-circle",
+      "outposts",
       "settlement-jurisdiction-areas",
       "demolition-orders",
       "jordanian-state-land",
@@ -468,6 +453,17 @@
         <span class:legend-off={!layersToggles["settlements-circle"]}
           >Settlements</span
         >
+      </div>
+      <div class="legend-item" on:click={() => toggleLayer("outposts")}>
+        <span
+          class="legend-swatch"
+          style="background:#707070; border-radius:100%; border:1.5px solid #000; opacity:{layersToggles[
+            'outposts'
+          ]
+            ? 1
+            : 0.4};"
+        ></span>
+        <span class:legend-off={!layersToggles["outposts"]}>Outposts</span>
       </div>
       <div
         class="legend-item"

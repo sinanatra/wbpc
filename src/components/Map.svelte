@@ -361,6 +361,7 @@
     } else if (id === "settlements") {
       map.setLayoutProperty("settlements-circle", "visibility", "visible");
     } else if (id === "closed-military-zones") {
+      map.setLayoutProperty("area-c", "visibility", "visible");
       map.setLayoutProperty("closed-military-zones", "visibility", "visible");
     } else if (id === "area-a") {
       map.setLayoutProperty("area-a", "visibility", "visible");

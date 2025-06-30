@@ -43,7 +43,7 @@
         const rv = p.risks?.[0]?.riskvalue ?? p.risk ?? "default";
         color = riskColors[rv] || "#aaa";
       } else if (p.type === "settlement") {
-        color = "#C8C8C8";
+        color = "#555";
       } else if (p.type === "outpost") {
         color = "#fff";
       } else {
@@ -228,6 +228,8 @@
         type: "circle",
         source: "points",
         filter: ["==", ["get", "type"], "settlement"],
+        minzoom: 0,
+        maxzoom: 11,
         paint: {
           "circle-radius": [
             "interpolate",
@@ -260,6 +262,20 @@
       });
 
       map.addLayer({
+        id: "settlements-circle-fixed",
+        type: "circle",
+        source: "points",
+        filter: ["==", ["get", "type"], "settlement"],
+        minzoom: 11,
+        paint: {
+          "circle-radius": 6,
+          "circle-color": "rgba(0, 0, 0, .2)",
+          "circle-stroke-color": "black",
+          "circle-stroke-width": 1,
+        },
+      });
+
+      map.addLayer({
         id: "communities-circle",
         type: "circle",
         source: "points",
@@ -271,7 +287,7 @@
         layout: { visibility: "none" },
       });
 
-      map.on("click", "settlements-circle", (e) => {
+      map.on("click", "settlements-circle-fixed", (e) => {
         if (!e.features?.length) return;
         const feat = e.features[0];
         dispatch("dotClick", feat.properties);
@@ -282,10 +298,10 @@
           duration: 1000,
         });
       });
-      map.on("mouseenter", "settlements-circle", () => {
+      map.on("mouseenter", "settlements-circle-fixed", () => {
         map.getCanvas().style.cursor = "pointer";
       });
-      map.on("mouseleave", "settlements-circle", () => {
+      map.on("mouseleave", "settlements-circle-fixed", () => {
         map.getCanvas().style.cursor = "";
       });
 
@@ -403,6 +419,8 @@
 
     [
       "settlements-circle",
+      "settlements-circle-fixed",
+
       "communities-circle",
       "oslo",
       "closed-military-zones",
@@ -448,6 +466,8 @@
 
     [
       "settlements-circle",
+      "settlements-circle-fixed",
+
       "outposts",
       "settlement-jurisdiction-areas",
       "demolition-orders",
@@ -502,17 +522,17 @@
     <div class="map-legend">
       <div
         class="legend-item"
-        on:click={() => toggleLayer("settlements-circle")}
+        on:click={() => toggleLayer("settlements-circle-fixed")}
       >
         <span
           class="legend-swatch"
           style="background: rgba(0, 0, 0, .2);border-radius:100%; border: 1.5px solid black; opacity:{layersToggles[
-            'settlements-circle'
+            'settlements-circle-fixed'
           ]
             ? 1
             : 0.4};"
         ></span>
-        <span class:legend-off={!layersToggles["settlements-circle"]}
+        <span class:legend-off={!layersToggles["settlements-circle-fixed"]}
           >Settlements</span
         >
       </div>

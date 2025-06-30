@@ -264,11 +264,12 @@
       if (map.getLayer("outposts")) {
         map.setPaintProperty("outposts", "circle-stroke-color", "#000");
         map.setPaintProperty("outposts", "circle-stroke-width", 2);
+        map.setPaintProperty("demolition-orders", "circle-radius", 2);
       }
 
       if (map.getLayer("demolition-orders")) {
         map.setPaintProperty("demolition-orders", "fill-opacity", 0.1);
-        map.setPaintProperty("demolition-orders", "circle-radius", 4);
+        map.setPaintProperty("demolition-orders", "circle-radius", 2);
       }
 
       if (map.getLayer("jordanian-state-land")) {
@@ -445,7 +446,7 @@
       >
         <span
           class="legend-swatch"
-          style="background: rgba(255, 255, 255, .2);border-radius:100%; border: 1.5px solid black; opacity:{layersToggles[
+          style="background: rgba(0, 0, 0, .2);border-radius:100%; border: 1.5px solid black; opacity:{layersToggles[
             'settlements-circle'
           ]
             ? 1
@@ -458,7 +459,7 @@
       <div class="legend-item" on:click={() => toggleLayer("outposts")}>
         <span
           class="legend-swatch"
-          style="background:#707070; border-radius:100%; border:1.5px solid #000; opacity:{layersToggles[
+          style="background:#fff; border-radius:100%; border:1.5px solid #000; opacity:{layersToggles[
             'outposts'
           ]
             ? 1

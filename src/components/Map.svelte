@@ -369,6 +369,10 @@
     } else if (id === "area-b") {
       map.setLayoutProperty("area-a", "visibility", "visible");
       map.setLayoutProperty("area-b", "visibility", "visible");
+    } else if (id === "all-areas") {
+      map.setLayoutProperty("area-a", "visibility", "visible");
+      map.setLayoutProperty("area-b", "visibility", "visible");
+      map.setLayoutProperty("area-c", "visibility", "visible");
     } else if (id === "area-c") {
       map.setLayoutProperty("area-c", "visibility", "visible");
     }

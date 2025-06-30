@@ -38,17 +38,27 @@
     labelMarker?.remove();
     setTimeout(() => {
       const p = feature.properties;
-      const rv = p.risks?.[0]?.riskvalue ?? p.risk ?? "default";
-      const color = riskColors[rv] || "#aaa";
+      let color;
+      if (p.type === "community") {
+        const rv = p.risks?.[0]?.riskvalue ?? p.risk ?? "default";
+        color = riskColors[rv] || "#aaa";
+      } else if (p.type === "settlement") {
+        color = "#C8C8C8";
+      } else if (p.type === "outpost") {
+        color = "#fff";
+      } else {
+        color = "#aaa";
+      }
+
       const el = document.createElement("div");
       el.className = "label-container";
       el.innerHTML = `
-        <svg class="label-line" width="50" height="50" viewBox="0 0 50 50">
-          <line x1="0" y1="50" x2="50" y2="0" stroke="${color}" stroke-width="2"/>
-        </svg>
-        <div class="label-box" style="background:${color};color:black">
-          ${p.title}
-        </div>`;
+      <svg class="label-line" width="50" height="50" viewBox="0 0 50 50">
+        <line x1="0" y1="50" x2="50" y2="0" stroke="${color}" stroke-width="2"/>
+      </svg>
+      <div class="label-box" style="background:${color};color:black">
+        ${p.title}
+      </div>`;
       labelMarker = new mapboxgl.Marker({ element: el, anchor: "bottom-left" })
         .setLngLat(feature.geometry.coordinates)
         .addTo(map);
@@ -259,6 +269,52 @@
         },
         filter: ["==", ["get", "type"], "community"],
         layout: { visibility: "none" },
+      });
+
+      map.on("click", "settlements-circle", (e) => {
+        if (!e.features?.length) return;
+        const feat = e.features[0];
+        dispatch("dotClick", feat.properties);
+        showLabel(feat);
+        map.flyTo({
+          center: feat.geometry.coordinates,
+          zoom: targetZoom,
+          duration: 1000,
+        });
+      });
+      map.on("mouseenter", "settlements-circle", () => {
+        map.getCanvas().style.cursor = "pointer";
+      });
+      map.on("mouseleave", "settlements-circle", () => {
+        map.getCanvas().style.cursor = "";
+      });
+
+      map.on("click", "outposts", (e) => {
+        if (!e.features?.length) return;
+        const feat = e.features[0];
+
+        feat.properties.title =
+          feat.properties["Name_Engli"] ||
+          feat.properties["שם"] ||
+          feat.properties["ערבית"] ||
+          "Unknown";
+
+        feat.properties.type = "outpost";
+
+        dispatch("dotClick", feat.properties);
+        showLabel(feat);
+        map.flyTo({
+          center: feat.geometry.coordinates,
+          zoom: targetZoom,
+          duration: 1000,
+        });
+      });
+
+      map.on("mouseenter", "outposts", () => {
+        map.getCanvas().style.cursor = "pointer";
+      });
+      map.on("mouseleave", "outposts", () => {
+        map.getCanvas().style.cursor = "";
       });
 
       if (map.getLayer("outposts")) {

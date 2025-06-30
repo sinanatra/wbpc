@@ -122,7 +122,7 @@
     }
     .map-area {
       flex: none;
-      width: 80vw;
+      width: 100vw;
       min-width: 50vw;
       height: 100vh;
     }

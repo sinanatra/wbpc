@@ -264,7 +264,7 @@
       if (map.getLayer("outposts")) {
         map.setPaintProperty("outposts", "circle-stroke-color", "#000");
         map.setPaintProperty("outposts", "circle-stroke-width", 2);
-        map.setPaintProperty("demolition-orders", "circle-radius", 2);
+        map.setPaintProperty("outposts", "circle-radius", 2);
       }
 
       if (map.getLayer("demolition-orders")) {

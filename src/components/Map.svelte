@@ -11,7 +11,7 @@
 
   const STYLE_URL = "mapbox://styles/sinanatra/cm7yteg6x00ty01sc85aqduv2";
   const dispatch = createEventDispatcher();
-  let targetZoom = 15;
+  let targetZoom = 12;
 
   let map, mapContainer;
   let mapLoaded = false;

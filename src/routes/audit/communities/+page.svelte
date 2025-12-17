@@ -49,10 +49,6 @@
 </script>
 
 <section class="audit">
-  <header class="header">
-    <h1>Projects completeness</h1>
-  </header>
-
   {#if loading}
     <p>Loading…</p>
   {:else if error}

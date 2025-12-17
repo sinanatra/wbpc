@@ -206,3 +206,42 @@ export const fetchColophonSEO = async () => {
   const data = await res.json();
   return data;
 };
+
+export const fetchCommunitiesAudit = async () => {
+  const res = await fetch("/api/query", {
+    method: "post",
+    headers: { "content-type": "application/json" },
+    body: JSON.stringify({
+      query: "site.children.template('community').filterBy('status', 'listed')",
+      select: {
+        id: "page.id",
+        title: "page.title",
+        info: "page.info",
+        text: "page.text",
+        imagesCount: "page.images.count()",
+      },
+    }),
+  });
+  const data = await res.json();
+  return data;
+};
+
+export const fetchSettlementsAudit = async () => {
+  const res = await fetch("/api/query", {
+    method: "post",
+    headers: { "content-type": "application/json" },
+    body: JSON.stringify({
+      query:
+        "site.children.template('settlement').filterBy('status', 'listed')",
+      select: {
+        id: "page.id",
+        title: "page.title",
+        info: "page.info",
+        text: "page.text",
+        imagesCount: "page.images.count()",
+      },
+    }),
+  });
+  const data = await res.json();
+  return data;
+};

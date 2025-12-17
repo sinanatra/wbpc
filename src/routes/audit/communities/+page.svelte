@@ -49,6 +49,7 @@
 </script>
 
 <section class="audit">
+  <h1>Community Info Sheet </h1>
   {#if loading}
     <p>Loading…</p>
   {:else if error}

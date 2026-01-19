@@ -1,36 +1,36 @@
 <script>
-  import { page } from '$app/stores';
+  import { page } from "$app/stores";
 </script>
 
 <header>
   <h1><a href="/">forcible transfer watch</a></h1>
-  <div>
-    <p>A project by the West Bank Protection Consortium</p>
-    <p>
-      <a href="/about" class:active={$page.route.id === '/about'}>About</a> | 
-      <a href="/methodology" class:active={$page.route.id === '/methodology'}>Methodology</a>
-    </p>
-  </div>
+  <nav>
+    <a href="/about" class:active={$page.route.id === "/about"}>About</a>
+    <br>
+    <a href="/methodology" class:active={$page.route.id === "/methodology"}
+      >Methodology</a
+    >
+  </nav>
 </header>
 
 <style>
   header {
     padding: 5px;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    /* border-bottom: 1px solid #ddd; */
+  }
+
+  nav {
+    font-size: 0.9em;
+    display: block;
     text-align: right;
-  }
-
-  header div {
-    font-size: 0.8em;
-  }
-
-  header div p:last-child {
-    font-size: 1.5em;
-    margin-top: 0.5em;
-    line-height: 1.3;
   }
 
   a {
     color: var(--color-primary);
+    text-decoration: none;
   }
 
   a.active {
@@ -38,17 +38,15 @@
     border-bottom: 1px solid var(--color-primary);
     padding-bottom: 1px;
   }
-  
+
   h1 {
     font-size: 2em;
     margin: 0;
     padding: 0;
     color: var(--color-primary);
     text-transform: capitalize;
-  }
-
-  a {
-    text-decoration: none;
+    word-spacing: 999rem;
+    line-height: 1.2;
   }
 
   h1 a {
@@ -58,11 +56,5 @@
 
   h1 a:hover {
     opacity: 0.8;
-  }
-
-  p {
-    margin: 0;
-    padding: 0;
-    font-size: 0.875em;
   }
 </style>

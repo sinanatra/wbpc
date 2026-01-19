@@ -113,8 +113,8 @@
 
     // Bounds for West Bank area (prevent panning outside)
     const maxBounds = [
-      [34.2, 31.4],   // Southwest corner
-      [35.8, 32.6]    // Northeast corner
+      [34.2, 31.4], // Southwest corner
+      [35.8, 32.6], // Northeast corner
     ];
 
     map = new mapboxgl.Map({
@@ -133,7 +133,7 @@
 
     map.addControl(
       new mapboxgl.NavigationControl({ showCompass: false }),
-      "top-right"
+      "top-right",
     );
     map.on("zoom", () => {
       toggleZoomLayers();
@@ -146,7 +146,7 @@
       addStaticLabel(
         "Gaza Strip",
         [34.55717960887084, 31.53758461986557],
-        "#ccc"
+        "#ccc",
       );
 
       map.addSource("points", {
@@ -159,7 +159,7 @@
                 (c.risks || [])
                   .slice()
                   .sort(
-                    (a, b) => new Date(b.riskdate) - new Date(a.riskdate)
+                    (a, b) => new Date(b.riskdate) - new Date(a.riskdate),
                   )[0]?.riskvalue || "default";
 
               return {
@@ -360,7 +360,7 @@
         map.setPaintProperty(
           "settlement-jurisdiction-areas",
           "fill-opacity",
-          0.1
+          0.1,
         );
       }
 
@@ -369,7 +369,7 @@
         map.setPaintProperty(
           "closed-military-zones",
           "fill-outline-color",
-          "#000"
+          "#000",
         );
       }
 
@@ -378,7 +378,7 @@
           if (map.getLayer(layerId)) {
             map.setLayoutProperty(layerId, "visibility", "none");
           }
-        }
+        },
       );
     });
   });
@@ -405,7 +405,7 @@
 
     const defaultCenter = [35.3182, 31.9613];
     const defaultZoom = 8;
-    
+
     const communitiesCenter = [35.23, 31.95];
     const communitiesZoom = 8.5;
 
@@ -487,7 +487,7 @@
       map.setLayoutProperty(
         id,
         "visibility",
-        shouldShow && layersToggles[id] ? "visible" : "none"
+        shouldShow && layersToggles[id] ? "visible" : "none",
       );
     });
   }
@@ -495,7 +495,7 @@
   export function zoomToCommunity(
     comm,
     zoomLevel = targetZoom,
-    duration = 1000
+    duration = 1000,
   ) {
     const { lon, lat } = comm.coordinates || {};
     if (lon == null || lat == null) return;
@@ -521,7 +521,7 @@
       map.setLayoutProperty(
         layerId,
         "visibility",
-        showCommunitiesLayers && layersToggles[layerId] ? "visible" : "none"
+        showCommunitiesLayers && layersToggles[layerId] ? "visible" : "none",
       );
     }
   }
@@ -530,21 +530,16 @@
 <div bind:this={mapContainer} class="map-container">
   {#if showCommunitiesLayers}
     <div class="map-legend">
-      <div
-        class="legend-item"
-        on:click={() => toggleLayer("settlements-circle-fixed")}
-      >
-        <span
-          class="legend-swatch"
-          style="background: rgba(0, 0, 0, .2);border-radius:100%; border: 1.5px solid black; opacity:{layersToggles[
-            'settlements-circle-fixed'
-          ]
-            ? 1
-            : 0.4};"
-        ></span>
-        <span class:legend-off={!layersToggles["settlements-circle-fixed"]}
-          >Settlements</span
-        >
+      <div class="legend-item">
+        <div class="legend-dots">
+          {#each Object.entries(riskColors).slice(0, 3) as [risk, color]}
+            <span
+              class="legend-dot"
+              style="background: {color}; border: .5px solid #000;"
+            ></span>
+          {/each}
+        </div>
+        <span>Communities</span>
       </div>
       <div class="legend-item" on:click={() => toggleLayer("outposts")}>
         <span
@@ -556,22 +551,6 @@
             : 0.4};"
         ></span>
         <span class:legend-off={!layersToggles["outposts"]}>Outposts</span>
-      </div>
-      <div
-        class="legend-item"
-        on:click={() => toggleLayer("demolition-orders")}
-      >
-        <span
-          class="legend-swatch"
-          style="background:#000000; border-radius:100%; border:1.5px solid #000000; opacity:{layersToggles[
-            'demolition-orders'
-          ]
-            ? 1
-            : 0.4};"
-        ></span>
-        <span class:legend-off={!layersToggles["demolition-orders"]}
-          >Demolition Orders</span
-        >
       </div>
       <div
         class="legend-item"
@@ -589,6 +568,54 @@
           >Settlement Jurisdiction Areas</span
         >
       </div>
+      <div
+        class="legend-item"
+        on:click={() => toggleLayer("closed-military-zones")}
+      >
+        <span
+          class="legend-swatch"
+          style="background:#464544; border:1.5px solid #464544; opacity:{layersToggles[
+            'closed-military-zones'
+          ]
+            ? 1
+            : 0.4};"
+        ></span>
+        <span class:legend-off={!layersToggles["closed-military-zones"]}
+          >Closed Military Zones</span
+        >
+      </div>
+      <div
+        class="legend-item"
+        on:click={() => toggleLayer("settlements-circle-fixed")}
+      >
+        <span
+          class="legend-swatch"
+          style="background: rgba(0, 0, 0, .2);border-radius:100%; border: 1.5px solid black; opacity:{layersToggles[
+            'settlements-circle-fixed'
+          ]
+            ? 1
+            : 0.4};"
+        ></span>
+        <span class:legend-off={!layersToggles["settlements-circle-fixed"]}
+          >Settlements</span
+        >
+      </div>
+      <div
+        class="legend-item"
+        on:click={() => toggleLayer("demolition-orders")}
+      >
+        <span
+          class="legend-swatch"
+          style="background:#000000; border-radius:100%; border:1.5px solid #000000; opacity:{layersToggles[
+            'demolition-orders'
+          ]
+            ? 1
+            : 0.4};"
+        ></span>
+        <span class:legend-off={!layersToggles["demolition-orders"]}
+          >Demolition Orders</span
+        >
+      </div>
 
       <div
         class="legend-item"
@@ -604,22 +631,6 @@
         ></span>
         <span class:legend-off={!layersToggles["jordanian-state-land"]}
           >Jordanian State Land</span
-        >
-      </div>
-      <div
-        class="legend-item"
-        on:click={() => toggleLayer("closed-military-zones")}
-      >
-        <span
-          class="legend-swatch"
-          style="background:#464544; border:1.5px solid #464544; opacity:{layersToggles[
-            'closed-military-zones'
-          ]
-            ? 1
-            : 0.4};"
-        ></span>
-        <span class:legend-off={!layersToggles["closed-military-zones"]}
-          >Closed Military Zones</span
         >
       </div>
     </div>
@@ -688,6 +699,17 @@
     margin-right: 8px;
     border: 1.5px solid #222;
     transition: opacity 0.15s;
+  }
+  .legend-dots {
+    display: flex;
+    margin-right: 8px;
+  }
+  .legend-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    display: inline-block;
+    margin-right: -5px;
   }
   .legend-off {
     opacity: 0.5;

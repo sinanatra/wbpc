@@ -1,53 +1,16 @@
 <script>
-  import { marked } from "marked";
-  import { fetchCustomPageByUrl } from "$lib/loadData.js";
-
-  export let title;
-
-  let showAbout = false;
-  let about = null;
-  let loading = false;
-  let error = null;
-
-  async function loadAbout() {
-    if (about || loading) {
-      showAbout = !showAbout;
-      return;
-    }
-
-    loading = true;
-    try {
-      const response = await fetchCustomPageByUrl("about");
-      about = response.result;
-      console.log("About page loaded:", about);
-      showAbout = true;
-    } catch (err) {
-      error = "Failed to load About page.";
-      console.error(err);
-    } finally {
-      loading = false;
-    }
-  }
+  import { page } from '$app/stores';
 </script>
 
 <header>
-  <h1>{title}</h1>
+  <h1><a href="/">forcible transfer watch</a></h1>
   <div>
     <p>A project by the West Bank Protection Consortium</p>
-    <p><a href="#about" on:click|preventDefault={loadAbout}>About</a></p>
+    <p>
+      <a href="/about" class:active={$page.route.id === '/about'}>About</a> | 
+      <a href="/methodology" class:active={$page.route.id === '/methodology'}>Methodology</a>
+    </p>
   </div>
-
-  {#if showAbout}
-    <div class="about-content">
-      {#if loading}
-        <p>Loading…</p>
-      {:else if error}
-        <p>{error}</p>
-      {:else}
-        <div>{@html marked(about.content.text)}</div>
-      {/if}
-    </div>
-  {/if}
 </header>
 
 <style>
@@ -60,8 +23,20 @@
     font-size: 0.8em;
   }
 
+  header div p:last-child {
+    font-size: 1.5em;
+    margin-top: 0.5em;
+    line-height: 1.3;
+  }
+
   a {
     color: var(--color-primary);
+  }
+
+  a.active {
+    font-weight: bold;
+    border-bottom: 1px solid var(--color-primary);
+    padding-bottom: 1px;
   }
   
   h1 {
@@ -72,17 +47,22 @@
     text-transform: capitalize;
   }
 
+  a {
+    text-decoration: none;
+  }
+
+  h1 a {
+    text-decoration: none;
+    color: inherit;
+  }
+
+  h1 a:hover {
+    opacity: 0.8;
+  }
+
   p {
     margin: 0;
     padding: 0;
     font-size: 0.875em;
-  }
-
-  .about-content {
-    font-size: 1rem;
-    margin-top: 1em;
-    text-align: left;
-    padding: 1em;
-    border-bottom: 1px solid #ccc;
   }
 </style>

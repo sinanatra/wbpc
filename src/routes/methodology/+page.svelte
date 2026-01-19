@@ -58,7 +58,7 @@
     font-size: 1.3rem;
     line-height: 1.6;
     padding: 16px;
-    padding-top: 3em;
+    padding-top: 1em;
     max-width: 960px;
   }
 

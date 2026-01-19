@@ -1,5 +1,5 @@
 <script>
-  import { onDestroy, createEventDispatcher } from "svelte";
+  import { onDestroy, onMount, createEventDispatcher } from "svelte";
   import { marked } from "marked";
 
   export let slides = [];
@@ -34,6 +34,24 @@
       },
     };
   }
+
+  onMount(() => {
+    // Check which slide is visible on initial load
+    setTimeout(() => {
+      for (let i = 0; i < slideRefs.length; i++) {
+        const rect = slideRefs[i].getBoundingClientRect();
+        const windowHeight = window.innerHeight;
+        // Check if slide is in viewport (center 50%)
+        if (rect.top < windowHeight / 2 && rect.bottom > windowHeight / 2) {
+          if (activeIndex !== i) {
+            activeIndex = i;
+            dispatch("slideEnter", { index: i, slide: slides[i] });
+          }
+          break;
+        }
+      }
+    }, 0);
+  });
 
   onDestroy(() => observers.forEach((o) => o.disconnect()));
 

@@ -88,7 +88,7 @@
           map.flyTo({
             center: [item.coordinates.lon, item.coordinates.lat],
             zoom: targetZoom,
-            duration: 2000,
+            duration: 3000,
           });
         }, 50);
       });
@@ -108,15 +108,23 @@
     const isMobile = window.matchMedia("(max-width: 767px)").matches;
 
     // const initialPitch = isMobile ? 50 : 0;
-    const initialZoom = isMobile ? 8 : 8;
+    const minZoomLevel = 8;
+    const initialZoom = minZoomLevel;
+
+    // Bounds for West Bank area (prevent panning outside)
+    const maxBounds = [
+      [34.2, 31.4],   // Southwest corner
+      [35.8, 32.6]    // Northeast corner
+    ];
 
     map = new mapboxgl.Map({
       container: mapContainer,
       style: STYLE_URL,
       center: [35.3182, 31.8613],
       zoom: initialZoom,
-      minZoom: initialZoom,
+      minZoom: minZoomLevel,
       maxZoom: 18,
+      maxBounds: maxBounds,
       // pitch: initialPitch,
       bearing: 0,
       scrollZoom: false,
@@ -213,7 +221,7 @@
         map.flyTo({
           center: feat.geometry.coordinates,
           zoom: targetZoom,
-          duration: 1000,
+          duration: 1500,
         });
       });
       map.on("mouseenter", "communities-circle", () => {
@@ -295,7 +303,7 @@
         map.flyTo({
           center: feat.geometry.coordinates,
           zoom: targetZoom,
-          duration: 1000,
+          duration: 1500,
         });
       });
       map.on("mouseenter", "settlements-circle-fixed", () => {
@@ -322,7 +330,7 @@
         map.flyTo({
           center: feat.geometry.coordinates,
           zoom: targetZoom,
-          duration: 1000,
+          duration: 1500,
         });
       });
 
@@ -395,24 +403,27 @@
     if (!map?.isStyleLoaded()) return;
     map.resize();
 
-    map.flyTo({
-      center: [35.3182, 31.9613],
-      zoom: 8.5,
-      duration: 500,
+    const defaultCenter = [35.3182, 31.9613];
+    const defaultZoom = 8;
+    
+    const communitiesCenter = [35.23, 31.95];
+    const communitiesZoom = 8.5;
 
+    let center = defaultCenter;
+    let zoom = defaultZoom;
+
+    if (id === "communities") {
+      center = communitiesCenter;
+      zoom = communitiesZoom;
+    }
+
+    map.flyTo({
+      center: center,
+      zoom: zoom,
+      duration: 1000,
       pitch: map.getPitch(),
       bearing: map.getBearing(),
     });
-
-    // if (id === "damage") {
-    //   map.flyTo({
-    //     center: [35.22, 31.85],
-    //     zoom: 11,
-    //     duration: 700,
-    //     pitch: 0,
-    //     bearing: 0,
-    //   });
-    // }
 
     clearLabel();
     clearPills();
@@ -420,7 +431,6 @@
     [
       "settlements-circle",
       "settlements-circle-fixed",
-
       "communities-circle",
       "oslo",
       "closed-military-zones",

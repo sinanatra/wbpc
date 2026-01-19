@@ -219,6 +219,8 @@ export const fetchCommunitiesAudit = async () => {
         info: "page.info",
         text: "page.text",
         imagesCount: "page.images.count()",
+        lastAlertText:
+          "page.alerts.toStructure().sortBy('alertDate', 'desc').first() ? page.alerts.toStructure().sortBy('alertDate', 'desc').first().alertDescription : ''",
       },
     }),
   });

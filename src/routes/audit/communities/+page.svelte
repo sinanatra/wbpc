@@ -8,6 +8,7 @@
 
   let missingText = false;
   let missingImages = false;
+  let missingAlerts = false;
 
   const hasText = (value) =>
     typeof value === "string" ? value.trim().length > 0 : false;
@@ -21,6 +22,7 @@
       hasText: hasText(text),
       hasImages: imagesCount > 0,
       imagesCount,
+      hasAlerts: hasText(project.lastAlertText),
     };
   };
 
@@ -41,9 +43,13 @@
   });
 
   $: filtered = projects.filter((p) => {
+    if (missingText && missingImages && missingAlerts) return !p.hasText && !p.hasImages && !p.hasAlerts;
     if (missingText && missingImages) return !p.hasText && !p.hasImages;
+    if (missingText && missingAlerts) return !p.hasText && !p.hasAlerts;
+    if (missingImages && missingAlerts) return !p.hasImages && !p.hasAlerts;
     if (missingText) return !p.hasText;
     if (missingImages) return !p.hasImages;
+    if (missingAlerts) return !p.hasAlerts;
     return true;
   });
 </script>
@@ -64,6 +70,10 @@
         <input type="checkbox" bind:checked={missingImages} />
         Missing images
       </label>
+      <label>
+        <input type="checkbox" bind:checked={missingAlerts} />
+        Missing alerts
+      </label>
       <span class="count">{filtered.length} / {projects.length}</span>
     </div>
 
@@ -73,7 +83,8 @@
           <span class="title">{p.title}</span>
           <span class="meta">
             {p.hasText ? "text" : "no text"},
-            {p.hasImages ? `images (${p.imagesCount})` : "no images"}
+            {p.hasImages ? `images (${p.imagesCount})` : "no images"},
+            {p.hasAlerts ? "alerts" : "no alerts"}
           </span>
         </li>
       {/each}

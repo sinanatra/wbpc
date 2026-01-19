@@ -3,7 +3,7 @@
 </script>
 
 <header>
-  <h1><a href="/">forcible transfer watch</a></h1>
+  <h1><a href="/"><img src="/logo.svg" alt="Forcible Transfer Watch" class="logo" /></a></h1>
   <nav>
     <a href="/about" class:active={$page.route.id === "/about"}>About</a>
     <br>
@@ -45,7 +45,6 @@
     padding: 0;
     color: var(--color-primary);
     text-transform: capitalize;
-    word-spacing: 999rem;
     line-height: 1.2;
   }
 
@@ -56,5 +55,11 @@
 
   h1 a:hover {
     opacity: 0.8;
+  }
+
+  .logo {
+    height: 60px;
+    width: auto;
+    display: block;
   }
 </style>

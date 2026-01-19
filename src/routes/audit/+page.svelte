@@ -1,6 +1,6 @@
 <section class="audit">
   <p>
-    <a href="/audit/projects">Communities completeness</a>
+    <a href="/audit/communities">Communities completeness</a>
   </p>
 </section>
 

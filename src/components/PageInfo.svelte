@@ -101,7 +101,6 @@
     border-radius: 4px;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
     font-size: 1em;
-    margin-top: 100px;
   }
 
   h3 {

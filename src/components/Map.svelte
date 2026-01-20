@@ -143,11 +143,6 @@
       mapLoaded = true;
 
       addStaticLabel("Occupied West Bank", [35.4558374411592, 32.404], "#ccc");
-      addStaticLabel(
-        "Gaza Strip",
-        [34.55717960887084, 31.53758461986557],
-        "#ccc",
-      );
 
       map.addSource("points", {
         type: "geojson",

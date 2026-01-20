@@ -29,6 +29,7 @@
     row-gap: 5px;
     margin-top: 50px;
     margin-bottom: 40px;
+    max-height: 120px;
   }
 
   .risk-row {

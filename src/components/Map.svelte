@@ -485,7 +485,6 @@
       "settlement-jurisdiction-areas",
       "demolition-orders",
       "jordanian-state-land",
-      "closed-military-zones",
     ].forEach((id) => {
       map.setLayoutProperty(
         id,
@@ -504,6 +503,18 @@
           : "none",
       );
     });
+
+    // Keep closed-military-zones visible when zoom >= 11 or when closed-military-zones slide is active
+    if (map.getLayer("closed-military-zones")) {
+      map.setLayoutProperty(
+        "closed-military-zones",
+        "visibility",
+        (shouldShow || activeSlide === "closed-military-zones") &&
+          layersToggles["closed-military-zones"]
+          ? "visible"
+          : "none",
+      );
+    }
   }
 
   export function zoomToCommunity(

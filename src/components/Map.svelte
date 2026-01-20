@@ -107,11 +107,12 @@
   }
 
   let center = [35.23, 31.95];
+  let isMobile = false;
 
   onMount(() => {
-    const isMobile = window.matchMedia("(max-width: 767px)").matches;
+    isMobile = window.matchMedia("(max-width: 767px)").matches;
 
-    // const initialPitch = isMobile ? 50 : 0;
+    const initialPitch = isMobile ? 50 : 0;
     const minZoomLevel = 8;
     const initialZoom = 8;
 
@@ -129,7 +130,7 @@
       minZoom: minZoomLevel,
       maxZoom: 18,
       // maxBounds: maxBounds,
-      // pitch: initialPitch,
+      pitch: initialPitch,
       bearing: 0,
       scrollZoom: false,
       dragPan: isMobile ? false : true,
@@ -146,7 +147,13 @@
     map.on("load", () => {
       mapLoaded = true;
 
-      addStaticLabel("Occupied West Bank", [35.4558374411592, 32.404], "#ccc");
+      addStaticLabel(
+        "Occupied West Bank",
+        isMobile
+          ? [34.96829552848957, 31.82178927355715]
+          : [35.4558374411592, 32.404],
+        "#ccc",
+      );
 
       map.addSource("points", {
         type: "geojson",
@@ -741,5 +748,35 @@
   .legend-off {
     opacity: 0.5;
     text-decoration: line-through;
+  }
+
+  @media screen and (max-width: 767px) {
+    .map-legend {
+      padding: 1px 2px;
+      font-size: 0.5rem;
+      bottom: 4px;
+      left: unset;
+      right: 4px;
+      max-height: 40vh;
+      overflow-y: auto;
+    }
+
+    .legend-item {
+      margin-bottom: 1px;
+      padding: 0.5px 0;
+      line-height: 1;
+    }
+
+    .legend-swatch {
+      width: 8px;
+      height: 8px;
+      margin-right: 2px;
+    }
+
+    .legend-dot {
+      width: 4px;
+      height: 4px;
+      margin-right: -1px;
+    }
   }
 </style>

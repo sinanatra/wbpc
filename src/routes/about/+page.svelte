@@ -67,4 +67,34 @@
   .text-content :global(h3) {
     color: var(--color-primary);
   }
+
+  @media screen and (max-width: 767px) {
+    .layout-container {
+      flex-direction: column;
+      height: auto;
+      width: 100%;
+    }
+
+    .left-column {
+      flex: 0 0 auto;
+      max-width: 100%;
+      border-right: none;
+      border-bottom: 1px solid var(--color-tertiary);
+      height: auto;
+      order: 1;
+    }
+
+    .right-column {
+      flex: 1;
+      overflow: visible;
+      order: 2;
+    }
+
+    .text-content {
+      flex: none;
+      overflow: visible;
+      padding: 16px;
+      padding-top: 1em;
+    }
+  }
 </style>

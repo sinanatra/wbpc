@@ -11,6 +11,7 @@
 
   function intersectAction(node, index) {
     slideRefs[index] = node;
+    const rootMargin = window.innerHeight > 768 ? "-50% 0px -50% 0px" : "-25% 0px -25% 0px";
     const obs = new IntersectionObserver(
       (entries) => {
         for (const entry of entries) {
@@ -22,7 +23,7 @@
       },
       {
         root: null,
-        rootMargin: "-50% 0px -50% 0px",
+        rootMargin: rootMargin,
         threshold: 0,
       }
     );
@@ -63,9 +64,18 @@
   }
 
   function goToCommunities() {
-    const element = document.getElementById("risk-legend");
-    if (element) {
-      element.scrollIntoView({ behavior: "instant", block: "start" });
+    // Find the communities slide
+    const communitiesIndex = slides.findIndex(
+      (slide) => slide.id === "communities"
+    );
+    if (communitiesIndex !== -1) {
+      scrollToIndex(communitiesIndex, "instant", "start");
+    } else {
+      // Fallback to old behavior if communities slide not found
+      const element = document.getElementById("risk-legend");
+      if (element) {
+        element.scrollIntoView({ behavior: "instant", block: "start" });
+      }
     }
   }
 </script>

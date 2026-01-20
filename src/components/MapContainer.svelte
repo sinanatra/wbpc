@@ -109,22 +109,25 @@
 
   @media screen and (max-width: 767px) {
     .container {
-      overflow-x: auto;
+      flex-direction: column;
       height: 100vh;
+      width: 100%;
     }
 
     .sidebar {
-      flex: none;
-      width: 90vw;
-      min-width: 50vw;
-      max-width: 80vw;
-      height: 100vh;
+      flex: 2;
+      width: 100%;
+      max-width: 100%;
+      height: auto;
+      order: 2;
+      border-right: none;
+      border-top: 1px solid var(--color-tertiary);
+      overflow-y: auto;
     }
     .map-area {
-      flex: none;
-      width: 100vw;
-      min-width: 50vw;
-      height: 100vh;
+      flex: 1;
+      width: 100%;
+      order: 1;
     }
   }
 </style>

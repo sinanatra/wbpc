@@ -9,7 +9,8 @@
   mapboxgl.accessToken =
     "pk.eyJ1Ijoic2luYW5hdHJhIiwiYSI6ImNpcTloaTlocjAwNWFodm0yODJjODF5MXYifQ.urgyj3bpfbG3dX4uTOOZtQ";
 
-  const STYLE_URL = "mapbox://styles/sinanatra/cm7yteg6x00ty01sc85aqduv2";
+  const STYLE_URL = `mapbox://styles/sinanatra/cm7yteg6x00ty01sc85aqduv2?${Date.now()}`;
+
   const dispatch = createEventDispatcher();
   let targetZoom = 12;
 
@@ -19,6 +20,7 @@
   let labelMarker = null;
   let showSettlementsLegend = false;
   let showCommunitiesLayers = false;
+  let activeSlide = null;
 
   let layersToggles = {
     "settlements-circle": true,
@@ -104,27 +106,29 @@
     labelMarker = null;
   }
 
+  let center = [35.23, 31.95];
+
   onMount(() => {
     const isMobile = window.matchMedia("(max-width: 767px)").matches;
 
     // const initialPitch = isMobile ? 50 : 0;
     const minZoomLevel = 8;
-    const initialZoom = minZoomLevel;
+    const initialZoom = 8;
 
     // Bounds for West Bank area (prevent panning outside)
     const maxBounds = [
-      [34.2, 31.4], // Southwest corner
-      [35.8, 32.6], // Northeast corner
+      [33.5, 30.8], // Southwest corner
+      [36.5, 33.2], // Northeast corner
     ];
 
     map = new mapboxgl.Map({
       container: mapContainer,
       style: STYLE_URL,
-      center: [35.3182, 31.8613],
+      center: center,
       zoom: initialZoom,
       minZoom: minZoomLevel,
       maxZoom: 18,
-      maxBounds: maxBounds,
+      // maxBounds: maxBounds,
       // pitch: initialPitch,
       bearing: 0,
       scrollZoom: false,
@@ -398,18 +402,23 @@
     if (!map?.isStyleLoaded()) return;
     map.resize();
 
-    const defaultCenter = [35.3182, 31.9613];
-    const defaultZoom = 8;
+    activeSlide = id;
 
-    const communitiesCenter = [35.23, 31.95];
+    // const defaultCenter = [35.3182, 31.9613];
+    const defaultZoom = 6;
+
+    // const communitiesCenter = [35.23, 31.95];
     const communitiesZoom = 8.5;
 
-    let center = defaultCenter;
+    // let center = communitiesCenter;
+
     let zoom = defaultZoom;
 
     if (id === "communities") {
-      center = communitiesCenter;
+      // center = communitiesCenter;
       zoom = communitiesZoom;
+    } else if (id === "settlements") {
+      zoom = 8;
     }
 
     map.flyTo({
@@ -455,6 +464,8 @@
     } else if (id === "area-c") {
       map.setLayoutProperty("area-c", "visibility", "visible");
     }
+
+    toggleZoomLayers();
   }
 
   function toggleZoomLayers() {
@@ -470,9 +481,6 @@
     // }
 
     [
-      "settlements-circle",
-      "settlements-circle-fixed",
-
       "outposts",
       "settlement-jurisdiction-areas",
       "demolition-orders",
@@ -483,6 +491,17 @@
         id,
         "visibility",
         shouldShow && layersToggles[id] ? "visible" : "none",
+      );
+    });
+
+    // Keep settlements visible when zoom >= 11 or when settlements slide is active
+    ["settlements-circle", "settlements-circle-fixed"].forEach((id) => {
+      map.setLayoutProperty(
+        id,
+        "visibility",
+        (shouldShow || activeSlide === "settlements") && layersToggles[id]
+          ? "visible"
+          : "none",
       );
     });
   }

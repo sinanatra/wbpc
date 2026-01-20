@@ -63,8 +63,10 @@
   }
 
   function goToCommunities() {
-    const idx = slides.findIndex((s) => s.id === "communities");
-    scrollToIndex(idx, "instant", "start");
+    const element = document.getElementById("risk-legend");
+    if (element) {
+      element.scrollIntoView({ behavior: "instant", block: "start" });
+    }
   }
 </script>
 

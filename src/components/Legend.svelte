@@ -2,7 +2,7 @@
   export let riskArray = [];
 </script>
 
-<section class="risk-legend">
+<section class="risk-legend" id="risk-legend">
   {#each riskArray as risk}
     <div class="risk-row">
       <div class="risk-key">
@@ -21,14 +21,14 @@
     top: 0;
     left: 0;
     background-color: #f9f9f9;
-    border: 1px solid var(--color-fade);
+    border-bottom: 1px solid var(--color-fade);
     z-index: 10;
     padding: 10px;
     font-size: 0.8em;
     display: grid;
     row-gap: 5px;
     margin-top: 50px;
-    margin-bottom: 20px;
+    margin-bottom: 40px;
   }
 
   .risk-row {

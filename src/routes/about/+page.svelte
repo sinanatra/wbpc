@@ -39,7 +39,7 @@
     max-width: 450px;
     display: flex;
     flex-direction: column;
-    border-right: 1px solid #ddd;
+    border-right: 1px solid var(--color-tertiary);
     overflow-y: auto;
     background: #f9f9f9;
     position: relative;

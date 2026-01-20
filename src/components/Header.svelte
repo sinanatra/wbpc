@@ -20,7 +20,7 @@
     justify-content: space-between;
     align-items: flex-start;
     padding-bottom: 20px;
-    border-bottom: 1px solid #ddd;
+    border-bottom: 1px solid var(--color-tertiary);
   }
 
   nav {

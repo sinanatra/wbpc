@@ -17,6 +17,12 @@
 
 <style>
   .risk-legend {
+    position: sticky;
+    top: 0;
+    left: 0;
+    background-color: #f9f9f9;
+    border: 1px solid var(--color-fade);
+    z-index: 10;
     padding: 10px;
     font-size: 0.8em;
     display: grid;

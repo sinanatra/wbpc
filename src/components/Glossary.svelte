@@ -65,7 +65,7 @@
     border-bottom: 1px dashed var(--color-primary);
     padding: 5px 10px;
     cursor: pointer;
-    scroll-margin-top: 100px;
+    scroll-margin-top: 155px;
   }
 
   h2 {

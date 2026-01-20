@@ -21,14 +21,13 @@
     top: 0;
     left: 0;
     background-color: #f9f9f9;
-    border-bottom: 1px solid var(--color-fade);
     z-index: 10;
     padding: 10px;
     font-size: 0.8em;
     display: grid;
     row-gap: 5px;
     margin-top: 50px;
-    margin-bottom: 40px;
+    margin-bottom: 10px;
   }
 
   .risk-row {

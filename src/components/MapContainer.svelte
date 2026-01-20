@@ -59,8 +59,10 @@
   <aside class="sidebar">
     <Header {title} />
     <ScrollyText slides={editorialData} on:slideEnter={handleSlideEnter} />
-    <Legend {riskArray} />
-    <SearchBar on:search={onSearch} />
+    <div class="sticky-section">
+      <Legend {riskArray} />
+      <SearchBar on:search={onSearch} />
+    </div>
     <Glossary
       {communities}
       {selectedItem}
@@ -94,6 +96,14 @@
     overflow-y: auto;
     background: #f9f9f9;
     position: relative;
+  }
+
+  .sticky-section {
+    position: sticky;
+    top: 0;
+    background: #f9f9f9;
+    z-index: 10;
+    border-bottom: 1px solid var(--color-fade);
   }
 
   .map-area {

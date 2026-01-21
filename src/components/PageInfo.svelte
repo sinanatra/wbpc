@@ -4,19 +4,19 @@
   let { community } = $props();
 
   let wrapper;
-  function handleClickOutside(e) {
-    if (wrapper && !wrapper.contains(e.target)) {
-      clearSelection();
-    }
-  }
-  onMount(() => {
-    document.addEventListener("click", handleClickOutside, true);
-    // setTimeout(() => {
-    // }, 0);
-  });
-  onDestroy(() => {
-    document.removeEventListener("click", handleClickOutside, true);
-  });
+  // function handleClickOutside(e) {
+  //   if (wrapper && !wrapper.contains(e.target)) {
+  //     clearSelection();
+  //   }
+  // }
+  // onMount(() => {
+  //   document.addEventListener("click", handleClickOutside, true);
+  //   // setTimeout(() => {
+  //   // }, 0);
+  // });
+  // onDestroy(() => {
+  //   document.removeEventListener("click", handleClickOutside, true);
+  // });
 
   function formatDate(dateStr) {
     const date = new Date(dateStr);

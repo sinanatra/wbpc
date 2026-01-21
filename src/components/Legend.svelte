@@ -26,7 +26,7 @@
     font-size: 0.8em;
     display: grid;
     row-gap: 5px;
-    margin-top: 50px;
+    /* margin-top: 50px; */
     margin-bottom: 10px;
   }
 

@@ -75,7 +75,7 @@
         type: "settlement",
       }));
 
-      mapItems = [...communities]; // All dots
+      mapItems = [...communities]; 
       filteredMapItems = [...mapItems];
 
       riskArray = Array.isArray(rc.result)

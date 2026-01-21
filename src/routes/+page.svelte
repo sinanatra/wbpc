@@ -1,5 +1,5 @@
 <script>
-  import { onMount } from "svelte";
+  import { onMount, onDestroy } from "svelte";
   import {
     fetchCommunities,
     fetchCommunitiesData,
@@ -8,21 +8,22 @@
     fetchEditorial,
     fetchTitle,
   } from "$lib/loadData.js";
+  import { communities, settlements, riskColors } from "$stores/mapStore.js";
+  import { selectedItem, setSelectedItem, setMapItems, filteredItems, isLoading, error } from "$stores/uiStore.js";
 
-  let communities = [];
-  let settlements = [];
-  let mapItems = [];
-  let filteredMapItems = [];
   let riskArray = [];
-  let riskColors = {};
-  let selectedItem = null;
-  let error = null;
   let editorialData = [];
   let title = null;
-  let loading = true;
 
   let MapContainerPromise;
   let MapContainer;
+  let lastFetchedId = null;
+
+  const unsubscribeSelectedItem = selectedItem.subscribe((item) => {
+    if (item?.id && item.id !== lastFetchedId) {
+      handleItemSelect(item);
+    }
+  });
 
   function retry(fn, retries = 3, delay = 500) {
     let lastErr;
@@ -41,32 +42,19 @@
 
   async function handleItemSelect(item) {
     try {
-      if (item) {
+      if (item?.id) {
+        lastFetchedId = item.id;
         const res = await fetchCommunitiesData(item.id);
-        selectedItem = res.result || res;
+        setSelectedItem(res.result || res);
       }
     } catch (e) {
       console.error("detail fetch error:", e);
     }
   }
 
-  function handleSearch(query) {
-    const q = query.toLowerCase().trim();
-    filteredMapItems =
-      q.length < 3
-        ? [...mapItems]
-        : mapItems.filter((item) => {
-            const t = item.title.toLowerCase();
-            const alt = Array.isArray(item.alternativeNames)
-              ? item.alternativeNames.some((a) => a.toLowerCase().includes(q))
-              : false;
-            return t.includes(q) || alt;
-          });
-  }
-
   async function loadEverything() {
-    loading = true;
-    error = null;
+    isLoading.set(true);
+    error.set(null);
     try {
       const [comms, setts, rc, editorial, tt] = await Promise.all([
         retry(() => fetchCommunities()),
@@ -77,53 +65,62 @@
       ]);
 
       title = tt.result;
-      communities = (comms.result || comms).map((c) => ({
+      
+      const communitiesData = (comms.result || comms).map((c) => ({
         ...c,
         type: "community",
       }));
-      settlements = (setts.result || setts).map((s) => ({
+      
+      const settlementsData = (setts.result || setts).map((s) => ({
         ...s,
         type: "settlement",
       }));
-
-      mapItems = [...communities];
-      filteredMapItems = [...mapItems];
 
       riskArray = Array.isArray(rc.result)
         ? rc.result
         : rc.result
           ? [rc.result]
           : [];
-      riskColors = {};
+      
+      const riskColorsObj = {};
       riskArray.forEach((r) => {
-        riskColors[r.riskvalue] = r.riskcolor;
+        riskColorsObj[r.riskvalue] = r.riskcolor;
       });
 
       editorialData = editorial?.result;
+
+      communities.set(communitiesData);
+      settlements.set(settlementsData);
+      riskColors.set(riskColorsObj);
+      setMapItems(communitiesData);
     } catch (e) {
-      error = e;
+      error.set(e);
     } finally {
-      loading = false;
+      isLoading.set(false);
     }
   }
 
-  $: if (!loading && !error && !MapContainerPromise) {
+  $: if (!MapContainerPromise) {
     MapContainerPromise = import("@components/MapContainer.svelte").then(
       (mod) => (MapContainer = mod.default)
     );
   }
 
   onMount(loadEverything);
+
+  onDestroy(() => {
+    unsubscribeSelectedItem();
+  });
 </script>
 
-{#if loading}
+{#if $isLoading}
   <div class="loader-container">
     <div class="loader"></div>
     <p>Loading…</p>
   </div>
-{:else if error}
+{:else if $error}
   <div class="error">
-    Error loading: {error.message}
+    Error loading: {$error.message}
     <br />
     <button
       on:click={() => {
@@ -141,15 +138,10 @@
   {:then MapContainerComponent}
     <svelte:component
       this={MapContainerComponent}
-      bind:selectedItem
-      communities={filteredMapItems}
-      {settlements}
-      {riskColors}
+      {title}
       {riskArray}
       {editorialData}
-      {title}
       on:dotClick={(e) => handleItemSelect(e.detail)}
-      on:search={(e) => handleSearch(e.detail)}
     />
   {:catch e}
     <div class="error">

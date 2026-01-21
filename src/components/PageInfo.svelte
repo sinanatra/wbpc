@@ -1,16 +1,22 @@
 <script>
-  import { createEventDispatcher, onMount, onDestroy } from "svelte";
+  import { onMount, onDestroy } from "svelte";
+  import { clearSelection } from "$stores/uiStore.js";
   export let community;
-  const dispatch = createEventDispatcher();
 
   let wrapper;
   function handleClickOutside(e) {
     if (wrapper && !wrapper.contains(e.target)) {
-      dispatch("close");
+      clearSelection();
     }
   }
-  onMount(() => document.addEventListener("click", handleClickOutside));
-  onDestroy(() => document.removeEventListener("click", handleClickOutside));
+  onMount(() => {
+    document.addEventListener("click", handleClickOutside, true);
+    // setTimeout(() => {
+    // }, 0);
+  });
+  onDestroy(() => {
+    document.removeEventListener("click", handleClickOutside, true);
+  });
 
   function formatDate(dateStr) {
     const date = new Date(dateStr);
@@ -31,7 +37,7 @@
   }
 </script>
 
-<div bind:this={wrapper} class="panel-wrapper">
+<div bind:this={wrapper} class="panel-wrapper" on:click|stopPropagation>
   <h2>{community.title}</h2>
 
   <div class="tab-content">
@@ -153,7 +159,7 @@
 
   .images-panel .caption {
     margin: 0 0 0.5em;
-    font-size: .875em;
+    font-size: 0.875em;
     color: var(--color-tertiary);
   }
 </style>

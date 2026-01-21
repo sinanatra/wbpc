@@ -6,7 +6,8 @@ const config = {
     adapter: adapter(),
     alias: {
       "@components": "src/components",
-      "@stores": "src/stores.js",
+      "$stores": "src/stores",
+      "$lib": "src/lib",
       "@utils": "src/utils.js",
     },
   },

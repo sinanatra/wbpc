@@ -1,12 +1,13 @@
 <script>
-  import { createEventDispatcher, afterUpdate } from "svelte";
+  import { createEventDispatcher } from "svelte";
   import PageInfo from "./PageInfo.svelte";
+  import { selectedItem, setSelectedItem } from "$stores/uiStore.js";
 
   export let communities = [];
-  export let selectedItem = null;
-  const dispatch = createEventDispatcher();
 
   let communityRefs = [];
+  let lastScrolledId = null;
+  const dispatch = createEventDispatcher();
 
   function registerRef(node, index) {
     communityRefs[index] = node;
@@ -18,37 +19,35 @@
   }
 
   function handleClick(community) {
+    setSelectedItem(community);
     dispatch("select", community);
   }
-  function handleClose() {
-    dispatch("close");
-  }
 
-  afterUpdate(() => {
-    if (selectedItem) {
-      const idx = communities.findIndex((c) => c.id === selectedItem.id);
-      const el = communityRefs[idx];
-      if (el) {
-        el.scrollIntoView({ behavior: "instant", block: "start" });
-      }
+  $: if ($selectedItem?.id && $selectedItem.id !== lastScrolledId) {
+    lastScrolledId = $selectedItem.id;
+    const idx = communities.findIndex((c) => c.id === $selectedItem.id);
+    if (idx !== -1 && communityRefs[idx]) {
+      setTimeout(() => {
+        communityRefs[idx].scrollIntoView({ behavior: "smooth", block: "start" });
+      }, 0);
     }
-  });
+  }
 </script>
 
 <article>
   {#each communities as community, i}
     <div
       class="community"
-      on:click={() => handleClick(community)}
+      on:click={(e) => { e.stopPropagation(); handleClick(community); }}
       use:registerRef={i}
     >
       <h2 class="title">{community.title}</h2>
       <h2 class="alternative">{community.alternativeTitle}</h2>
     </div>
 
-    {#if selectedItem?.id === community.id}
-      <div class="info-inline">
-        <PageInfo community={selectedItem} on:close={handleClose} />
+    {#if $selectedItem?.id === community.id}
+      <div class="info-inline" on:click|stopPropagation>
+        <PageInfo community={$selectedItem} />
       </div>
     {/if}
   {/each}
@@ -65,7 +64,8 @@
     border-bottom: 1px dashed var(--color-primary);
     padding: 5px 10px;
     cursor: pointer;
-    scroll-margin-top: 155px;
+    scroll-margin-top: 200px;
+    
   }
 
   h2 {

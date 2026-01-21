@@ -1,11 +1,8 @@
 <script>
-  import { createEventDispatcher } from "svelte";
-  const dispatch = createEventDispatcher();
-  let query = "";
+  import { searchQuery, setSearchQuery } from "$stores/uiStore.js";
 
   function onInput(e) {
-    query = e.target.value;
-    dispatch("search", query);
+    setSearchQuery(e.target.value);
   }
 </script>
 
@@ -13,7 +10,7 @@
   <input
     type="text"
     placeholder="Search communities..."
-    bind:value={query}
+    bind:value={$searchQuery}
     on:input={onInput}
   />
 </div>
@@ -25,7 +22,7 @@
     box-sizing: border-box;
     border: 1px solid #ccc;
     border-radius: 4px;
-    margin-bottom: 1rem;
+    margin-bottom: 0.5rem;
 
     /* padding: 0.2rem 0.5rem; */
     color: var(--color-primary);

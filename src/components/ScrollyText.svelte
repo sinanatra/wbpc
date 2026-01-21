@@ -1,13 +1,16 @@
 <script>
-  import { onDestroy, onMount, createEventDispatcher } from "svelte";
+  import { onDestroy, onMount } from "svelte";
   import { marked } from "marked";
+  import { activeSlideIndex, setActiveSlide, setSlides, slides } from "$stores/scrollStore.js";
 
-  export let slides = [];
+  export let slides_data = [];
 
-  let activeIndex = 0;
-  const dispatch = createEventDispatcher();
-  const observers = [];
-  const slideRefs = [];
+  $: if (slides_data.length > 0) {
+    setSlides(slides_data);
+  }
+
+  let observers = [];
+  let slideRefs = [];
 
   function intersectAction(node, index) {
     slideRefs[index] = node;
@@ -15,9 +18,8 @@
     const obs = new IntersectionObserver(
       (entries) => {
         for (const entry of entries) {
-          if (entry.isIntersecting && activeIndex !== index) {
-            activeIndex = index;
-            dispatch("slideEnter", { index, slide: slides[index] });
+          if (entry.isIntersecting && $activeSlideIndex !== index) {
+            setActiveSlide(index);
           }
         }
       },
@@ -37,16 +39,13 @@
   }
 
   onMount(() => {
-    // Check which slide is visible on initial load
     setTimeout(() => {
       for (let i = 0; i < slideRefs.length; i++) {
         const rect = slideRefs[i].getBoundingClientRect();
         const windowHeight = window.innerHeight;
-        // Check if slide is in viewport (center 50%)
         if (rect.top < windowHeight / 2 && rect.bottom > windowHeight / 2) {
-          if (activeIndex !== i) {
-            activeIndex = i;
-            dispatch("slideEnter", { index: i, slide: slides[i] });
+          if ($activeSlideIndex !== i) {
+            setActiveSlide(i);
           }
           break;
         }
@@ -59,23 +58,15 @@
   function scrollToIndex(idx, behavior = "smooth", block = "center") {
     if (idx < 0 || idx >= slideRefs.length) return;
     slideRefs[idx].scrollIntoView({ behavior: behavior, block: block });
-    activeIndex = idx;
-    dispatch("slideEnter", { index: idx, slide: slides[idx] });
+    setActiveSlide(idx);
   }
 
   function goToCommunities() {
-    // Find the communities slide
-    const communitiesIndex = slides.findIndex(
+    const communitiesIndex = $slides.findIndex(
       (slide) => slide.id === "communities"
     );
     if (communitiesIndex !== -1) {
       scrollToIndex(communitiesIndex, "instant", "start");
-    } else {
-      // Fallback to old behavior if communities slide not found
-      const element = document.getElementById("risk-legend");
-      if (element) {
-        element.scrollIntoView({ behavior: "instant", block: "start" });
-      }
     }
   }
 </script>
@@ -87,11 +78,11 @@
     </button>
   </div>
   <div>
-    {#each slides as slide, i}
+    {#each $slides as slide, i}
       <div
         use:intersectAction={i}
         class="slide"
-        class:active={i === activeIndex}
+        class:active={i === $activeSlideIndex}
         on:click={() => scrollToIndex(i, "instant")}
       >
         {@html marked(slide.text)}

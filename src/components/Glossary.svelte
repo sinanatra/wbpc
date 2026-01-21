@@ -1,9 +1,9 @@
 <script>
-  import { createEventDispatcher } from "svelte";
+  import { createEventDispatcher, onMount } from "svelte";
   import PageInfo from "./PageInfo.svelte";
   import { selectedItem, setSelectedItem } from "$stores/uiStore.js";
 
-  export let communities = [];
+  let { communities = [] } = $props();
 
   let communityRefs = [];
   let lastScrolledId = null;
@@ -23,15 +23,19 @@
     dispatch("select", community);
   }
 
-  $: if ($selectedItem?.id && $selectedItem.id !== lastScrolledId) {
-    lastScrolledId = $selectedItem.id;
-    const idx = communities.findIndex((c) => c.id === $selectedItem.id);
-    if (idx !== -1 && communityRefs[idx]) {
-      setTimeout(() => {
-        communityRefs[idx].scrollIntoView({ behavior: "smooth", block: "start" });
-      }, 0);
-    }
-  }
+  onMount(() => {
+    return selectedItem.subscribe((item) => {
+      if (item?.id && item.id !== lastScrolledId) {
+        lastScrolledId = item.id;
+        const idx = communities.findIndex((c) => c.id === item.id);
+        if (idx !== -1 && communityRefs[idx]) {
+          setTimeout(() => {
+            communityRefs[idx].scrollIntoView({ behavior: "smooth", block: "start" });
+          }, 0);
+        }
+      }
+    });
+  });
 </script>
 
 <article>

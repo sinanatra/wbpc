@@ -1,7 +1,7 @@
 <script>
   import { onMount, onDestroy } from "svelte";
   import { clearSelection } from "$stores/uiStore.js";
-  export let community;
+  let { community } = $props();
 
   let wrapper;
   function handleClickOutside(e) {

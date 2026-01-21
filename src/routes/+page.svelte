@@ -100,11 +100,13 @@
     }
   }
 
-  $: if (!MapContainerPromise) {
-    MapContainerPromise = import("@components/MapContainer.svelte").then(
-      (mod) => (MapContainer = mod.default)
-    );
-  }
+  $effect(() => {
+    if (!MapContainerPromise) {
+      MapContainerPromise = import("@components/MapContainer.svelte").then(
+        (mod) => (MapContainer = mod.default)
+      );
+    }
+  });
 
   onMount(loadEverything);
 

@@ -27,6 +27,7 @@
 
   let mapContainerElement;
   let isMobile = false;
+  let colorSubscription = null;
 
   function clearPills() {
     alertPillMarkers.update(markers => {
@@ -46,7 +47,7 @@
       let color;
       if (p.type === "community") {
         const rv = p.risks?.[0]?.riskvalue ?? p.risk ?? "default";
-        color = $riskColors[rv] || "#aaa";
+        color = $riskColors?.[rv] || "#aaa";
       } else if (p.type === "settlement") {
         color = "#555";
       } else if (p.type === "outpost") {
@@ -79,8 +80,9 @@
       pill.className = "alert-pill";
       const count = item.alertCount || 1;
       pill.textContent = `${count}${count === 1 ? " new alert" : " new alerts"}`;
+      const riskValue = item.risks?.[0]?.riskvalue;
       pill.style.backgroundColor =
-        $riskColors[item.risks[0].riskvalue] || "rgba(255,255,255,0)";
+        (riskValue && $riskColors?.[riskValue]) || "rgba(255,255,255,0)";
       pill.addEventListener("click", (e) => {
         e.stopPropagation();
         setSelectedItem(item);
@@ -166,7 +168,7 @@
         data: {
           type: "FeatureCollection",
           features: [
-            ...$communities.map((c) => {
+            ...($communities || []).map((c) => {
               const latestRisk =
                 (c.risks || [])
                   .slice()
@@ -189,7 +191,7 @@
                 },
               };
             }),
-            ...$settlements.map((s) => ({
+            ...($settlements || []).map((s) => ({
               type: "Feature",
               geometry: {
                 type: "Point",
@@ -307,6 +309,28 @@
         layout: { visibility: "none" },
       });
 
+      // Subscribe to riskColors and update the layer paint property
+      colorSubscription = riskColors.subscribe((colors) => {
+        if (Object.keys(colors).length > 0 && mapInstance.getLayer("communities-circle")) {
+          // Use requestAnimationFrame to defer the property update
+          requestAnimationFrame(() => {
+            try {
+              const colorExpr = [
+                "match",
+                ["get", "risk"],
+                ...Object.entries(colors).flatMap(([rv, col]) => [rv, col]),
+                "#aaa",
+              ];
+              if (mapInstance.getLayer("communities-circle")) {
+                mapInstance.setPaintProperty("communities-circle", "circle-color", colorExpr);
+              }
+            } catch (e) {
+              console.error("Error setting color:", e);
+            }
+          });
+        }
+      });
+
       mapInstance.on("click", "settlements-circle-fixed", (e) => {
         if (!e.features?.length) return;
         const feat = e.features[0];
@@ -359,9 +383,9 @@
         mapInstance.setPaintProperty("outposts", "circle-radius", 2);
       }
 
-      if (mapInstance.getLayer("demolition-orders")) {
-        mapInstance.setPaintProperty("demolition-orders", "fill-opacity", 0.1);
-        mapInstance.setPaintProperty("demolition-orders", "circle-radius", 2);
+      if (mapInstance?.getLayer("demolition-orders")) {
+        mapInstance?.setPaintProperty("demolition-orders", "fill-opacity", 0.1);
+        mapInstance?.setPaintProperty("demolition-orders", "circle-radius", 2);
       }
 
       if (mapInstance.getLayer("jordanian-state-land")) {
@@ -394,18 +418,6 @@
       );
     });
   });
-
-  $: if ($map && $mapLoaded && $riskColors && Object.keys($riskColors).length) {
-    const colorExpr = [
-      "match",
-      ["get", "risk"],
-      ...Object.entries($riskColors).flatMap(([rv, col]) => [rv, col]),
-      "#aaa",
-    ];
-    if ($map.getLayer("communities-circle")) {
-      $map.setPaintProperty("communities-circle", "circle-color", colorExpr);
-    }
-  }
 
   export function resize() {
     if ($map) $map.resize();
@@ -454,7 +466,11 @@
       "area-a",
       "area-b",
       "area-c",
-    ].forEach((l) => $map.setLayoutProperty(l, "visibility", "none"));
+    ].forEach((l) => {
+      if ($map?.getLayer(l)) {
+        $map.setLayoutProperty(l, "visibility", "none");
+      }
+    });
 
     if (id === "communities") {
       $map.scrollZoom.enable();
@@ -463,8 +479,12 @@
     } else if (id === "settlements") {
       $map.setLayoutProperty("settlements-circle", "visibility", "visible");
     } else if (id === "closed-military-zones") {
-      $map.setLayoutProperty("area-c", "visibility", "visible");
-      $map.setLayoutProperty("closed-military-zones", "visibility", "visible");
+      if ($map?.getLayer("area-c")) {
+        $map.setLayoutProperty("area-c", "visibility", "visible");
+      }
+      if ($map?.getLayer("closed-military-zones")) {
+        $map.setLayoutProperty("closed-military-zones", "visibility", "visible");
+      }
     } else if (id === "area-a") {
       $map.setLayoutProperty("area-a", "visibility", "visible");
     } else if (id === "area-b") {
@@ -485,7 +505,10 @@
     const zoom = $map.getZoom();
     const shouldShow = zoom >= 11;
     showSettlementsLegend.set(shouldShow);
-    showCommunitiesLayers.set(shouldShow);
+    
+    // Only show communities layers if we're on a slide that allows it
+    const allowLayerDisplay = $activeSlide === "communities" || $activeSlide === "settlements" || $activeSlide === "closed-military-zones";
+    showCommunitiesLayers.set(shouldShow && allowLayerDisplay);
 
     // if (shouldShow) {
     //   $map.setLayoutProperty("settlements-circle", "visibility", "visible");
@@ -502,7 +525,7 @@
       $map.setLayoutProperty(
         id,
         "visibility",
-        shouldShow && $layersToggles[id] ? "visible" : "none",
+        shouldShow && $layersToggles[id] && allowLayerDisplay ? "visible" : "none",
       );
     });
 
@@ -510,7 +533,7 @@
       $map.setLayoutProperty(
         id,
         "visibility",
-        (shouldShow || $activeSlide === "settlements") && $layersToggles[id]
+        (shouldShow || $activeSlide === "settlements") && $layersToggles[id] && allowLayerDisplay
           ? "visible"
           : "none",
       );
@@ -521,7 +544,7 @@
         "closed-military-zones",
         "visibility",
         (shouldShow || $activeSlide === "closed-military-zones") &&
-          $layersToggles["closed-military-zones"]
+          $layersToggles["closed-military-zones"] && allowLayerDisplay
           ? "visible"
           : "none",
       );
@@ -549,7 +572,10 @@
     });
   }
 
-  onDestroy(() => $map && $map.remove());
+  onDestroy(() => {
+    if (colorSubscription) colorSubscription();
+    if ($map) $map.remove();
+  });
 
   function toggleLayer(layerId) {
     toggleLayerVisibility(layerId);

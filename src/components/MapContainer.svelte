@@ -10,13 +10,7 @@
   import { currentSlideId } from "$stores/scrollStore.js";
   import { filteredItems } from "$stores/uiStore.js";
 
-  export let editorialData = [];
-  export let riskArray = [];
-  export let title = "";
-  export let mapRef;
-  export let mapComponent;
-
-  $: mapRef = mapComponent;
+  let { editorialData = [], riskArray = [], title = "", mapRef = undefined, mapComponent = undefined } = $props();
 
   const debounce = (fn, wait = 100) => {
     let timer;
@@ -32,9 +26,11 @@
     }
   }, 200);
 
-  $: if ($currentSlideId) {
-    handleSlideChange();
-  }
+  $effect(() => {
+    if ($currentSlideId) {
+      handleSlideChange();
+    }
+  });
 
   function handleGlossarySelect(community) {
     mapComponent?.zoomToCommunity(community, 12, 1000);

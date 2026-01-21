@@ -3,11 +3,13 @@
   import { marked } from "marked";
   import { activeSlideIndex, setActiveSlide, setSlides, slides } from "$stores/scrollStore.js";
 
-  export let slides_data = [];
+  let { slides_data = [] } = $props();
 
-  $: if (slides_data.length > 0) {
-    setSlides(slides_data);
-  }
+  $effect(() => {
+    if (slides_data.length > 0) {
+      setSlides(slides_data);
+    }
+  });
 
   let observers = [];
   let slideRefs = [];

@@ -24,7 +24,7 @@
   }
 
   nav {
-    font-size: 0.9em;
+    font-size: 1.2em;
     display: block;
     text-align: right;
   }

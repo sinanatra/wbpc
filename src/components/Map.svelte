@@ -139,7 +139,7 @@
       pitch: initialPitch,
       bearing: 0,
       scrollZoom: false,
-      dragPan: isMobile ? false : true,
+      dragPan: true,
     });
 
     map.set(mapInstance);
@@ -783,7 +783,8 @@
   @media screen and (max-width: 767px) {
     .map-legend {
       padding: 1px 2px;
-      font-size: 0.5rem;
+      font-size: 0.9rem;
+      line-height: 1.2rem;
       bottom: 4px;
       left: unset;
       right: 4px;

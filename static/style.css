@@ -85,6 +85,67 @@ p {
   color: black;
 }
 
+.text-content h1,
+.text-content h2,
+.text-content h3 {
+  color: var(--color-primary);
+}
+
+.text-content h1 {
+  margin: 1.5em 0 0.5em 0;
+  font-size: 2em;
+}
+
+.text-content h1:first-child {
+  margin-top: 0;
+}
+
+.text-content h2 {
+  margin: 1.2em 0 0.4em 0;
+  font-size: 1.5em;
+}
+
+.text-content h3 {
+  margin: 1em 0 0.3em 0;
+  font-size: 1.2em;
+}
+
+.text-content p {
+  margin: 0.8em 0;
+}
+
+.text-content ul,
+.text-content ol {
+  margin: 0.8em 0;
+  padding-left: 2em;
+}
+
+.text-content li {
+  margin: 0.3em 0;
+}
+
+.text-content blockquote {
+  margin: 1em 0;
+  padding-left: 1em;
+  border-left: 3px solid var(--color-primary);
+  opacity: 0.8;
+}
+
+.text-content code {
+  background: rgba(0, 0, 0, 0.05);
+  padding: 0.2em 0.4em;
+  border-radius: 3px;
+  font-family: monospace;
+}
+
+.text-content pre {
+  background: rgba(0, 0, 0, 0.05);
+  padding: 1em;
+  border-radius: 3px;
+  overflow-x: auto;
+  margin: 1em 0;
+}
+
 @font-face {
   font-family: Ronzino;
   src: url("/fonts/Ronzino-Regular.woff2");

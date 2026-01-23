@@ -62,11 +62,7 @@
     max-width: 960px;
   }
 
-  .text-content :global(h1),
-  .text-content :global(h2),
-  .text-content :global(h3) {
-    color: var(--color-primary);
-  }
+
 
   @media screen and (max-width: 767px) {
     .layout-container {

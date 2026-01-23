@@ -17,7 +17,7 @@
     settlements,
     riskColors,
     clearAllMarkers,
-    toggleLayerVisibility
+    toggleLayerVisibility,
   } from "$stores/mapStore.js";
   import { selectedItem, setSelectedItem } from "$stores/uiStore.js";
 
@@ -30,24 +30,34 @@
   let isMobile = false;
   let colorSubscription = null;
 
+  function getLatestRiskValue(item) {
+    const risks = Array.isArray(item?.risks) ? item.risks : [];
+    const latest = risks
+      .slice()
+      .sort(
+        (a, b) => new Date(b.riskdate) - new Date(a.riskdate),
+      )[0]?.riskvalue;
+    return item?.risk ?? latest ?? "default";
+  }
+
   function clearPills() {
-    alertPillMarkers.update(markers => {
+    alertPillMarkers.update((markers) => {
       markers.forEach((m) => m.remove());
       return [];
     });
   }
 
   function showLabel(feature) {
-    labelMarker.update(marker => {
+    labelMarker.update((marker) => {
       marker?.remove();
       return null;
     });
-    
+
     setTimeout(() => {
       const p = feature.properties;
       let color;
       if (p.type === "community") {
-        const rv = p.risks?.[0]?.riskvalue ?? p.risk ?? "default";
+        const rv = getLatestRiskValue(p);
         color = $riskColors?.[rv] || "#aaa";
       } else if (p.type === "settlement") {
         color = "#555";
@@ -66,7 +76,10 @@
       <div class="label-box" style="background:${color};color:black">
         ${p.title}
       </div>`;
-      const newMarker = new mapboxgl.Marker({ element: el, anchor: "bottom-left" })
+      const newMarker = new mapboxgl.Marker({
+        element: el,
+        anchor: "bottom-left",
+      })
         .setLngLat(feature.geometry.coordinates)
         .addTo($map);
       labelMarker.set(newMarker);
@@ -104,39 +117,101 @@
       const marker = new mapboxgl.Marker({ element: pill, offset: [20, 0] })
         .setLngLat([item.coordinates.lon, item.coordinates.lat])
         .addTo($map);
-      alertPillMarkers.update(markers => [...markers, marker]);
+      alertPillMarkers.update((markers) => [...markers, marker]);
     });
   }
 
   export function clearLabel() {
-    labelMarker.update(marker => {
+    labelMarker.update((marker) => {
       marker?.remove();
       return null;
     });
   }
 
-  let center = [35.23, 31.95];
+  let {
+    initialCenter = [35.23, 31.95],
+    initialZoomLevel = 8,
+    initialPitch = 0,
+    singleCommunity = null,
+  } = $props();
+
+  console.log(
+    "Initial center:",
+    initialCenter,
+    "Initial zoom:",
+    initialZoomLevel,
+  );
+
+  let center = initialCenter;
+  let singleCommunityMarker = null;
+
+  function showSingleCommunity() {
+    if (!$map || !$mapLoaded || !singleCommunity?.coordinates) return;
+
+    if (singleCommunityMarker) {
+      singleCommunityMarker.remove();
+      singleCommunityMarker = null;
+    }
+
+    const coords = singleCommunity.coordinates;
+    const riskValue = getLatestRiskValue(singleCommunity);
+    const color = $riskColors?.[riskValue] || "#aaa";
+
+    const markerEl = document.createElement("div");
+    markerEl.className = "single-community-marker";
+    markerEl.style.width = "12px";
+    markerEl.style.height = "12px";
+    markerEl.style.backgroundColor = color;
+    markerEl.style.borderRadius = "50%";
+    markerEl.style.cursor = "pointer";
+
+    singleCommunityMarker = new mapboxgl.Marker({ element: markerEl })
+      .setLngLat([parseFloat(coords.lon), parseFloat(coords.lat)])
+      .addTo($map);
+
+    showLabel({
+      geometry: {
+        coordinates: [parseFloat(coords.lon), parseFloat(coords.lat)],
+      },
+      properties: {
+        ...singleCommunity,
+        title: singleCommunity.title,
+        type: "community",
+        risk: riskValue,
+      },
+    });
+  }
+
+  $effect(() => {
+    if ($mapLoaded && $riskColors && Object.keys($riskColors).length > 0) {
+      showSingleCommunity();
+    }
+  });
+  const minZoomLevel = 8;
+  const initialZoom = initialZoomLevel;
+
+  const maxBounds = [
+    [33.5, 30.8],
+    [36.5, 33.2],
+  ];
+
+  let mapInstance;
 
   onMount(() => {
-    isMobile = window.matchMedia("(max-width: 767px)").matches;
+    if (!mapContainerElement) return;
 
-    const initialPitch = isMobile ? 50 : 0;
-    const minZoomLevel = 8;
-    const initialZoom = 8;
+    mapLoaded.set(false);
+    mapInstance?.remove();
 
-    const maxBounds = [
-      [33.5, 30.8], // Southwest corner
-      [36.5, 33.2], // Northeast corner
-    ];
-
-    const mapInstance = new mapboxgl.Map({
+    mapInstance = new mapboxgl.Map({
       container: mapContainerElement,
       style: STYLE_URL,
       center: center,
       zoom: initialZoom,
       minZoom: minZoomLevel,
       maxZoom: 18,
-      // maxBounds: maxBounds,
+      maxBounds,
+
       pitch: initialPitch,
       bearing: 0,
       scrollZoom: false,
@@ -144,11 +219,13 @@
     });
 
     map.set(mapInstance);
+    mapContainer.set(mapContainerElement);
 
     mapInstance.addControl(
       new mapboxgl.NavigationControl({ showCompass: false }),
       "top-right",
     );
+
     mapInstance.on("zoom", () => {
       toggleZoomLayers();
     });
@@ -170,12 +247,7 @@
           type: "FeatureCollection",
           features: [
             ...($communities || []).map((c) => {
-              const latestRisk =
-                (c.risks || [])
-                  .slice()
-                  .sort(
-                    (a, b) => new Date(b.riskdate) - new Date(a.riskdate),
-                  )[0]?.riskvalue || "default";
+              const latestRisk = getLatestRiskValue(c);
 
               return {
                 type: "Feature",
@@ -310,10 +382,11 @@
         layout: { visibility: "none" },
       });
 
-      // Subscribe to riskColors and update the layer paint property
       colorSubscription = riskColors.subscribe((colors) => {
-        if (Object.keys(colors).length > 0 && mapInstance.getLayer("communities-circle")) {
-          // Use requestAnimationFrame to defer the property update
+        if (
+          Object.keys(colors).length > 0 &&
+          mapInstance.getLayer("communities-circle")
+        ) {
           requestAnimationFrame(() => {
             try {
               const colorExpr = [
@@ -323,7 +396,11 @@
                 "#aaa",
               ];
               if (mapInstance.getLayer("communities-circle")) {
-                mapInstance.setPaintProperty("communities-circle", "circle-color", colorExpr);
+                mapInstance.setPaintProperty(
+                  "communities-circle",
+                  "circle-color",
+                  colorExpr,
+                );
               }
             } catch (e) {
               console.error("Error setting color:", e);
@@ -390,7 +467,11 @@
       }
 
       if (mapInstance.getLayer("jordanian-state-land")) {
-        mapInstance.setPaintProperty("jordanian-state-land", "fill-opacity", 0.1);
+        mapInstance.setPaintProperty(
+          "jordanian-state-land",
+          "fill-opacity",
+          0.1,
+        );
       }
 
       if (mapInstance.getLayer("settlement-jurisdiction-areas")) {
@@ -402,7 +483,11 @@
       }
 
       if (mapInstance.getLayer("closed-military-zones")) {
-        mapInstance.setPaintProperty("closed-military-zones", "fill-opacity", 0.1);
+        mapInstance.setPaintProperty(
+          "closed-military-zones",
+          "fill-opacity",
+          0.1,
+        );
         mapInstance.setPaintProperty(
           "closed-military-zones",
           "fill-outline-color",
@@ -430,18 +515,13 @@
 
     activeSlide.set(id);
 
-    // const defaultCenter = [35.3182, 31.9613];
     const defaultZoom = 6;
 
-    // const communitiesCenter = [35.23, 31.95];
     const communitiesZoom = 8.5;
-
-    // let center = communitiesCenter;
 
     let zoom = defaultZoom;
 
     if (id === "communities") {
-      // center = communitiesCenter;
       zoom = communitiesZoom;
     } else if (id === "settlements") {
       zoom = 8;
@@ -484,7 +564,11 @@
         $map.setLayoutProperty("area-c", "visibility", "visible");
       }
       if ($map?.getLayer("closed-military-zones")) {
-        $map.setLayoutProperty("closed-military-zones", "visibility", "visible");
+        $map.setLayoutProperty(
+          "closed-military-zones",
+          "visibility",
+          "visible",
+        );
       }
     } else if (id === "area-a") {
       $map.setLayoutProperty("area-a", "visibility", "visible");
@@ -506,16 +590,12 @@
     const zoom = $map.getZoom();
     const shouldShow = zoom >= 11;
     showSettlementsLegend.set(shouldShow);
-    
-    // Only show communities layers if we're on a slide that allows it
-    const allowLayerDisplay = $activeSlide === "communities" || $activeSlide === "settlements" || $activeSlide === "closed-military-zones";
-    showCommunitiesLayers.set(shouldShow && allowLayerDisplay);
 
-    // if (shouldShow) {
-    //   $map.setLayoutProperty("settlements-circle", "visibility", "visible");
-    // } else {
-    //   $map.setLayoutProperty("settlements-circle", "visibility", "none");
-    // }
+    const allowLayerDisplay =
+      $activeSlide === "communities" ||
+      $activeSlide === "settlements" ||
+      $activeSlide === "closed-military-zones";
+    showCommunitiesLayers.set(shouldShow && allowLayerDisplay);
 
     [
       "outposts",
@@ -526,7 +606,9 @@
       $map.setLayoutProperty(
         id,
         "visibility",
-        shouldShow && $layersToggles[id] && allowLayerDisplay ? "visible" : "none",
+        shouldShow && $layersToggles[id] && allowLayerDisplay
+          ? "visible"
+          : "none",
       );
     });
 
@@ -534,7 +616,9 @@
       $map.setLayoutProperty(
         id,
         "visibility",
-        (shouldShow || $activeSlide === "settlements") && $layersToggles[id] && allowLayerDisplay
+        (shouldShow || $activeSlide === "settlements") &&
+          $layersToggles[id] &&
+          allowLayerDisplay
           ? "visible"
           : "none",
       );
@@ -545,18 +629,15 @@
         "closed-military-zones",
         "visibility",
         (shouldShow || $activeSlide === "closed-military-zones") &&
-          $layersToggles["closed-military-zones"] && allowLayerDisplay
+          $layersToggles["closed-military-zones"] &&
+          allowLayerDisplay
           ? "visible"
           : "none",
       );
     }
   }
 
-  export function zoomToCommunity(
-    comm,
-    zoomLevel = 12,
-    duration = 1000,
-  ) {
+  export function zoomToCommunity(comm, zoomLevel = 12, duration = 1000) {
     const { lon, lat } = comm.coordinates || {};
     if (lon == null || lat == null) return;
     $map.flyTo({
@@ -575,7 +656,9 @@
 
   onDestroy(() => {
     if (colorSubscription) colorSubscription();
-    if ($map) $map.remove();
+    mapInstance?.remove();
+    map.set(null);
+    mapLoaded.set(false);
   });
 </script>
 

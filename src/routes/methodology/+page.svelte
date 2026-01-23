@@ -22,12 +22,6 @@
 {/if}
 
 <style>
-  .error {
-    color: var(--color-primary);
-    padding: 10px;
-    text-align: center;
-  }
-
   .layout-container {
     display: flex;
     height: 100vh;

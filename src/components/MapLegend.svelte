@@ -32,7 +32,7 @@
       </div>
       <span>Communities</span>
     </div>
-    <div class="legend-item" on:click={() => toggleLayer("outposts")}>
+    <button class="legend-item" on:click={() => toggleLayer("outposts")} type="button">
       <span
         class="legend-swatch"
         style="background:#fff; border-radius:100%; border:1.5px solid #000; opacity:{$layersToggles[
@@ -42,10 +42,11 @@
           : 0.4};"
       ></span>
       <span class:legend-off={!$layersToggles["outposts"]}>Outposts</span>
-    </div>
-    <div
+    </button>
+    <button
       class="legend-item"
       on:click={() => toggleLayer("settlement-jurisdiction-areas")}
+      type="button"
     >
       <span
         class="legend-swatch"
@@ -58,10 +59,11 @@
       <span class:legend-off={!$layersToggles["settlement-jurisdiction-areas"]}
         >Settlement Jurisdiction Areas</span
       >
-    </div>
-    <div
+    </button>
+    <button
       class="legend-item"
       on:click={() => toggleLayer("closed-military-zones")}
+      type="button"
     >
       <span
         class="legend-swatch"
@@ -74,10 +76,11 @@
       <span class:legend-off={!$layersToggles["closed-military-zones"]}
         >Closed Military Zones</span
       >
-    </div>
-    <div
+    </button>
+    <button
       class="legend-item"
       on:click={() => toggleLayer("settlements-circle-fixed")}
+      type="button"
     >
       <span
         class="legend-swatch"
@@ -90,10 +93,11 @@
       <span class:legend-off={!$layersToggles["settlements-circle-fixed"]}
         >Settlements</span
       >
-    </div>
-    <div
+    </button>
+    <button
       class="legend-item"
       on:click={() => toggleLayer("demolition-orders")}
+      type="button"
     >
       <span
         class="legend-swatch"
@@ -106,11 +110,12 @@
       <span class:legend-off={!$layersToggles["demolition-orders"]}
         >Demolition Orders</span
       >
-    </div>
+    </button>
 
-    <div
+    <button
       class="legend-item"
       on:click={() => toggleLayer("jordanian-state-land")}
+      type="button"
     >
       <span
         class="legend-swatch"
@@ -123,7 +128,7 @@
       <span class:legend-off={!$layersToggles["jordanian-state-land"]}
         >Jordanian State Land</span
       >
-    </div>
+    </button>
   </div>
 {/if}
 
@@ -147,6 +152,20 @@
     margin-bottom: 6px;
     cursor: pointer;
     user-select: none;
+    background: none;
+    border: none;
+    padding: 0;
+    font: inherit;
+    color: inherit;
+  }
+
+  .legend-item:hover {
+    opacity: 0.8;
+  }
+
+  .legend-item:focus {
+    outline: 2px solid var(--color-primary);
+    outline-offset: 2px;
   }
 
   .legend-swatch {

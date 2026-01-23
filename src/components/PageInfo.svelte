@@ -1,7 +1,7 @@
 <script>
   import { onMount, onDestroy } from "svelte";
   import { clearSelection } from "$stores/uiStore.js";
-  let { community } = $props();
+  let { community, hideLink = false } = $props();
 
   let wrapper;
   // function handleClickOutside(e) {
@@ -97,6 +97,15 @@
         {/each}
       </div>
     {/if}
+    {#if (community.info?.length > 0 || community.alerts?.length > 0 || community.images?.length > 0) && !hideLink}
+      <div class="action-section">
+        <a
+          target="_blank"
+          href="/community/{community.id}"
+          class="view-full-link">Open in a new tab</a
+        >
+      </div>
+    {/if}
   </div>
 </div>
 
@@ -161,5 +170,23 @@
     margin: 0 0 0.5em;
     font-size: 0.875em;
     color: var(--color-tertiary);
+  }
+
+  .action-section {
+    margin-top: .5rem;
+  }
+
+  .view-full-link {
+    display: inline-block;
+    padding: 0.2rem 0.3rem;
+    background: var(--color-primary);
+    color: white;
+    text-decoration: none;
+    border-radius: 3px;
+    transition: opacity 0.15s;
+  }
+
+  .view-full-link:hover {
+    opacity: 0.8;
   }
 </style>

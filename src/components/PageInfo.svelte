@@ -38,7 +38,21 @@
 </script>
 
 <div bind:this={wrapper} class="panel-wrapper" on:click|stopPropagation>
-  <h2>{community.title}</h2>
+  <div class="title-row">
+    <h2>{community.title}</h2>
+    {#if !hideLink}
+      <a
+        target="_blank"
+        href="/community/{community.id}"
+        class="open-link"
+        title="Open in a new tab"
+      >
+        <svg width=".8rem" height=".8rem" viewBox="0 0 .8rem .8rem" fill="none">
+          <path d="M2 14L14 2M14 2H6M14 2V10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </a>
+    {/if}
+  </div>
 
   <div class="tab-content">
     <div class="info-table">
@@ -97,15 +111,6 @@
         {/each}
       </div>
     {/if}
-    {#if (community.info?.length > 0 || community.alerts?.length > 0 || community.images?.length > 0) && !hideLink}
-      <div class="action-section">
-        <a
-          target="_blank"
-          href="/community/{community.id}"
-          class="view-full-link">Open in a new tab</a
-        >
-      </div>
-    {/if}
   </div>
 </div>
 
@@ -116,6 +121,35 @@
     border-radius: 4px;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
     font-size: 1em;
+  }
+
+  .title-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 10px;
+  }
+
+  .title-row h2 {
+    margin: 0;
+    flex: 1;
+  }
+
+  .open-link {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 1rem;
+    height: 1rem;
+    color: var(--color-primary);
+    text-decoration: none;
+    flex-shrink: 0;
+  }
+
+  .open-link svg {
+    width: 100%;
+    height: 100%;
   }
 
   h3 {
@@ -170,23 +204,5 @@
     margin: 0 0 0.5em;
     font-size: 0.875em;
     color: var(--color-tertiary);
-  }
-
-  .action-section {
-    margin-top: .5rem;
-  }
-
-  .view-full-link {
-    display: inline-block;
-    padding: 0.2rem 0.3rem;
-    background: var(--color-primary);
-    color: white;
-    text-decoration: none;
-    border-radius: 3px;
-    transition: opacity 0.15s;
-  }
-
-  .view-full-link:hover {
-    opacity: 0.8;
   }
 </style>

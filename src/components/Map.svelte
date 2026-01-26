@@ -29,6 +29,7 @@
   let mapContainerElement;
   let isMobile = false;
   let colorSubscription = null;
+  let isVisuallyReady = $state(false);
 
   function getLatestRiskValue(item) {
     const risks = Array.isArray(item?.risks) ? item.risks : [];
@@ -196,12 +197,14 @@
   ];
 
   let mapInstance;
+  let pendingSlideRequest = null;
 
   onMount(() => {
     if (!mapContainerElement) return;
 
     mapLoaded.set(false);
     mapInstance?.remove();
+    isVisuallyReady = false;
 
     mapInstance = new mapboxgl.Map({
       container: mapContainerElement,
@@ -232,6 +235,19 @@
 
     mapInstance.on("load", () => {
       mapLoaded.set(true);
+
+      requestAnimationFrame(() => {
+        mapInstance.resize();
+        mapInstance.jumpTo({
+          center,
+          zoom: initialZoom,
+          pitch: initialPitch,
+          bearing: 0,
+        });
+        mapInstance.once("idle", () => {
+          isVisuallyReady = true;
+        });
+      });
 
       addStaticLabel(
         "Occupied West Bank",
@@ -502,6 +518,12 @@
           }
         },
       );
+
+      if (pendingSlideRequest) {
+        const { id, options } = pendingSlideRequest;
+        pendingSlideRequest = null;
+        showSlide(id, { ...options, animate: false, duration: 0 });
+      }
     });
   });
 
@@ -510,7 +532,14 @@
   }
 
   export function showSlide(id) {
-    if (!$map?.isStyleLoaded()) return;
+    const options =
+      arguments.length > 1 && arguments[1] != null ? arguments[1] : {};
+
+    if (!$map) return;
+    if (!$map.isStyleLoaded()) {
+      pendingSlideRequest = { id, options };
+      return;
+    }
     $map.resize();
 
     activeSlide.set(id);
@@ -527,13 +556,20 @@
       zoom = 8;
     }
 
-    $map.flyTo({
+    const animate = options?.animate ?? true;
+    const duration = options?.duration ?? 1000;
+    const view = {
       center: center,
       zoom: zoom,
-      duration: 1000,
       pitch: $map.getPitch(),
       bearing: $map.getBearing(),
-    });
+    };
+
+    if (animate && duration > 0) {
+      $map.flyTo({ ...view, duration });
+    } else {
+      $map.jumpTo(view);
+    }
 
     clearLabel();
     clearPills();
@@ -662,7 +698,11 @@
   });
 </script>
 
-<div bind:this={mapContainerElement} class="map-container">
+<div
+  bind:this={mapContainerElement}
+  class="map-container"
+  class:ready={isVisuallyReady}
+>
   <MapLegend />
 </div>
 
@@ -671,6 +711,11 @@
   .map-container {
     width: 100%;
     height: 100%;
+    opacity: 0;
+  }
+
+  .map-container.ready {
+    opacity: 1;
   }
 
   :global(.alert-pill) {

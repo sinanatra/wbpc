@@ -1,5 +1,4 @@
 <script>
-  import { onMount, tick } from "svelte";
   import Map from "@components/Map.svelte";
   import SearchBar from "@components/SearchBar.svelte";
   import Legend from "@components/Legend.svelte";
@@ -20,9 +19,12 @@
     };
   };
 
+  let hasInitializedSlide = false;
+
   const handleSlideChange = debounce(() => {
     if ($currentSlideId && mapComponent?.showSlide) {
-      mapComponent.showSlide($currentSlideId);
+      mapComponent.showSlide($currentSlideId, { animate: hasInitializedSlide });
+      hasInitializedSlide = true;
     }
   }, 200);
 
@@ -35,13 +37,6 @@
   function handleGlossarySelect(community) {
     mapComponent?.zoomToCommunity(community, 12, 1000);
   }
-
-  onMount(async () => {
-    await tick();
-    if (mapComponent?.showSlide && editorialData.length) {
-      mapComponent.showSlide(editorialData[0].id);
-    }
-  });
 </script>
 
 <div class="container">

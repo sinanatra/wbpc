@@ -39,18 +39,26 @@
 
 <div bind:this={wrapper} class="panel-wrapper" on:click|stopPropagation>
   <div class="title-row">
-    <h2>{community.title}</h2>
     {#if !hideLink}
       <a
         target="_blank"
-        href="/community/{community.id}"
-        class="open-link"
+        href="/community/{community.title}"
+        class="title-link"
         title="Open in a new tab"
       >
-        <svg width=".8rem" height=".8rem" viewBox="0 0 .8rem .8rem" fill="none">
-          <path d="M2 14L14 2M14 2H6M14 2V10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+        <h2>{community.title}</h2>
+        <svg width="1rem" height="1rem" viewBox="0 0 1rem 1rem" fill="none">
+          <path
+            d="M2 14L14 2M14 2H6M14 2V10"
+            stroke="currentColor"
+            stroke-width="1.5"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          />
         </svg>
       </a>
+    {:else}
+      <h2>{community.title}</h2>
     {/if}
   </div>
 
@@ -132,6 +140,21 @@
   }
 
   .title-row h2 {
+    margin: 0;
+    flex: 1;
+  }
+
+  .title-link {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    flex: 1;
+    color: inherit;
+    text-decoration: none;
+  }
+
+  .title-link h2 {
     margin: 0;
     flex: 1;
   }

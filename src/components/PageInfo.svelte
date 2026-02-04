@@ -42,7 +42,7 @@
     {#if !hideLink}
       <a
         target="_blank"
-        href="/community/{community.title}"
+        href="/community/{community.id}"
         class="title-link"
         title="Open in a new tab"
       >

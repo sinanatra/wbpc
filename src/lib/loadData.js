@@ -74,8 +74,9 @@ export const fetchCommunities = async () => {
   return data;
 };
 
-export const fetchCommunitiesData = async (id) => {
-  const res = await fetch("/api/query", {
+export const fetchCommunitiesData = async (id, customFetch) => {
+  const fetchFn = customFetch || fetch;
+  const res = await fetchFn("/api/query", {
     method: "post",
     headers: {
       "content-type": "application/json",

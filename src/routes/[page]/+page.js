@@ -1,5 +1,4 @@
 export const load = ({ fetch, params }) => {
-    console.log(params.page)
     const fetchPosts = async () => {
         const res = await fetch('/api/query', {
             method: "post",

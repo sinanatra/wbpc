@@ -2,7 +2,7 @@
   import { marked } from "marked";
 
   export let editorialData;
-  console.log("Editorial data:", editorialData);
+  // console.log("Editorial data:", editorialData);
 </script>
 
 <article>

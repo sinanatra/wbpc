@@ -136,12 +136,12 @@
     singleCommunity = null,
   } = $props();
 
-  console.log(
-    "Initial center:",
-    initialCenter,
-    "Initial zoom:",
-    initialZoomLevel,
-  );
+  // console.log(
+  //   "Initial center:",
+  //   initialCenter,
+  //   "Initial zoom:",
+  //   initialZoomLevel,
+  // );
 
   let center = initialCenter;
   let singleCommunityMarker = null;

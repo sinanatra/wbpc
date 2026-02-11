@@ -134,6 +134,7 @@
     initialZoomLevel = 8,
     initialPitch = 0,
     singleCommunity = null,
+    interactionsEnabled = true,
   } = $props();
 
   // console.log(
@@ -198,6 +199,28 @@
 
   let mapInstance;
   let pendingSlideRequest = null;
+
+  function setMapInteractions(enabled) {
+    if (!$map) return;
+
+    if (enabled) {
+      $map.dragPan.enable();
+      $map.scrollZoom.enable();
+      $map.boxZoom.enable();
+      $map.doubleClickZoom.enable();
+      $map.touchZoomRotate.enable();
+      $map.keyboard.enable();
+      return;
+    }
+
+    $map.dragPan.disable();
+    $map.scrollZoom.disable();
+    $map.boxZoom.disable();
+    $map.doubleClickZoom.disable();
+    $map.touchZoomRotate.disable();
+    $map.keyboard.disable();
+    $map.getCanvas().style.cursor = "";
+  }
 
   onMount(() => {
     if (!mapContainerElement) return;
@@ -317,6 +340,7 @@
       }
 
       mapInstance.on("click", "communities-circle", (e) => {
+        if (!interactionsEnabled) return;
         if (!e.features?.length) return;
         const feat = e.features[0];
         setSelectedItem(feat.properties);
@@ -328,6 +352,7 @@
         });
       });
       mapInstance.on("mouseenter", "communities-circle", () => {
+        if (!interactionsEnabled) return;
         mapInstance.getCanvas().style.cursor = "pointer";
       });
       mapInstance.on("mouseleave", "communities-circle", () => {
@@ -426,6 +451,7 @@
       });
 
       mapInstance.on("click", "settlements-circle-fixed", (e) => {
+        if (!interactionsEnabled) return;
         if (!e.features?.length) return;
         const feat = e.features[0];
         setSelectedItem(feat.properties);
@@ -437,6 +463,7 @@
         });
       });
       mapInstance.on("mouseenter", "settlements-circle-fixed", () => {
+        if (!interactionsEnabled) return;
         mapInstance.getCanvas().style.cursor = "pointer";
       });
       mapInstance.on("mouseleave", "settlements-circle-fixed", () => {
@@ -444,6 +471,7 @@
       });
 
       mapInstance.on("click", "outposts", (e) => {
+        if (!interactionsEnabled) return;
         if (!e.features?.length) return;
         const feat = e.features[0];
 
@@ -465,6 +493,7 @@
       });
 
       mapInstance.on("mouseenter", "outposts", () => {
+        if (!interactionsEnabled) return;
         mapInstance.getCanvas().style.cursor = "pointer";
       });
       mapInstance.on("mouseleave", "outposts", () => {
@@ -525,6 +554,11 @@
         showSlide(id, { ...options, animate: false, duration: 0 });
       }
     });
+  });
+
+  $effect(() => {
+    if (!$mapLoaded) return;
+    setMapInteractions(interactionsEnabled);
   });
 
   export function resize() {
@@ -590,7 +624,9 @@
     });
 
     if (id === "communities") {
-      $map.scrollZoom.enable();
+      if (interactionsEnabled) {
+        $map.scrollZoom.enable();
+      }
       $map.setLayoutProperty("communities-circle", "visibility", "visible");
       addAlertPills($communities);
     } else if (id === "settlements") {
@@ -702,6 +738,7 @@
   bind:this={mapContainerElement}
   class="map-container"
   class:ready={isVisuallyReady}
+  class:locked={!interactionsEnabled}
 >
   <MapLegend />
 </div>
@@ -716,6 +753,10 @@
 
   .map-container.ready {
     opacity: 1;
+  }
+
+  .map-container.locked {
+    pointer-events: none;
   }
 
   :global(.alert-pill) {

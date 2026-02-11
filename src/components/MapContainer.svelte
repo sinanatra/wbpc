@@ -6,7 +6,7 @@
   import Header from "@components/Header.svelte";
   import Glossary from "@components/Glossary.svelte";
   import { communities } from "$stores/mapStore.js";
-  import { currentSlideId } from "$stores/scrollStore.js";
+  import { activeSlideIndex, currentSlideId } from "$stores/scrollStore.js";
   import { filteredItems } from "$stores/uiStore.js";
 
   let { editorialData = [], riskArray = [], title = "", mapRef = undefined, mapComponent = undefined } = $props();
@@ -20,6 +20,10 @@
   };
 
   let hasInitializedSlide = false;
+  let mapInteractionsEnabled = $derived(
+    editorialData.length === 0 ||
+      $activeSlideIndex === editorialData.length - 1
+  );
 
   const handleSlideChange = debounce(() => {
     if ($currentSlideId && mapComponent?.showSlide) {
@@ -56,6 +60,7 @@
   <div class="map-area">
     <Map
       bind:this={mapComponent}
+      interactionsEnabled={mapInteractionsEnabled}
     />
   </div>
 </div>

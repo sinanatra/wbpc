@@ -1,22 +1,66 @@
 <script>
-  import { onDestroy, onMount } from "svelte";
+  import { onDestroy } from "svelte";
   import { marked } from "marked";
-  import { activeSlideIndex, setActiveSlide, setSlides, slides } from "$stores/scrollStore.js";
+  import {
+    activeSlideIndex,
+    setActiveSlide,
+    setSlides,
+    slides,
+  } from "$stores/scrollStore.js";
 
   let { slides_data = [] } = $props();
+  let articleEl;
 
   $effect(() => {
     if (slides_data.length > 0) {
       setSlides(slides_data);
+      setActiveSlide(0);
     }
   });
 
   let observers = [];
   let slideRefs = [];
+  const observerTopInsetRem = 1;
+
+  function remToPx(rem) {
+    const rootFontSize =
+      parseFloat(getComputedStyle(document.documentElement).fontSize) || 16;
+    return rem * rootFontSize;
+  }
+
+  function getObserverRootMargin() {
+    const viewportHeight = window.innerHeight || 0;
+    if (!viewportHeight) return "0px 0px -98% 0px";
+
+    const paddingTop = articleEl
+      ? parseFloat(window.getComputedStyle(articleEl).paddingTop) || 0
+      : viewportHeight * 0.1;
+
+    let mobileOffsetY = 0;
+    if (window.matchMedia("(max-width: 767px)").matches && articleEl) {
+      const sidebar = articleEl.closest(".sidebar");
+      const sidebarTop = sidebar
+        ? sidebar.getBoundingClientRect().top
+        : articleEl.getBoundingClientRect().top;
+      mobileOffsetY = Math.max(sidebarTop, 0);
+    }
+
+    const triggerY = Math.min(
+      Math.max(
+        mobileOffsetY + paddingTop + remToPx(observerTopInsetRem),
+        0,
+      ),
+      viewportHeight - 1,
+    );
+    const bandHeight = 2;
+    const topShrink = triggerY;
+    const bottomShrink = Math.max(0, viewportHeight - triggerY - bandHeight);
+
+    return `-${topShrink}px 0px -${bottomShrink}px 0px`;
+  }
 
   function intersectAction(node, index) {
     slideRefs[index] = node;
-    const rootMargin = window.innerHeight > 768 ? "-50% 0px -50% 0px" : "-25% 0px -25% 0px";
     const obs = new IntersectionObserver(
       (entries) => {
         for (const entry of entries) {
@@ -27,9 +71,9 @@
       },
       {
         root: null,
-        rootMargin: rootMargin,
+        rootMargin: getObserverRootMargin(),
         threshold: 0,
-      }
+      },
     );
     obs.observe(node);
     observers.push(obs);
@@ -40,21 +84,6 @@
     };
   }
 
-  onMount(() => {
-    setTimeout(() => {
-      for (let i = 0; i < slideRefs.length; i++) {
-        const rect = slideRefs[i].getBoundingClientRect();
-        const windowHeight = window.innerHeight;
-        if (rect.top < windowHeight / 2 && rect.bottom > windowHeight / 2) {
-          if ($activeSlideIndex !== i) {
-            setActiveSlide(i);
-          }
-          break;
-        }
-      }
-    }, 0);
-  });
-
   onDestroy(() => observers.forEach((o) => o.disconnect()));
 
   function scrollToIndex(idx, behavior = "smooth", block = "center") {
@@ -63,22 +92,21 @@
     setActiveSlide(idx);
   }
 
-  function goToCommunities() {
-    const communitiesIndex = $slides.findIndex(
-      (slide) => slide.id === "communities"
+  function skipIntro() {
+    const firstPostIntroIndex = $slides.findIndex(
+      (slide, idx) => idx > 0 && slide.id === "communities",
     );
-    if (communitiesIndex !== -1) {
-      scrollToIndex(communitiesIndex, "instant", "start");
+    const fallbackIndex = $slides.length > 1 ? $slides.length - 1 : -1;
+    const targetIndex =
+      firstPostIntroIndex !== -1 ? firstPostIntroIndex : fallbackIndex;
+
+    if (targetIndex !== -1) {
+      scrollToIndex(targetIndex, "auto", "start");
     }
   }
 </script>
 
-<article class="slides">
-  <div class="skip-btn-container">
-    <button class="skip-btn" on:click={goToCommunities}>
-      Skip to Communities
-    </button>
-  </div>
+<article class="slides" bind:this={articleEl}>
   <div>
     {#each $slides as slide, i}
       <div
@@ -89,6 +117,11 @@
       >
         {@html marked(slide.text)}
       </div>
+      {#if i === 0}
+        <div class="skip-btn-container">
+          <button class="skip-btn" on:click={skipIntro}> Skip intro </button>
+        </div>
+      {/if}
     {/each}
   </div>
 </article>
@@ -110,12 +143,13 @@
   }
 
   .skip-btn {
-    padding: 0.2rem 0.5rem;
+    padding: 0.4rem 0.6rem;
     color: var(--color-primary);
     border: none;
     border-radius: 4px;
     cursor: pointer;
-    opacity: 0.7;
+    opacity: 0.8;
+    font-size: 1rem;
   }
 
   .skip-btn:hover {
@@ -123,7 +157,12 @@
   }
 
   article {
-    padding-top: 60vh;
+    /* padding-top: 10vh; */
+  }
+
+  article .slide:first-child {
+    /* background-color: red; */
+    margin-bottom: 10vh;
   }
 
   .slide {
@@ -140,13 +179,11 @@
     text-wrap: pretty;
   }
 
-  .slide.active {
-    opacity: 1;
+  :global(.slide > p) {
+    padding-bottom: 1rem;
   }
 
-  @media screen and (max-width: 767px) {
-    article {
-      padding-top: 10vh;
-    }
+  .slide.active {
+    opacity: 1;
   }
 </style>

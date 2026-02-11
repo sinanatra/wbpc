@@ -7,7 +7,7 @@
   import Glossary from "@components/Glossary.svelte";
   import { communities } from "$stores/mapStore.js";
   import { activeSlideIndex, currentSlideId } from "$stores/scrollStore.js";
-  import { filteredItems } from "$stores/uiStore.js";
+  import { clearSelection, filteredItems } from "$stores/uiStore.js";
 
   let { editorialData = [], riskArray = [], title = "", mapRef = undefined, mapComponent = undefined } = $props();
 
@@ -35,6 +35,12 @@
   $effect(() => {
     if ($currentSlideId) {
       handleSlideChange();
+    }
+  });
+
+  $effect(() => {
+    if (!mapInteractionsEnabled) {
+      clearSelection();
     }
   });
 

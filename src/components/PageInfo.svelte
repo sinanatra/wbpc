@@ -126,6 +126,22 @@
         {/each}
       </div>
     {/if}
+
+    {#if community.videos?.length > 0}
+      <h3>Videos</h3>
+      <div class="videos-panel">
+        {#each community.videos as video}
+          <div class="video-wrapper">
+            <video controls preload="metadata">
+              <source src={video.url} />
+            </video>
+            {#if video.caption}
+              <p class="caption">{video.caption}</p>
+            {/if}
+          </div>
+        {/each}
+      </div>
+    {/if}
   </div>
 </div>
 
@@ -225,5 +241,16 @@
     margin: 0 0 0.5em;
     font-size: 0.875em;
     color: var(--color-tertiary);
+  }
+
+  .videos-panel {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .videos-panel .video-wrapper video {
+    width: 100%;
+    border-radius: 4px;
+    background: #000;
   }
 </style>

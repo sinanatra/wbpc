@@ -107,6 +107,15 @@ export const fetchCommunitiesData = async (id, customFetch) => {
             alt: "file.alt",
           },
         },
+        videos: {
+          query: "page.videos.sortBy('sort')",
+          select: {
+            url: true,
+            caption: "file.caption",
+            copyright: "file.copyright",
+            alt: "file.alt",
+          },
+        },
         governmentMoneySpent: "page.governmentMoneySpent",
         donorFunding:
           "page.grantsList.toStructure().sortBy('fundingDate', 'asc')",

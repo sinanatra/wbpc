@@ -120,7 +120,7 @@
           <div class="image-wrapper">
             <img src={image.url} alt={image.alt || community.title} />
             {#if image.caption}
-              <p class="caption">{image.caption}</p>
+              <div class="caption">{@html image.caption}</div>
             {/if}
           </div>
         {/each}
@@ -136,7 +136,7 @@
               <source src={video.url} />
             </video>
             {#if video.caption}
-              <p class="caption">{video.caption}</p>
+              <div class="caption">{@html video.caption}</div>
             {/if}
           </div>
         {/each}
@@ -252,5 +252,15 @@
     width: 100%;
     border-radius: 4px;
     background: #000;
+  }
+
+  .videos-panel .caption {
+    margin: 0 0 0.5em;
+    font-size: 0.875em;
+    color: var(--color-tertiary);
+  }
+
+  .caption :global(p) {
+    margin: 0;
   }
 </style>

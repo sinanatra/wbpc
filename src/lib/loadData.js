@@ -102,7 +102,7 @@ export const fetchCommunitiesData = async (id, customFetch) => {
           query: "page.images.sortBy('sort')",
           select: {
             url: true,
-            caption: "file.caption",
+            caption: "file.caption.kt",
             copyright: "file.copyright",
             alt: "file.alt",
           },
@@ -111,7 +111,7 @@ export const fetchCommunitiesData = async (id, customFetch) => {
           query: "page.videos.sortBy('sort')",
           select: {
             url: true,
-            caption: "file.caption",
+            caption: "file.caption.kt",
             copyright: "file.copyright",
             alt: "file.alt",
           },

@@ -3,10 +3,14 @@
 </script>
 
 <header>
-  <h1><a href="/"><img src="/logo.svg" alt="Forcible Transfer Watch" class="logo" /></a></h1>
+  <h1>
+    <a href="/"
+      ><img src="/logo.svg" alt="Forcible Transfer Watch" class="logo" /></a
+    >
+  </h1>
   <nav>
     <a href="/about" class:active={$page.route.id === "/about"}>About</a>
-    <br>
+    <br />
     <a href="/methodology" class:active={$page.route.id === "/methodology"}
       >Methodology</a
     >
@@ -19,6 +23,7 @@
     display: flex;
     justify-content: space-between;
     align-items: flex-start;
+    align-items: center;
     padding-bottom: 20px;
     border-bottom: 1px solid var(--color-tertiary);
   }
@@ -59,7 +64,7 @@
   }
 
   .logo {
-    height: 60px;
+    height: 40px;
     width: auto;
     display: block;
   }

@@ -16,8 +16,13 @@
   $effect(() => {
     if (slides_data.length > 0) {
       setSlides(slides_data);
-      setActiveSlide(0);
-      setActiveSlide(0);
+      const boundedIndex = Math.min(
+        Math.max($activeSlideIndex, 0),
+        slides_data.length - 1,
+      );
+      if ($activeSlideIndex !== boundedIndex) {
+        setActiveSlide(boundedIndex);
+      }
     }
   });
 
@@ -27,6 +32,8 @@
   const observerTopInsetRem = 1;
   let scrollRoot = null;
   let syncFrame = null;
+  let settleSyncRaf = null;
+  let settleSyncTimer = null;
 
   function remToPx(rem) {
     const rootFontSize =
@@ -144,11 +151,29 @@
 
     scrollRoot.addEventListener("scroll", onScroll, { passive: true });
     window.addEventListener("resize", onResize, { passive: true });
+
     scheduleSync();
+    settleSyncRaf = requestAnimationFrame(() => {
+      scheduleSync();
+      settleSyncRaf = requestAnimationFrame(() => {
+        scheduleSync();
+      });
+    });
+    settleSyncTimer = setTimeout(() => {
+      scheduleSync();
+    }, 150);
 
     return () => {
       scrollRoot?.removeEventListener("scroll", onScroll);
       window.removeEventListener("resize", onResize);
+      if (settleSyncRaf !== null) {
+        cancelAnimationFrame(settleSyncRaf);
+        settleSyncRaf = null;
+      }
+      if (settleSyncTimer !== null) {
+        clearTimeout(settleSyncTimer);
+        settleSyncTimer = null;
+      }
       if (syncFrame !== null) {
         cancelAnimationFrame(syncFrame);
         syncFrame = null;

@@ -609,10 +609,10 @@
     });
   });
 
-  $effect(() => {
-    if (!$mapLoaded) return;
-    setMapInteractions(interactionsEnabled);
-  });
+  // $effect(() => {
+  //   if (!$mapLoaded) return;
+  //   setMapInteractions(interactionsEnabled);
+  // });
 
   $effect(() => {
     if (!$mapLoaded || !$map) return;

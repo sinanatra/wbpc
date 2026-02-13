@@ -1,6 +1,7 @@
 <script>
   import { onDestroy, onMount } from "svelte";
   import { marked } from "marked";
+  import Legend from "@components/Legend.svelte";
 
   import {
     activeSlideIndex,
@@ -9,7 +10,7 @@
     slides,
   } from "$stores/scrollStore.js";
 
-  let { slides_data = [] } = $props();
+  let { slides_data = [], riskArray = [] } = $props();
   let articleEl;
 
   $effect(() => {
@@ -22,7 +23,7 @@
 
   let observers = [];
   let slideRefs = [];
-  
+
   const observerTopInsetRem = 1;
   let scrollRoot = null;
   let syncFrame = null;
@@ -51,10 +52,7 @@
     }
 
     const triggerY = Math.min(
-      Math.max(
-        mobileOffsetY + paddingTop + remToPx(observerTopInsetRem),
-        0,
-      ),
+      Math.max(mobileOffsetY + paddingTop + remToPx(observerTopInsetRem), 0),
       viewportHeight - 1,
     );
 
@@ -95,7 +93,11 @@
     }
 
     const nextIndex =
-      containingIndex !== -1 ? containingIndex : lastBeforeIndex !== -1 ? lastBeforeIndex : 0;
+      containingIndex !== -1
+        ? containingIndex
+        : lastBeforeIndex !== -1
+          ? lastBeforeIndex
+          : 0;
 
     if ($activeSlideIndex !== nextIndex) {
       setActiveSlide(nextIndex);
@@ -209,8 +211,11 @@
         {@html marked(slide.text)}
       </div>
       {#if i === 0}
-        <div class="skip-btn-container">
-          <button class="skip-btn" on:click={skipIntro}> Skip intro </button>
+        <div class="context">
+          <Legend {riskArray} />
+          <div class="skip-btn-container">
+            <button class="skip-btn" on:click={skipIntro}> Skip intro </button>
+          </div>
         </div>
       {/if}
     {/each}
@@ -247,7 +252,8 @@
     opacity: 1;
   }
 
-  article .slide:first-child {
+  /* article .slide:first-child */
+  .context {
     /* background-color: red; */
     margin-bottom: 10vh;
   }
@@ -258,12 +264,18 @@
     padding: 10px 5px;
     font-size: 1.8em;
     line-height: 1.2em;
+
     /* text-indent: 10px; */
     cursor: pointer;
     margin: 0 auto;
 
     hyphens: auto;
     text-wrap: pretty;
+  }
+
+  :global(.slide > h1),
+  :global(.slide > h2) {
+    line-height: 1em;
   }
 
   :global(.slide > p) {

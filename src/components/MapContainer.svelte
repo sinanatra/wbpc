@@ -99,7 +99,7 @@
 <div class="container">
   <aside class="sidebar" bind:this={sidebarEl}>
     <Header {title} />
-    <ScrollyText slides_data={editorialData} />
+    <ScrollyText slides_data={editorialData} {riskArray}/>
     <div class="sticky-section">
       <Legend {riskArray} />
       <div class="search-controls">

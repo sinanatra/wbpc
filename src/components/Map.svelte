@@ -44,6 +44,54 @@
     return item?.risk ?? latest ?? "default";
   }
 
+  function buildPointsData() {
+    return {
+      type: "FeatureCollection",
+      features: [
+        ...($communities || []).map((c) => {
+          const latestRisk = getLatestRiskValue(c);
+          return {
+            type: "Feature",
+            geometry: {
+              type: "Point",
+              coordinates: [
+                parseFloat(c.coordinates.lon),
+                parseFloat(c.coordinates.lat),
+              ],
+            },
+            properties: {
+              ...c,
+              risk: latestRisk,
+            },
+          };
+        }),
+        ...($settlements || []).map((s) => ({
+          type: "Feature",
+          geometry: {
+            type: "Point",
+            coordinates: [
+              parseFloat(s.coordinates.lon),
+              parseFloat(s.coordinates.lat),
+            ],
+          },
+          properties: {
+            ...s,
+            type: "settlement",
+            size: Number(s.size) || 0,
+            year: Number(s.year),
+          },
+        })),
+      ],
+    };
+  }
+
+  function refreshPointsSource() {
+    if (!$map || !$mapLoaded) return;
+    const pointsSource = $map.getSource("points");
+    if (!pointsSource || typeof pointsSource.setData !== "function") return;
+    pointsSource.setData(buildPointsData());
+  }
+
   function clearPills() {
     alertPillMarkers.update((markers) => {
       markers.forEach((m) => m.remove());
@@ -298,45 +346,7 @@
 
       mapInstance.addSource("points", {
         type: "geojson",
-        data: {
-          type: "FeatureCollection",
-          features: [
-            ...($communities || []).map((c) => {
-              const latestRisk = getLatestRiskValue(c);
-
-              return {
-                type: "Feature",
-                geometry: {
-                  type: "Point",
-                  coordinates: [
-                    parseFloat(c.coordinates.lon),
-                    parseFloat(c.coordinates.lat),
-                  ],
-                },
-                properties: {
-                  ...c,
-                  risk: latestRisk,
-                },
-              };
-            }),
-            ...($settlements || []).map((s) => ({
-              type: "Feature",
-              geometry: {
-                type: "Point",
-                coordinates: [
-                  parseFloat(s.coordinates.lon),
-                  parseFloat(s.coordinates.lat),
-                ],
-              },
-              properties: {
-                ...s,
-                type: "settlement",
-                size: Number(s.size) || 0,
-                year: Number(s.year),
-              },
-            })),
-          ],
-        },
+        data: buildPointsData(),
       });
 
       function addStaticLabel(text, coordinates, color = "#aaa") {
@@ -598,6 +608,17 @@
     $activeSlide;
     $selectedItem;
     syncLabelVisibility();
+  });
+
+  $effect(() => {
+    if (!$mapLoaded || !$map) return;
+    $communities;
+    $settlements;
+    $activeSlide;
+    refreshPointsSource();
+    if ($activeSlide === "communities") {
+      addAlertPills($communities);
+    }
   });
 
   export function resize() {

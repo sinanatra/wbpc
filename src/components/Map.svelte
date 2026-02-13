@@ -33,6 +33,7 @@
   const pointStroke = "#000";
   const communityStroke = "#222";
   const communityStrokeWidth = 1;
+  const occupiedWestBankLabelMaxZoom = 9.5;
 
   function getLatestRiskValue(item) {
     const risks = Array.isArray(item?.risks) ? item.risks : [];
@@ -90,6 +91,14 @@
     const pointsSource = $map.getSource("points");
     if (!pointsSource || typeof pointsSource.setData !== "function") return;
     pointsSource.setData(buildPointsData());
+  }
+
+  function syncOccupiedWestBankLabelVisibility() {
+    if (!occupiedWestBankLabelMarker || !$map) return;
+    const shouldShow = $map.getZoom() <= occupiedWestBankLabelMaxZoom;
+    occupiedWestBankLabelMarker.getElement().style.display = shouldShow
+      ? ""
+      : "none";
   }
 
   function clearPills() {
@@ -285,6 +294,7 @@
 
   let mapInstance;
   let pendingSlideRequest = null;
+  let occupiedWestBankLabelMarker = null;
 
   onMount(() => {
     if (!mapContainerElement) return;
@@ -318,6 +328,7 @@
 
     mapInstance.on("zoom", () => {
       toggleZoomLayers();
+      syncOccupiedWestBankLabelVisibility();
     });
 
     mapInstance.on("load", () => {
@@ -336,13 +347,14 @@
         });
       });
 
-      addStaticLabel(
+      occupiedWestBankLabelMarker = addStaticLabel(
         "Occupied West Bank",
         isMobile
           ? [34.96829552848957, 31.82178927355715]
           : [35.4558374411592, 32.404],
         "#ccc",
       );
+      syncOccupiedWestBankLabelVisibility();
 
       mapInstance.addSource("points", {
         type: "geojson",
@@ -797,6 +809,8 @@
 
   onDestroy(() => {
     if (colorSubscription) colorSubscription();
+    occupiedWestBankLabelMarker?.remove();
+    occupiedWestBankLabelMarker = null;
     mapInstance?.remove();
     map.set(null);
     mapLoaded.set(false);

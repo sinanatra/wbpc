@@ -19,7 +19,6 @@
   } from "$stores/mapStore.js";
   import { selectedItem, setSelectedItem } from "$stores/uiStore.js";
 
-  
   mapboxgl.accessToken = import.meta.env.VITE_MAPBOX_ACCESS_TOKEN;
 
   const STYLE_URL = `mapbox://styles/sinanatra/cm7yteg6x00ty01sc85aqduv2?${Date.now()}`;
@@ -168,7 +167,6 @@
     initialPitch = 0,
     singleCommunity = null,
     interactionsEnabled = true,
-    interactionsEnabled = true,
   } = $props();
 
   // console.log(
@@ -239,50 +237,6 @@
 
   let mapInstance;
   let pendingSlideRequest = null;
-
-  function setMapInteractions(enabled) {
-    if (!$map) return;
-
-    if (enabled) {
-      $map.dragPan.enable();
-      $map.scrollZoom.enable();
-      $map.boxZoom.enable();
-      $map.doubleClickZoom.enable();
-      $map.touchZoomRotate.enable();
-      $map.keyboard.enable();
-      return;
-    }
-
-    $map.dragPan.disable();
-    $map.scrollZoom.disable();
-    $map.boxZoom.disable();
-    $map.doubleClickZoom.disable();
-    $map.touchZoomRotate.disable();
-    $map.keyboard.disable();
-    $map.getCanvas().style.cursor = "";
-  }
-
-  function setMapInteractions(enabled) {
-    if (!$map) return;
-
-    if (enabled) {
-      $map.dragPan.enable();
-      $map.scrollZoom.enable();
-      $map.boxZoom.enable();
-      $map.doubleClickZoom.enable();
-      $map.touchZoomRotate.enable();
-      $map.keyboard.enable();
-      return;
-    }
-
-    $map.dragPan.disable();
-    $map.scrollZoom.disable();
-    $map.boxZoom.disable();
-    $map.doubleClickZoom.disable();
-    $map.touchZoomRotate.disable();
-    $map.keyboard.disable();
-    $map.getCanvas().style.cursor = "";
-  }
 
   onMount(() => {
     if (!mapContainerElement) return;

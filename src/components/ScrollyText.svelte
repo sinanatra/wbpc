@@ -1,12 +1,7 @@
 <script>
   import { onDestroy, onMount } from "svelte";
   import { marked } from "marked";
-  import {
-    activeSlideIndex,
-    setActiveSlide,
-    setSlides,
-    slides,
-  } from "$stores/scrollStore.js";
+
   import {
     activeSlideIndex,
     setActiveSlide,
@@ -15,7 +10,6 @@
   } from "$stores/scrollStore.js";
 
   let { slides_data = [] } = $props();
-  let articleEl;
   let articleEl;
 
   $effect(() => {
@@ -28,92 +22,7 @@
 
   let observers = [];
   let slideRefs = [];
-  const observerTopInsetRem = 1;
-  let scrollRoot = null;
-  let syncFrame = null;
-
-  function remToPx(rem) {
-    const rootFontSize =
-      parseFloat(getComputedStyle(document.documentElement).fontSize) || 16;
-    return rem * rootFontSize;
-  }
-
-  function getTriggerY() {
-    const viewportHeight = window.innerHeight || 0;
-    if (!viewportHeight) return 0;
-
-    const paddingTop = articleEl
-      ? parseFloat(window.getComputedStyle(articleEl).paddingTop) || 0
-      : viewportHeight * 0.1;
-
-    let mobileOffsetY = 0;
-    if (window.matchMedia("(max-width: 767px)").matches && articleEl) {
-      const sidebar = articleEl.closest(".sidebar");
-      const sidebarTop = sidebar
-        ? sidebar.getBoundingClientRect().top
-        : articleEl.getBoundingClientRect().top;
-      mobileOffsetY = Math.max(sidebarTop, 0);
-    }
-
-    const triggerY = Math.min(
-      Math.max(
-        mobileOffsetY + paddingTop + remToPx(observerTopInsetRem),
-        0,
-      ),
-      viewportHeight - 1,
-    );
-
-    return triggerY;
-  }
-
-  function getObserverRootMargin() {
-    const viewportHeight = window.innerHeight || 0;
-    if (!viewportHeight) return "0px 0px -98% 0px";
-
-    const triggerY = getTriggerY();
-    const bandHeight = 2;
-    const topShrink = triggerY;
-    const bottomShrink = Math.max(0, viewportHeight - triggerY - bandHeight);
-
-    return `-${topShrink}px 0px -${bottomShrink}px 0px`;
-  }
-
-  function syncActiveSlideFromPosition() {
-    if (!slideRefs.length) return;
-
-    const triggerY = getTriggerY();
-    let containingIndex = -1;
-    let lastBeforeIndex = -1;
-
-    for (let i = 0; i < slideRefs.length; i++) {
-      const node = slideRefs[i];
-      if (!node) continue;
-
-      const rect = node.getBoundingClientRect();
-      if (rect.top <= triggerY && rect.bottom > triggerY) {
-        containingIndex = i;
-        break;
-      }
-      if (rect.top <= triggerY) {
-        lastBeforeIndex = i;
-      }
-    }
-
-    const nextIndex =
-      containingIndex !== -1 ? containingIndex : lastBeforeIndex !== -1 ? lastBeforeIndex : 0;
-
-    if ($activeSlideIndex !== nextIndex) {
-      setActiveSlide(nextIndex);
-    }
-  }
-
-  function scheduleSync() {
-    if (syncFrame !== null) return;
-    syncFrame = requestAnimationFrame(() => {
-      syncFrame = null;
-      syncActiveSlideFromPosition();
-    });
-  }
+  
   const observerTopInsetRem = 1;
   let scrollRoot = null;
   let syncFrame = null;

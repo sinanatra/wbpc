@@ -119,7 +119,6 @@
     <Map
       bind:this={mapComponent}
       interactionsEnabled={mapInteractionsEnabled}
-      interactionsEnabled={mapInteractionsEnabled}
     />
   </div>
 </div>

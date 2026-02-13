@@ -88,6 +88,7 @@ export const fetchCommunitiesData = async (id, customFetch) => {
         title: "page.title",
         risks: "page.risks.toStructure().sortBy('riskdate', 'desc')",
         alternativeNames: "page.alternativeNames.split(',')",
+        alternativeTitle: "page.alternativeTitle",
         coordinates: "page.coordinates.yaml()",
         tags: "page.tags.split(',')",
         info: "page.info",

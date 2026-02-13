@@ -46,7 +46,11 @@
         class="title-link"
         title="Open in a new tab"
       >
-        <h2>{community.title}</h2>
+        <div>
+          <h2>{community.title}</h2>
+          <h2 class="alternative">{community.alternativeTitle}</h2>
+        </div>
+
         <svg width="1rem" height="1rem" viewBox="0 0 1rem 1rem" fill="none">
           <path
             d="M2 14L14 2M14 2H6M14 2V10"
@@ -58,7 +62,10 @@
         </svg>
       </a>
     {:else}
-      <h2>{community.title}</h2>
+      <div>
+        <h2>{community.title}</h2>
+        <h2 class="alternative">{community.alternativeTitle}</h2>
+      </div>
     {/if}
   </div>
 
@@ -159,20 +166,11 @@
     flex: 1;
   }
 
-  .open-link {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 1rem;
-    height: 1rem;
+  .alternative {
     color: var(--color-primary);
-    text-decoration: none;
-    flex-shrink: 0;
-  }
-
-  .open-link svg {
-    width: 100%;
-    height: 100%;
+    font-weight: 100;
+    font-size: 0.8em;
+    margin-top: 0.4em;
   }
 
   h3 {

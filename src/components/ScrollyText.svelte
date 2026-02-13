@@ -63,7 +63,7 @@
 
   function getObserverRootMargin() {
     const viewportHeight = window.innerHeight || 0;
-    if (!viewportHeight) return "0px 0px -98% 0px";
+    if (!viewportHeight) return "0px 0px -90% 0px";
 
     const triggerY = getTriggerY();
     const bandHeight = 2;

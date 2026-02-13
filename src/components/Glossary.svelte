@@ -1,19 +1,32 @@
 <script>
-  import { createEventDispatcher, onMount } from "svelte";
+  import { createEventDispatcher, onMount, tick } from "svelte";
   import PageInfo from "./PageInfo.svelte";
   import { selectedItem, setSelectedItem } from "$stores/uiStore.js";
 
   let { communities = [] } = $props();
 
-  let communityRefs = [];
-  let lastScrolledId = null;
+  let communityRefs = new Map();
   const dispatch = createEventDispatcher();
+  const selectedRowOffset = 180;
 
-  function registerRef(node, index) {
-    communityRefs[index] = node;
+  function getCommunityKey(id) {
+    return id == null ? "" : String(id);
+  }
+
+  function registerRef(node, communityId) {
+    let currentId = getCommunityKey(communityId);
+    communityRefs.set(currentId, node);
+
     return {
+      update(nextId) {
+        const nextKey = getCommunityKey(nextId);
+        if (nextKey === currentId) return;
+        communityRefs.delete(currentId);
+        currentId = nextKey;
+        communityRefs.set(currentId, node);
+      },
       destroy() {
-        communityRefs[index] = null;
+        communityRefs.delete(currentId);
       },
     };
   }
@@ -23,37 +36,60 @@
     dispatch("select", community);
   }
 
+  function scrollNodeToSelectionPosition(node) {
+    const scrollContainer = node.closest(".sidebar");
+    if (!scrollContainer) {
+      node.scrollIntoView({ behavior: "auto", block: "start" });
+      return;
+    }
+
+    const containerRect = scrollContainer.getBoundingClientRect();
+    const nodeRect = node.getBoundingClientRect();
+    const targetTop =
+      scrollContainer.scrollTop +
+      (nodeRect.top - containerRect.top) -
+      selectedRowOffset;
+    const maxTop = Math.max(
+      0,
+      scrollContainer.scrollHeight - scrollContainer.clientHeight,
+    );
+    const nextTop = Math.max(0, Math.min(maxTop, targetTop));
+    scrollContainer.scrollTo({ top: nextTop, behavior: "auto" });
+  }
+
   onMount(() => {
-    return selectedItem.subscribe((item) => {
-      if (item?.id && item.id !== lastScrolledId) {
-        lastScrolledId = item.id;
-        const idx = communities.findIndex((c) => c.id === item.id);
-        if (idx !== -1 && communityRefs[idx]) {
-          setTimeout(() => {
-            communityRefs[idx].scrollIntoView({ behavior: "smooth", block: "start" });
-          }, 0);
-        }
-      }
+    return selectedItem.subscribe(async (item) => {
+      if (item?.id == null) return;
+      await tick();
+      const node = communityRefs.get(getCommunityKey(item.id));
+      if (!node) return;
+      scrollNodeToSelectionPosition(node);
     });
   });
 </script>
 
 <article>
-  {#each communities as community, i}
-    <div
-      class="community"
-      on:click={(e) => { e.stopPropagation(); handleClick(community); }}
-      use:registerRef={i}
-    >
-      <h2 class="title">{community.title}</h2>
-      <h2 class="alternative">{community.alternativeTitle}</h2>
-    </div>
+  {#each communities as community}
+    <div class="community-row" use:registerRef={community.id}>
+      {#if getCommunityKey($selectedItem?.id) !== getCommunityKey(community.id)}
+        <div
+          class="community"
+          on:click={(e) => {
+            e.stopPropagation();
+            handleClick(community);
+          }}
+        >
+          <h2 class="title">{community.title}</h2>
+          <h2 class="alternative">{community.alternativeTitle}</h2>
+        </div>
+      {/if}
 
-    {#if $selectedItem?.id === community.id}
-      <div class="info-inline" on:click|stopPropagation>
-        <PageInfo community={$selectedItem} />
-      </div>
-    {/if}
+      {#if getCommunityKey($selectedItem?.id) === getCommunityKey(community.id)}
+        <div class="info-inline" on:click|stopPropagation>
+          <PageInfo community={$selectedItem} />
+        </div>
+      {/if}
+    </div>
   {/each}
 </article>
 
@@ -68,8 +104,6 @@
     border-bottom: 1px dashed var(--color-primary);
     padding: 5px 10px;
     cursor: pointer;
-    scroll-margin-top: 150px;
-    
   }
 
   h2 {

@@ -16,13 +16,11 @@
     communities,
     settlements,
     riskColors,
-    clearAllMarkers,
-    toggleLayerVisibility,
   } from "$stores/mapStore.js";
   import { selectedItem, setSelectedItem } from "$stores/uiStore.js";
 
-  mapboxgl.accessToken =
-    "pk.eyJ1Ijoic2luYW5hdHJhIiwiYSI6ImNpcTloaTlocjAwNWFodm0yODJjODF5MXYifQ.urgyj3bpfbG3dX4uTOOZtQ";
+  
+  mapboxgl.accessToken = import.meta.env.VITE_MAPBOX_ACCESS_TOKEN;
 
   const STYLE_URL = `mapbox://styles/sinanatra/cm7yteg6x00ty01sc85aqduv2?${Date.now()}`;
 
@@ -30,6 +28,12 @@
   let isMobile = false;
   let colorSubscription = null;
   let isVisuallyReady = $state(false);
+  let activeLabelType = null;
+
+  const pointRadius = 6;
+  const pointStroke = "#000";
+  const communityStroke = "#222";
+  const communityStrokeWidth = 1;
 
   function getLatestRiskValue(item) {
     const risks = Array.isArray(item?.risks) ? item.risks : [];
@@ -48,6 +52,33 @@
     });
   }
 
+  function getSelectionZoom(preferredZoom = $targetZoom) {
+    if (!$map) return preferredZoom;
+    return Math.max($map.getZoom(), preferredZoom);
+  }
+
+  function isLayerVisible(layerId) {
+    if (!$map?.getLayer(layerId)) return false;
+    return $map.getLayoutProperty(layerId, "visibility") !== "none";
+  }
+
+  function syncLabelVisibility() {
+    const type = $selectedItem?.type || activeLabelType;
+    if (!type) return;
+
+    const labelVisibleByType = {
+      community: isLayerVisible("communities-circle"),
+      settlement:
+        isLayerVisible("settlements-circle") ||
+        isLayerVisible("settlements-circle-fixed"),
+      outpost: isLayerVisible("outposts"),
+    };
+
+    if (labelVisibleByType[type] === false) {
+      clearLabel();
+    }
+  }
+
   function showLabel(feature) {
     labelMarker.update((marker) => {
       marker?.remove();
@@ -56,6 +87,7 @@
 
     setTimeout(() => {
       const p = feature.properties;
+      activeLabelType = p.type || null;
       let color;
       if (p.type === "community") {
         const rv = getLatestRiskValue(p);
@@ -110,7 +142,7 @@
         setTimeout(() => {
           $map.flyTo({
             center: [item.coordinates.lon, item.coordinates.lat],
-            zoom: $targetZoom,
+            zoom: getSelectionZoom($targetZoom),
             duration: 3000,
           });
         }, 50);
@@ -127,6 +159,7 @@
       marker?.remove();
       return null;
     });
+    activeLabelType = null;
   }
 
   let {
@@ -135,8 +168,15 @@
     initialPitch = 0,
     singleCommunity = null,
     interactionsEnabled = true,
+    interactionsEnabled = true,
   } = $props();
 
+  // console.log(
+  //   "Initial center:",
+  //   initialCenter,
+  //   "Initial zoom:",
+  //   initialZoomLevel,
+  // );
   // console.log(
   //   "Initial center:",
   //   initialCenter,
@@ -199,6 +239,28 @@
 
   let mapInstance;
   let pendingSlideRequest = null;
+
+  function setMapInteractions(enabled) {
+    if (!$map) return;
+
+    if (enabled) {
+      $map.dragPan.enable();
+      $map.scrollZoom.enable();
+      $map.boxZoom.enable();
+      $map.doubleClickZoom.enable();
+      $map.touchZoomRotate.enable();
+      $map.keyboard.enable();
+      return;
+    }
+
+    $map.dragPan.disable();
+    $map.scrollZoom.disable();
+    $map.boxZoom.disable();
+    $map.doubleClickZoom.disable();
+    $map.touchZoomRotate.disable();
+    $map.keyboard.disable();
+    $map.getCanvas().style.cursor = "";
+  }
 
   function setMapInteractions(enabled) {
     if (!$map) return;
@@ -347,7 +409,7 @@
         showLabel(feat);
         mapInstance.flyTo({
           center: feat.geometry.coordinates,
-          zoom: $targetZoom,
+          zoom: getSelectionZoom($targetZoom),
           duration: 1500,
         });
       });
@@ -404,9 +466,9 @@
         filter: ["==", ["get", "type"], "settlement"],
         minzoom: 11,
         paint: {
-          "circle-radius": 6,
+          "circle-radius": pointRadius,
           "circle-color": "rgba(0, 0, 0, .2)",
-          "circle-stroke-color": "black",
+          "circle-stroke-color": pointStroke,
           "circle-stroke-width": 1,
         },
       });
@@ -416,8 +478,10 @@
         type: "circle",
         source: "points",
         paint: {
-          "circle-radius": 6,
+          "circle-radius": pointRadius,
           "circle-color": "#aaa",
+          "circle-stroke-color": communityStroke,
+          "circle-stroke-width": communityStrokeWidth,
         },
         filter: ["==", ["get", "type"], "community"],
         layout: { visibility: "none" },
@@ -458,7 +522,7 @@
         showLabel(feat);
         mapInstance.flyTo({
           center: feat.geometry.coordinates,
-          zoom: $targetZoom,
+          zoom: getSelectionZoom($targetZoom),
           duration: 1500,
         });
       });
@@ -487,7 +551,7 @@
         showLabel(feat);
         mapInstance.flyTo({
           center: feat.geometry.coordinates,
-          zoom: $targetZoom,
+          zoom: getSelectionZoom($targetZoom),
           duration: 1500,
         });
       });
@@ -501,21 +565,29 @@
       });
 
       if (mapInstance.getLayer("outposts")) {
-        mapInstance.setPaintProperty("outposts", "circle-stroke-color", "#000");
-        mapInstance.setPaintProperty("outposts", "circle-stroke-width", 2);
-        mapInstance.setPaintProperty("outposts", "circle-radius", 2);
+        mapInstance.setPaintProperty("outposts", "circle-color", "#fff");
+        mapInstance.setPaintProperty(
+          "outposts",
+          "circle-stroke-color",
+          pointStroke,
+        );
+        mapInstance.setPaintProperty("outposts", "circle-stroke-width", 1.5);
+        mapInstance.setPaintProperty("outposts", "circle-radius", pointRadius);
       }
 
-      if (mapInstance?.getLayer("demolition-orders")) {
-        mapInstance?.setPaintProperty("demolition-orders", "fill-opacity", 0.1);
-        mapInstance?.setPaintProperty("demolition-orders", "circle-radius", 2);
+      if (mapInstance.getLayer("demolition-orders")) {
+        mapInstance.setLayoutProperty(
+          "demolition-orders",
+          "visibility",
+          "none",
+        );
       }
 
       if (mapInstance.getLayer("jordanian-state-land")) {
         mapInstance.setPaintProperty(
           "jordanian-state-land",
           "fill-opacity",
-          0.1,
+          0.9,
         );
       }
 
@@ -523,7 +595,7 @@
         mapInstance.setPaintProperty(
           "settlement-jurisdiction-areas",
           "fill-opacity",
-          0.1,
+          0.9,
         );
       }
 
@@ -531,7 +603,7 @@
         mapInstance.setPaintProperty(
           "closed-military-zones",
           "fill-opacity",
-          0.1,
+          0.9,
         );
         mapInstance.setPaintProperty(
           "closed-military-zones",
@@ -540,13 +612,18 @@
         );
       }
 
-      ["oslo", "closed-military-zones", "area-a", "area-b", "area-c"].forEach(
-        (layerId) => {
-          if (mapInstance.getLayer(layerId)) {
-            mapInstance.setLayoutProperty(layerId, "visibility", "none");
-          }
-        },
-      );
+      [
+        "oslo",
+        "closed-military-zones",
+        "demolition-orders",
+        "area-a",
+        "area-b",
+        "area-c",
+      ].forEach((layerId) => {
+        if (mapInstance.getLayer(layerId)) {
+          mapInstance.setLayoutProperty(layerId, "visibility", "none");
+        }
+      });
 
       if (pendingSlideRequest) {
         const { id, options } = pendingSlideRequest;
@@ -561,6 +638,14 @@
     setMapInteractions(interactionsEnabled);
   });
 
+  $effect(() => {
+    if (!$mapLoaded || !$map) return;
+    $layersToggles;
+    $activeSlide;
+    $selectedItem;
+    syncLabelVisibility();
+  });
+
   export function resize() {
     if ($map) $map.resize();
   }
@@ -569,7 +654,10 @@
     const options =
       arguments.length > 1 && arguments[1] != null ? arguments[1] : {};
 
-    if (!$map) return;
+    if (!$map) {
+      pendingSlideRequest = { id, options };
+      return;
+    }
     if (!$map.isStyleLoaded()) {
       pendingSlideRequest = { id, options };
       return;
@@ -614,6 +702,7 @@
       "communities-circle",
       "oslo",
       "closed-military-zones",
+      "demolition-orders",
       "area-a",
       "area-b",
       "area-c",
@@ -672,7 +761,6 @@
     [
       "outposts",
       "settlement-jurisdiction-areas",
-      "demolition-orders",
       "jordanian-state-land",
     ].forEach((id) => {
       $map.setLayoutProperty(
@@ -689,12 +777,18 @@
         id,
         "visibility",
         (shouldShow || $activeSlide === "settlements") &&
-          $layersToggles[id] &&
+          $layersToggles["settlements-circle"] &&
           allowLayerDisplay
           ? "visible"
           : "none",
       );
     });
+
+    if ($map.getLayer("demolition-orders")) {
+      $map.setLayoutProperty("demolition-orders", "visibility", "none");
+    }
+
+    syncLabelVisibility();
 
     if ($map.getLayer("closed-military-zones")) {
       $map.setLayoutProperty(
@@ -714,7 +808,7 @@
     if (lon == null || lat == null) return;
     $map.flyTo({
       center: [lon, lat],
-      zoom: zoomLevel,
+      zoom: getSelectionZoom(zoomLevel),
       duration,
 
       pitch: $map.getPitch(),

@@ -7,19 +7,113 @@
     setSlides,
     slides,
   } from "$stores/scrollStore.js";
+  import {
+    activeSlideIndex,
+    setActiveSlide,
+    setSlides,
+    slides,
+  } from "$stores/scrollStore.js";
 
   let { slides_data = [] } = $props();
+  let articleEl;
   let articleEl;
 
   $effect(() => {
     if (slides_data.length > 0) {
       setSlides(slides_data);
       setActiveSlide(0);
+      setActiveSlide(0);
     }
   });
 
   let observers = [];
   let slideRefs = [];
+  const observerTopInsetRem = 1;
+  let scrollRoot = null;
+  let syncFrame = null;
+
+  function remToPx(rem) {
+    const rootFontSize =
+      parseFloat(getComputedStyle(document.documentElement).fontSize) || 16;
+    return rem * rootFontSize;
+  }
+
+  function getTriggerY() {
+    const viewportHeight = window.innerHeight || 0;
+    if (!viewportHeight) return 0;
+
+    const paddingTop = articleEl
+      ? parseFloat(window.getComputedStyle(articleEl).paddingTop) || 0
+      : viewportHeight * 0.1;
+
+    let mobileOffsetY = 0;
+    if (window.matchMedia("(max-width: 767px)").matches && articleEl) {
+      const sidebar = articleEl.closest(".sidebar");
+      const sidebarTop = sidebar
+        ? sidebar.getBoundingClientRect().top
+        : articleEl.getBoundingClientRect().top;
+      mobileOffsetY = Math.max(sidebarTop, 0);
+    }
+
+    const triggerY = Math.min(
+      Math.max(
+        mobileOffsetY + paddingTop + remToPx(observerTopInsetRem),
+        0,
+      ),
+      viewportHeight - 1,
+    );
+
+    return triggerY;
+  }
+
+  function getObserverRootMargin() {
+    const viewportHeight = window.innerHeight || 0;
+    if (!viewportHeight) return "0px 0px -98% 0px";
+
+    const triggerY = getTriggerY();
+    const bandHeight = 2;
+    const topShrink = triggerY;
+    const bottomShrink = Math.max(0, viewportHeight - triggerY - bandHeight);
+
+    return `-${topShrink}px 0px -${bottomShrink}px 0px`;
+  }
+
+  function syncActiveSlideFromPosition() {
+    if (!slideRefs.length) return;
+
+    const triggerY = getTriggerY();
+    let containingIndex = -1;
+    let lastBeforeIndex = -1;
+
+    for (let i = 0; i < slideRefs.length; i++) {
+      const node = slideRefs[i];
+      if (!node) continue;
+
+      const rect = node.getBoundingClientRect();
+      if (rect.top <= triggerY && rect.bottom > triggerY) {
+        containingIndex = i;
+        break;
+      }
+      if (rect.top <= triggerY) {
+        lastBeforeIndex = i;
+      }
+    }
+
+    const nextIndex =
+      containingIndex !== -1 ? containingIndex : lastBeforeIndex !== -1 ? lastBeforeIndex : 0;
+
+    if ($activeSlideIndex !== nextIndex) {
+      setActiveSlide(nextIndex);
+    }
+  }
+
+  function scheduleSync() {
+    if (syncFrame !== null) return;
+    syncFrame = requestAnimationFrame(() => {
+      syncFrame = null;
+      syncActiveSlideFromPosition();
+    });
+  }
   const observerTopInsetRem = 1;
   let scrollRoot = null;
   let syncFrame = null;
@@ -153,10 +247,31 @@
 
   onDestroy(() => observers.forEach((o) => o.disconnect()));
 
-  function scrollToIndex(idx, behavior = "smooth", block = "center") {
+  function scrollToIndex(idx, behavior = "smooth") {
     if (idx < 0 || idx >= slideRefs.length) return;
-    slideRefs[idx].scrollIntoView({ behavior: behavior, block: block });
+
+    const targetNode = slideRefs[idx];
+    if (!targetNode) return;
+
+    const resolvedBehavior = behavior === "smooth" ? "smooth" : "auto";
+    const triggerY = getTriggerY();
+    const rect = targetNode.getBoundingClientRect();
+    const deltaY = rect.top - triggerY;
+
+    if (scrollRoot && scrollRoot !== window) {
+      scrollRoot.scrollTo({
+        top: scrollRoot.scrollTop + deltaY,
+        behavior: resolvedBehavior,
+      });
+    } else {
+      window.scrollTo({
+        top: window.scrollY + deltaY,
+        behavior: resolvedBehavior,
+      });
+    }
+
     setActiveSlide(idx);
+    scheduleSync();
   }
 
   function skipIntro() {
@@ -168,7 +283,7 @@
       firstPostIntroIndex !== -1 ? firstPostIntroIndex : fallbackIndex;
 
     if (targetIndex !== -1) {
-      scrollToIndex(targetIndex, "auto", "start");
+      scrollToIndex(targetIndex, "auto");
     }
   }
 </script>
@@ -180,7 +295,7 @@
         use:intersectAction={i}
         class="slide"
         class:active={i === $activeSlideIndex}
-        on:click={() => scrollToIndex(i, "instant")}
+        on:click={() => scrollToIndex(i, "auto")}
       >
         {@html marked(slide.text)}
       </div>

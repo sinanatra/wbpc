@@ -7,9 +7,21 @@
   import Glossary from "@components/Glossary.svelte";
   import { communities } from "$stores/mapStore.js";
   import { activeSlideIndex, currentSlideId } from "$stores/scrollStore.js";
-  import { clearSelection, filteredItems } from "$stores/uiStore.js";
+  import {
+    clearSelection,
+    filteredItems,
+    searchQuery,
+    selectedItem,
+    setSearchQuery,
+  } from "$stores/uiStore.js";
 
-  let { editorialData = [], riskArray = [], title = "", mapRef = undefined, mapComponent = undefined } = $props();
+  let {
+    editorialData = [],
+    riskArray = [],
+    title = "",
+    mapRef = undefined,
+    mapComponent = undefined,
+  } = $props();
 
   const debounce = (fn, wait = 100) => {
     let timer;
@@ -20,9 +32,14 @@
   };
 
   let hasInitializedSlide = false;
+  let sidebarEl;
+  let mapAreaEl;
   let mapInteractionsEnabled = $derived(
     editorialData.length === 0 ||
-      $activeSlideIndex === editorialData.length - 1
+      $activeSlideIndex === editorialData.length - 1,
+  );
+  let showClearAll = $derived(
+    Boolean($selectedItem?.id) || ($searchQuery || "").trim().length > 0,
   );
 
   const handleSlideChange = debounce(() => {
@@ -33,7 +50,7 @@
   }, 200);
 
   $effect(() => {
-    if ($currentSlideId) {
+    if ($currentSlideId && mapComponent?.showSlide) {
       handleSlideChange();
     }
   });
@@ -44,18 +61,53 @@
     }
   });
 
+  $effect(() => {
+    if (!mapAreaEl || !sidebarEl) return;
+
+    const onMapAreaWheel = (event) => {
+      if (mapInteractionsEnabled) return;
+
+      const maxScrollTop = sidebarEl.scrollHeight - sidebarEl.clientHeight;
+      if (maxScrollTop <= 0) return;
+
+      const prev = sidebarEl.scrollTop;
+      const next = Math.min(maxScrollTop, Math.max(0, prev + event.deltaY));
+      sidebarEl.scrollTop = next;
+
+      if (next !== prev) {
+        event.preventDefault();
+      }
+    };
+
+    mapAreaEl.addEventListener("wheel", onMapAreaWheel, { passive: false });
+    return () => {
+      mapAreaEl.removeEventListener("wheel", onMapAreaWheel);
+    };
+  });
+
   function handleGlossarySelect(community) {
     mapComponent?.zoomToCommunity(community, 12, 1000);
+  }
+
+  function handleClearAll() {
+    clearSelection();
+    setSearchQuery("");
+    mapComponent?.clearLabel?.();
   }
 </script>
 
 <div class="container">
-  <aside class="sidebar">
+  <aside class="sidebar" bind:this={sidebarEl}>
     <Header {title} />
     <ScrollyText slides_data={editorialData} />
     <div class="sticky-section">
       <Legend {riskArray} />
-      <SearchBar />
+      <div class="search-controls">
+        <SearchBar />
+        {#if showClearAll}
+          <button class="clear-btn" on:click={handleClearAll}>Clear all</button>
+        {/if}
+      </div>
     </div>
     <Glossary
       communities={$filteredItems}
@@ -63,9 +115,10 @@
     />
   </aside>
 
-  <div class="map-area">
+  <div class="map-area" bind:this={mapAreaEl}>
     <Map
       bind:this={mapComponent}
+      interactionsEnabled={mapInteractionsEnabled}
       interactionsEnabled={mapInteractionsEnabled}
     />
   </div>
@@ -96,6 +149,37 @@
     z-index: 10;
     border-bottom: 1px solid var(--color-fade);
     flex-shrink: 0;
+  }
+
+  .search-controls {
+    display: flex;
+    align-items: stretch;
+    gap: 0.5rem;
+    padding: 0.5rem;
+  }
+
+  .search-controls :global(.search-bar) {
+    flex: 1;
+  }
+
+  .search-controls :global(.search-bar input) {
+    margin-bottom: 0;
+    height: 100%;
+    min-height: 38px;
+  }
+
+  .clear-btn {
+    padding: 0.4rem 0.6rem;
+    color: var(--color-primary);
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    opacity: 0.8;
+    font-size: 1rem;
+  }
+
+  .clear-btn:hover {
+    opacity: 1;
   }
 
   .map-area {

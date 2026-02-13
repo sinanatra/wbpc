@@ -13,7 +13,6 @@ export const layersToggles = writable({
   'settlements-circle': true,
   'outposts': true,
   'settlement-jurisdiction-areas': true,
-  'demolition-orders': false,
   'jordanian-state-land': false,
   'closed-military-zones': true,
 });

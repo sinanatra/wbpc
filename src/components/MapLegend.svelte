@@ -7,15 +7,30 @@
     toggleLayerVisibility
   } from "$stores/mapStore.js";
 
+  function applyVisibility(layerIds, enabled) {
+    if (!$map) return;
+
+    layerIds.forEach((id) => {
+      if ($map.getLayer(id)) {
+        $map.setLayoutProperty(
+          id,
+          "visibility",
+          $showCommunitiesLayers && enabled ? "visible" : "none",
+        );
+      }
+    });
+  }
+
   function toggleLayer(layerId) {
+    const nextEnabled = !$layersToggles[layerId];
     toggleLayerVisibility(layerId);
-    if ($map && $map.getLayer(layerId)) {
-      $map.setLayoutProperty(
-        layerId,
-        "visibility",
-        $showCommunitiesLayers && $layersToggles[layerId] ? "visible" : "none",
-      );
+
+    if (layerId === "settlements-circle") {
+      applyVisibility(["settlements-circle", "settlements-circle-fixed"], nextEnabled);
+      return;
     }
+
+    applyVisibility([layerId], nextEnabled);
   }
 </script>
 
@@ -23,7 +38,7 @@
   <div class="map-legend">
     <div class="legend-item">
       <div class="legend-dots">
-        {#each Object.entries($riskColors).slice(0, 3) as [risk, color]}
+        {#each Object.entries($riskColors).slice(0, 4) as [risk, color]}
           <span
             class="legend-dot"
             style="background: {color}; border: .5px solid #000;"
@@ -32,6 +47,23 @@
       </div>
       <span>Communities</span>
     </div>
+    <button
+      class="legend-item"
+      on:click={() => toggleLayer("settlements-circle")}
+      type="button"
+    >
+      <span
+        class="legend-swatch"
+        style="background: rgba(0, 0, 0, .2);border-radius:100%; border: 1.5px solid black; opacity:{$layersToggles[
+          'settlements-circle'
+        ]
+          ? 1
+          : 0.4};"
+      ></span>
+      <span class:legend-off={!$layersToggles["settlements-circle"]}
+        >Settlements</span
+      >
+    </button>
     <button class="legend-item" on:click={() => toggleLayer("outposts")} type="button">
       <span
         class="legend-swatch"
@@ -79,41 +111,6 @@
     </button>
     <button
       class="legend-item"
-      on:click={() => toggleLayer("settlements-circle-fixed")}
-      type="button"
-    >
-      <span
-        class="legend-swatch"
-        style="background: rgba(0, 0, 0, .2);border-radius:100%; border: 1.5px solid black; opacity:{$layersToggles[
-          'settlements-circle-fixed'
-        ]
-          ? 1
-          : 0.4};"
-      ></span>
-      <span class:legend-off={!$layersToggles["settlements-circle-fixed"]}
-        >Settlements</span
-      >
-    </button>
-    <button
-      class="legend-item"
-      on:click={() => toggleLayer("demolition-orders")}
-      type="button"
-    >
-      <span
-        class="legend-swatch"
-        style="background:#000000; border-radius:100%; border:1.5px solid #000000; opacity:{$layersToggles[
-          'demolition-orders'
-        ]
-          ? 1
-          : 0.4};"
-      ></span>
-      <span class:legend-off={!$layersToggles["demolition-orders"]}
-        >Demolition Orders</span
-      >
-    </button>
-
-    <button
-      class="legend-item"
       on:click={() => toggleLayer("jordanian-state-land")}
       type="button"
     >
@@ -126,7 +123,7 @@
           : 0.4};"
       ></span>
       <span class:legend-off={!$layersToggles["jordanian-state-land"]}
-        >Jordanian State Land</span
+        >State Land</span
       >
     </button>
   </div>

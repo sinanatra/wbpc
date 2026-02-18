@@ -4,7 +4,7 @@
     layersToggles,
     showCommunitiesLayers,
     riskColors,
-    toggleLayerVisibility
+    toggleLayerVisibility,
   } from "$stores/mapStore.js";
 
   function applyVisibility(layerIds, enabled) {
@@ -26,7 +26,10 @@
     toggleLayerVisibility(layerId);
 
     if (layerId === "settlements-circle") {
-      applyVisibility(["settlements-circle", "settlements-circle-fixed"], nextEnabled);
+      applyVisibility(
+        ["settlements-circle", "settlements-circle-fixed"],
+        nextEnabled,
+      );
       return;
     }
 
@@ -49,6 +52,7 @@
     </div>
     <button
       class="legend-item"
+      class:legend-off={!$layersToggles["settlements-circle"]}
       on:click={() => toggleLayer("settlements-circle")}
       type="button"
     >
@@ -60,11 +64,14 @@
           ? 1
           : 0.4};"
       ></span>
-      <span class:legend-off={!$layersToggles["settlements-circle"]}
-        >Settlements</span
-      >
+      <span>Settlements</span>
     </button>
-    <button class="legend-item" on:click={() => toggleLayer("outposts")} type="button">
+    <button
+      class="legend-item"
+      class:legend-off={!$layersToggles["outposts"]}
+      on:click={() => toggleLayer("outposts")}
+      type="button"
+    >
       <span
         class="legend-swatch"
         style="background:#fff; border-radius:100%; border:1.5px solid #000; opacity:{$layersToggles[
@@ -73,10 +80,11 @@
           ? 1
           : 0.4};"
       ></span>
-      <span class:legend-off={!$layersToggles["outposts"]}>Outposts</span>
+      <span>Outposts</span>
     </button>
     <button
       class="legend-item"
+      class:legend-off={!$layersToggles["settlement-jurisdiction-areas"]}
       on:click={() => toggleLayer("settlement-jurisdiction-areas")}
       type="button"
     >
@@ -88,12 +96,11 @@
           ? 1
           : 0.4};"
       ></span>
-      <span class:legend-off={!$layersToggles["settlement-jurisdiction-areas"]}
-        >Settlement Jurisdiction Areas</span
-      >
+      <span>Settlement Jurisdiction Areas</span>
     </button>
     <button
       class="legend-item"
+      class:legend-off={!$layersToggles["closed-military-zones"]}
       on:click={() => toggleLayer("closed-military-zones")}
       type="button"
     >
@@ -105,12 +112,11 @@
           ? 1
           : 0.4};"
       ></span>
-      <span class:legend-off={!$layersToggles["closed-military-zones"]}
-        >Closed Military Zones</span
-      >
+      <span>Closed Military Zones</span>
     </button>
     <button
       class="legend-item"
+      class:legend-off={!$layersToggles["jordanian-state-land"]}
       on:click={() => toggleLayer("jordanian-state-land")}
       type="button"
     >
@@ -122,9 +128,7 @@
           ? 1
           : 0.4};"
       ></span>
-      <span class:legend-off={!$layersToggles["jordanian-state-land"]}
-        >State Land</span
-      >
+      <span>Declared State Land</span>
     </button>
   </div>
 {/if}
@@ -134,26 +138,32 @@
     position: absolute;
     bottom: 8px;
     left: 8px;
-    padding: 4px 8px;
-    background: rgba(255, 255, 255, 1);
-    border: 1px solid var(--color-tertiary);
-    border-radius: 3px;
+
     font-size: 0.97rem;
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
     z-index: 20;
+
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 5px;
+    /* white-space: nowrap; */
+    /* overflow-x: auto; */
   }
 
   .legend-item {
     display: flex;
     align-items: center;
-    margin-bottom: 6px;
+    margin-bottom: 0;
     cursor: pointer;
     user-select: none;
-    background: none;
-    border: none;
-    padding: 0;
+    padding: 4px 8px;
+    border: 1px solid var(--color-tertiary);
+    border-radius: 3px;
     font: inherit;
     color: inherit;
+    white-space: nowrap;
+    background-color: white;
   }
 
   .legend-item:hover {
@@ -188,7 +198,8 @@
   }
 
   .legend-off {
-    opacity: 0.5;
+    background-color: gainsboro;
+    opacity: 0.8;
     text-decoration: line-through;
   }
 
@@ -200,12 +211,12 @@
       bottom: 4px;
       left: unset;
       right: 4px;
-      max-height: 40vh;
-      overflow-y: auto;
+      max-height: unset;
+      overflow-x: auto;
     }
 
     .legend-item {
-      margin-bottom: 1px;
+      margin-bottom: 0;
       padding: 0.5px 0;
       line-height: 1;
     }

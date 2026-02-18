@@ -35,6 +35,8 @@
   const communityStrokeWidth = 1;
   const occupiedWestBankLabelMaxZoom = 8.5;
   const overlayLayersMinZoom = 9;
+  const areaLayersMinZoom = 6;
+  const overlayLayersMaxZoom = 18;
   const settlementsZoomSwitch = overlayLayersMinZoom;
 
   function getLatestRiskValue(item) {
@@ -601,7 +603,21 @@
         "demolition-orders",
       ].forEach((layerId) => {
         if (mapInstance.getLayer(layerId)) {
-          mapInstance.setLayerZoomRange(layerId, overlayLayersMinZoom, 18);
+          mapInstance.setLayerZoomRange(
+            layerId,
+            overlayLayersMinZoom,
+            overlayLayersMaxZoom,
+          );
+        }
+      });
+
+      ["area-a", "area-b", "area-c"].forEach((layerId) => {
+        if (mapInstance.getLayer(layerId)) {
+          mapInstance.setLayerZoomRange(
+            layerId,
+            areaLayersMinZoom,
+            overlayLayersMaxZoom,
+          );
         }
       });
 

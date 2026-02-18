@@ -13,10 +13,14 @@ export const filteredItems = derived(
     
     return $mapItems.filter((item) => {
       const t = item.title.toLowerCase();
+      const alternativeTitle =
+        typeof item.alternativeTitle === 'string'
+          ? item.alternativeTitle.toLowerCase()
+          : '';
       const alt = Array.isArray(item.alternativeNames)
         ? item.alternativeNames.some((a) => a.toLowerCase().includes(q))
         : false;
-      return t.includes(q) || alt;
+      return t.includes(q) || alternativeTitle.includes(q) || alt;
     });
   }
 );

@@ -33,7 +33,9 @@
   const pointStroke = "#000";
   const communityStroke = "#222";
   const communityStrokeWidth = 1;
-  const occupiedWestBankLabelMaxZoom = 9.5;
+  const occupiedWestBankLabelMaxZoom = 8.5;
+  const overlayLayersMinZoom = 9;
+  const settlementsZoomSwitch = overlayLayersMinZoom;
 
   function getLatestRiskValue(item) {
     const risks = Array.isArray(item?.risks) ? item.risks : [];
@@ -403,7 +405,7 @@
         source: "points",
         filter: ["==", ["get", "type"], "settlement"],
         minzoom: 0,
-        maxzoom: 11,
+        maxzoom: settlementsZoomSwitch,
         paint: {
           "circle-radius": [
             "interpolate",
@@ -440,7 +442,7 @@
         type: "circle",
         source: "points",
         filter: ["==", ["get", "type"], "settlement"],
-        minzoom: 11,
+        minzoom: settlementsZoomSwitch,
         paint: {
           "circle-radius": pointRadius,
           "circle-color": "rgba(0, 0, 0, .2)",
@@ -589,6 +591,21 @@
       }
 
       [
+        "outposts",
+        "settlement-jurisdiction-areas",
+        "jordanian-state-land",
+        "closed-military-zones",
+        "area-a",
+        "area-b",
+        "area-c",
+        "demolition-orders",
+      ].forEach((layerId) => {
+        if (mapInstance.getLayer(layerId)) {
+          mapInstance.setLayerZoomRange(layerId, overlayLayersMinZoom, 18);
+        }
+      });
+
+      [
         "oslo",
         "closed-military-zones",
         "demolition-orders",
@@ -600,6 +617,8 @@
           mapInstance.setLayoutProperty(layerId, "visibility", "none");
         }
       });
+
+      toggleZoomLayers();
 
       if (pendingSlideRequest) {
         const { id, options } = pendingSlideRequest;
@@ -736,7 +755,7 @@
 
   function toggleZoomLayers() {
     const zoom = $map.getZoom();
-    const shouldShow = zoom >= 11;
+      const shouldShow = zoom >= 9;
     showSettlementsLegend.set(shouldShow);
 
     const allowLayerDisplay =

@@ -20,6 +20,8 @@
   let hasPoints = false;
   let loadError = null;
   let lastFetchedId = null;
+  let searchReady = false;
+  $: searchReady = !pointsLoading;
 
   const unsubscribeSelectedItem = selectedItem.subscribe((item) => {
     if (item?.id && item.id !== lastFetchedId) {
@@ -148,6 +150,7 @@
   {title}
   {riskArray}
   {editorialData}
+  {searchReady}
   on:dotClick={(e) => handleItemSelect(e.detail)}
 />
 

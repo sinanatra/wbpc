@@ -10,6 +10,7 @@
   import {
     clearSelection,
     filteredItems,
+    mapItems,
     searchQuery,
     selectedItem,
     setSearchQuery,
@@ -21,6 +22,7 @@
     title = "",
     mapRef = undefined,
     mapComponent = undefined,
+    searchReady = null,
   } = $props();
 
   const debounce = (fn, wait = 100) => {
@@ -40,6 +42,10 @@
   );
   let showClearAll = $derived(
     Boolean($selectedItem?.id) || ($searchQuery || "").trim().length > 0,
+  );
+  let hasSearchData = $derived(($mapItems || []).length > 0);
+  let canShowSearch = $derived(
+    searchReady === null ? hasSearchData : searchReady,
   );
 
   const handleSlideChange = debounce(() => {
@@ -102,12 +108,16 @@
     <ScrollyText slides_data={editorialData} {riskArray}/>
     <div class="sticky-section">
       <Legend {riskArray} />
-      <div class="search-controls">
-        <SearchBar />
-        {#if showClearAll}
-          <button class="clear-btn" on:click={handleClearAll}>Clear all</button>
-        {/if}
-      </div>
+      {#if canShowSearch}
+        <div class="search-controls">
+          <SearchBar />
+          {#if showClearAll}
+            <button class="clear-btn" on:click={handleClearAll}>
+              Clear all
+            </button>
+          {/if}
+        </div>
+      {/if}
     </div>
     <Glossary
       communities={$filteredItems}

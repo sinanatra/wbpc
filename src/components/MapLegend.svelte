@@ -39,7 +39,7 @@
 
 {#if $showCommunitiesLayers}
   <div class="map-legend">
-    <div class="legend-item">
+    <div class="legend-item communities">
       <div class="legend-dots">
         {#each Object.entries($riskColors).slice(0, 4) as [risk, color]}
           <span
@@ -166,11 +166,11 @@
     background-color: white;
   }
 
-  .legend-item:hover {
+  .legend-item communities:not(.communities):hover {
     opacity: 0.8;
   }
 
-  .legend-item:focus {
+  .legend-item communities:focus {
     outline: 2px solid var(--color-primary);
     outline-offset: 2px;
   }
@@ -215,7 +215,7 @@
       overflow-x: auto;
     }
 
-    .legend-item {
+    .legend-item communities {
       margin-bottom: 0;
       padding: 0.5px 0;
       line-height: 1;

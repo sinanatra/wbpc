@@ -21,7 +21,12 @@
 
   mapboxgl.accessToken = import.meta.env.VITE_MAPBOX_ACCESS_TOKEN;
 
-  const STYLE_URL = `mapbox://styles/sinanatra/cm7yteg6x00ty01sc85aqduv2?${Date.now()}`;
+  const BASE_STYLE_URL =
+    "mapbox://styles/sinanatra/cm7yteg6x00ty01sc85aqduv2";
+  const STYLE_CACHE_VERSION = import.meta.env.VITE_MAP_STYLE_VERSION;
+  const STYLE_URL = STYLE_CACHE_VERSION
+    ? `${BASE_STYLE_URL}?v=${STYLE_CACHE_VERSION}`
+    : BASE_STYLE_URL;
 
   let mapContainerElement;
   let isMobile = false;
@@ -337,6 +342,14 @@
 
     mapInstance.on("load", () => {
       mapLoaded.set(true);
+      let hasMarkedReady = false;
+      const markReady = () => {
+        if (hasMarkedReady) return;
+        hasMarkedReady = true;
+        isVisuallyReady = true;
+      };
+      mapInstance.once("render", markReady);
+      mapInstance.once("idle", markReady);
 
       requestAnimationFrame(() => {
         mapInstance.resize();
@@ -345,9 +358,6 @@
           zoom: initialZoom,
           pitch: initialPitch,
           bearing: 0,
-        });
-        mapInstance.once("idle", () => {
-          isVisuallyReady = true;
         });
       });
 
@@ -859,18 +869,25 @@
   class:locked={!interactionsEnabled}
 >
   <MapLegend />
+  {#if !isVisuallyReady}
+    <div class="map-loader" aria-live="polite">
+      <div class="map-loader__spinner" />
+      <div class="map-loader__text">Loading map...</div>
+    </div>
+  {/if}
 </div>
 
 <style>
   @import "mapbox-gl/dist/mapbox-gl.css";
   .map-container {
+    position: relative;
     width: 100%;
     height: 100%;
-    opacity: 0;
+    background: #101316;
   }
 
   .map-container.ready {
-    opacity: 1;
+    background: transparent;
   }
 
   .map-container.locked {
@@ -907,8 +924,36 @@
     flex-shrink: 0;
   }
 
-  .map-container {
-    width: 100%;
-    height: 100%;
+  .map-loader {
+    position: absolute;
+    inset: 0;
+    display: grid;
+    place-items: center;
+    gap: 10px;
+    background: linear-gradient(160deg, rgba(16, 19, 22, 0.92), rgba(22, 28, 35, 0.92));
+    color: #e8e8e8;
+    font-size: 0.95rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    z-index: 1;
+  }
+
+  .map-loader__spinner {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    border: 2px solid rgba(232, 232, 232, 0.3);
+    border-top-color: #e8e8e8;
+    animation: map-spin 1s linear infinite;
+  }
+
+  .map-loader__text {
+    font-family: Ronzino, sans-serif;
+  }
+
+  @keyframes map-spin {
+    to {
+      transform: rotate(360deg);
+    }
   }
 </style>

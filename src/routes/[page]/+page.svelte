@@ -25,6 +25,7 @@
   let editorialData = [];
   let title = null;
   let mapRef;
+  let searchReady = false;
 
   const pageParam = get(page).params.page;
 
@@ -75,7 +76,7 @@
         type: "settlement",
       }));
 
-      mapItems = [...communities]; 
+      mapItems = [...communities];
       filteredMapItems = [...mapItems];
 
       riskArray = Array.isArray(rc.result)
@@ -101,6 +102,8 @@
     } catch (e) {
       console.error(e);
       error = e;
+    } finally {
+      searchReady = true;
     }
   });
 </script>
@@ -117,6 +120,7 @@
     {riskArray}
     {editorialData}
     {title}
+    {searchReady}
     on:dotClick={(e) => handleItemSelect(e.detail)}
     on:search={(e) => handleSearch(e.detail)}
   />

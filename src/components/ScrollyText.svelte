@@ -264,13 +264,13 @@
   }
 
   .skip-btn {
-    padding: 0.4rem 0.6rem;
+    padding: 0.5rem 0.7rem;
     color: var(--color-primary);
     border: none;
     border-radius: 4px;
     cursor: pointer;
     opacity: 0.8;
-    font-size: 1rem;
+    font-size: 1.4rem;
   }
 
   .skip-btn:hover {

@@ -39,7 +39,8 @@
   const communityStroke = "#222";
   const communityStrokeWidth = 1;
   const occupiedWestBankLabelMaxZoom = 8.5;
-  const overlayLayersMinZoom = 9;
+  const overlayLayersMinZoom = 10;
+  const restrictedAreaLayersMinZoom = 10;
   const areaLayersMinZoom = 6;
   const overlayLayersMaxZoom = 18;
   const settlementsZoomSwitch = overlayLayersMinZoom;
@@ -621,6 +622,20 @@
         }
       });
 
+      [
+        "settlement-jurisdiction-areas",
+        "jordanian-state-land",
+        "closed-military-zones",
+      ].forEach((layerId) => {
+        if (mapInstance.getLayer(layerId)) {
+          mapInstance.setLayerZoomRange(
+            layerId,
+            restrictedAreaLayersMinZoom,
+            overlayLayersMaxZoom,
+          );
+        }
+      });
+
       ["area-a", "area-b", "area-c"].forEach((layerId) => {
         if (mapInstance.getLayer(layerId)) {
           mapInstance.setLayerZoomRange(
@@ -781,7 +796,8 @@
 
   function toggleZoomLayers() {
     const zoom = $map.getZoom();
-      const shouldShow = zoom >= 9;
+    const shouldShow = zoom >= overlayLayersMinZoom;
+    const shouldShowRestrictedAreaLayers = zoom >= restrictedAreaLayersMinZoom;
     showSettlementsLegend.set(shouldShow);
 
     const allowLayerDisplay =
@@ -790,11 +806,7 @@
       $activeSlide === "closed-military-zones";
     showCommunitiesLayers.set(shouldShow && allowLayerDisplay);
 
-    [
-      "outposts",
-      "settlement-jurisdiction-areas",
-      "jordanian-state-land",
-    ].forEach((id) => {
+    ["outposts"].forEach((id) => {
       $map.setLayoutProperty(
         id,
         "visibility",
@@ -802,6 +814,22 @@
           ? "visible"
           : "none",
       );
+    });
+
+    [
+      "settlement-jurisdiction-areas",
+      "jordanian-state-land",
+      "closed-military-zones",
+    ].forEach((id) => {
+      if ($map.getLayer(id)) {
+        $map.setLayoutProperty(
+          id,
+          "visibility",
+          shouldShowRestrictedAreaLayers && $layersToggles[id] && allowLayerDisplay
+            ? "visible"
+            : "none",
+        );
+      }
     });
 
     ["settlements-circle", "settlements-circle-fixed"].forEach((id) => {
@@ -822,17 +850,6 @@
 
     syncLabelVisibility();
 
-    if ($map.getLayer("closed-military-zones")) {
-      $map.setLayoutProperty(
-        "closed-military-zones",
-        "visibility",
-        (shouldShow || $activeSlide === "closed-military-zones") &&
-          $layersToggles["closed-military-zones"] &&
-          allowLayerDisplay
-          ? "visible"
-          : "none",
-      );
-    }
   }
 
   export function zoomToCommunity(comm, zoomLevel = 12, duration = 1000) {

@@ -105,7 +105,7 @@
 <div class="container">
   <aside class="sidebar" bind:this={sidebarEl}>
     <Header {title} />
-    <ScrollyText slides_data={editorialData} {riskArray}/>
+    <ScrollyText slides_data={editorialData} {riskArray} />
     <div class="sticky-section">
       <Legend {riskArray} />
       {#if canShowSearch}
@@ -160,6 +160,12 @@
     flex-shrink: 0;
   }
 
+  @media screen and (max-width: 767px) {
+    .sticky-section {
+      position: relative;
+    }
+  }
+
   .search-controls {
     display: flex;
     align-items: stretch;
@@ -204,13 +210,14 @@
 
   @media screen and (max-width: 767px) {
     .container {
+      font-size: 10px;
       flex-direction: column;
       height: 100vh;
       width: 100%;
     }
 
     .sidebar {
-      flex: 2;
+      flex: 1;
       width: 100%;
       max-width: 100%;
       height: auto;
@@ -220,7 +227,7 @@
       overflow-y: auto;
     }
     .map-area {
-      flex: 1;
+      flex: 2;
       width: 100%;
       order: 1;
     }

@@ -43,12 +43,14 @@
       return;
     }
 
+    const isMobile = window.matchMedia("(max-width: 767px)").matches;
+    const rowOffset = isMobile ? 0 : selectedRowOffset;
     const containerRect = scrollContainer.getBoundingClientRect();
     const nodeRect = node.getBoundingClientRect();
     const targetTop =
       scrollContainer.scrollTop +
       (nodeRect.top - containerRect.top) -
-      selectedRowOffset;
+      rowOffset;
     const maxTop = Math.max(
       0,
       scrollContainer.scrollHeight - scrollContainer.clientHeight,

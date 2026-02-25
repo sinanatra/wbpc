@@ -10,10 +10,10 @@
   </h1>
   <nav>
     <a href="/about" class:active={$page.route.id === "/about"}>About</a>
-    <br />
-    <a href="/methodology" class:active={$page.route.id === "/methodology"}
+    <!-- <br /> -->
+    <!-- <a href="/methodology" class:active={$page.route.id === "/methodology"}
       >Methodology</a
-    >
+    > -->
   </nav>
 </header>
 
@@ -23,8 +23,8 @@
     display: flex;
     justify-content: space-between;
     align-items: flex-start;
-    align-items: center;
-    padding-bottom: 20px;
+    /* align-items: center; */
+    /* padding-bottom: 20px; */
     border-bottom: 1px solid var(--color-tertiary);
   }
 

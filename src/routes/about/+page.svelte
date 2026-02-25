@@ -56,7 +56,51 @@
     max-width: 960px;
   }
 
+  :global(.text-content .risk-scale) {
+    margin: 1rem 0;
+    margin-bottom: 3rem;
+    display: grid;
+    gap: 0.45rem;
+  }
 
+  :global(.text-content .risk-scale .risk-row) {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+
+  :global(.text-content .risk-scale .risk-dot) {
+    width: 1em;
+    height: 1em;
+    border-radius: 50%;
+    background-color: currentColor;
+    margin-top: 0.15em;
+    flex: 0 0 1em;
+  }
+
+  :global(.text-content .risk-scale .risk-label) {
+    font-weight: 600;
+  }
+
+  :global(.text-content .risk-scale .risk-row.red .risk-dot),
+  :global(.text-content .risk-scale .risk-row.red) {
+    color: #cf4f4f;
+  }
+
+  :global(.text-content .risk-scale .risk-row.orange .risk-dot),
+  :global(.text-content .risk-scale .risk-row.orange) {
+    color: #d98b2d;
+  }
+
+  :global(.text-content .risk-scale .risk-row.yellow .risk-dot),
+  :global(.text-content .risk-scale .risk-row.yellow) {
+    color: #dbbf49;
+  }
+
+  :global(.text-content .risk-scale .risk-row.maroon .risk-dot),
+  :global(.text-content .risk-scale .risk-row.maroon) {
+    color: #7d2e46;
+  }
 
   @media screen and (max-width: 767px) {
     .layout-container {

@@ -50,7 +50,7 @@
     flex: 1;
     overflow-y: auto;
     font-size: 1.3rem;
-    line-height: 1.6;
+    /* line-height: 1.6; */
     padding: 16px;
     padding-top: 1em;
     max-width: 960px;

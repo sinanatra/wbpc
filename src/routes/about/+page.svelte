@@ -1,8 +1,30 @@
 <script>
   import { marked } from "marked";
   import Header from "@components/Header.svelte";
+  import Legend from "@components/Legend.svelte";
 
   export let data;
+
+  const LEGEND_PLACEHOLDER_REGEX =
+    /<div\s+[^>]*class=(["'])[^"']*\blegend\b[^"']*\1[^>]*>\s*<\/div>/gi;
+
+  function buildContentParts(text = "") {
+    const html = marked(text || "");
+    const parts = [];
+    let cursor = 0;
+    let match;
+
+    while ((match = LEGEND_PLACEHOLDER_REGEX.exec(html)) !== null) {
+      parts.push({ type: "html", content: html.slice(cursor, match.index) });
+      parts.push({ type: "legend" });
+      cursor = LEGEND_PLACEHOLDER_REGEX.lastIndex;
+    }
+
+    parts.push({ type: "html", content: html.slice(cursor) });
+    return parts;
+  }
+
+  $: aboutParts = buildContentParts(data.about?.content?.text || "");
 </script>
 
 {#if data.about || true}
@@ -14,7 +36,15 @@
     <div class="right-column">
       <div class="text-content">
         {#if data.about}
-          <div>{@html marked(data.about.content.text)}</div>
+          {#each aboutParts as part}
+            {#if part.type === "legend"}
+              <div class="legend-wrapper">
+                <Legend riskArray={data.riskArray || []} />
+              </div>
+            {:else if part.content}
+              {@html part.content}
+            {/if}
+          {/each}
         {/if}
       </div>
     </div>
@@ -56,50 +86,8 @@
     max-width: 960px;
   }
 
-  :global(.text-content .risk-scale) {
-    margin: 1rem 0;
-    margin-bottom: 3rem;
-    display: grid;
-    gap: 0.45rem;
-  }
-
-  :global(.text-content .risk-scale .risk-row) {
-    display: flex;
-    align-items: flex-start;
-    gap: 0.5rem;
-  }
-
-  :global(.text-content .risk-scale .risk-dot) {
-    width: 1em;
-    height: 1em;
-    border-radius: 50%;
-    background-color: currentColor;
-    margin-top: 0.15em;
-    flex: 0 0 1em;
-  }
-
-  :global(.text-content .risk-scale .risk-label) {
-    font-weight: 600;
-  }
-
-  :global(.text-content .risk-scale .risk-row.red .risk-dot),
-  :global(.text-content .risk-scale .risk-row.red) {
-    color: #cf4f4f;
-  }
-
-  :global(.text-content .risk-scale .risk-row.orange .risk-dot),
-  :global(.text-content .risk-scale .risk-row.orange) {
-    color: #d98b2d;
-  }
-
-  :global(.text-content .risk-scale .risk-row.yellow .risk-dot),
-  :global(.text-content .risk-scale .risk-row.yellow) {
-    color: #dbbf49;
-  }
-
-  :global(.text-content .risk-scale .risk-row.maroon .risk-dot),
-  :global(.text-content .risk-scale .risk-row.maroon) {
-    color: #7d2e46;
+  .legend-wrapper {
+    margin: 1rem 0 2rem;
   }
 
   @media screen and (max-width: 767px) {

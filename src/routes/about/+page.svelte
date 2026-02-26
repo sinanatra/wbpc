@@ -62,7 +62,7 @@
 
   :global(.layout-container a) {
     color: var(--color-primary);
-    text-decoration: underline;
+    /* text-decoration: underline; */
   }
 
   .left-column {

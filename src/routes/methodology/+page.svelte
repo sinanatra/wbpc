@@ -1,5 +1,4 @@
 <script>
-  import { marked } from "marked";
   import Header from "@components/Header.svelte";
 
   export let data;
@@ -14,7 +13,7 @@
     <div class="right-column">
       <div class="text-content">
         {#if data.methodology}
-          <div>{@html marked(data.methodology.content.text)}</div>
+          <div>{@html data.methodology.textHtml || ""}</div>
         {/if}
       </div>
     </div>

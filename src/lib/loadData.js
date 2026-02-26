@@ -199,6 +199,7 @@ export const fetchCustomPageByUrl = async (url) => {
         id: "page.id",
         title: "page.title",
         content: "page.content",
+        textHtml: "page.text.kt",
       },
     }),
   });

@@ -1,30 +1,32 @@
 <script>
-  import { marked } from "marked";
   import Header from "@components/Header.svelte";
   import Legend from "@components/Legend.svelte";
 
   export let data;
 
-  const LEGEND_PLACEHOLDER_REGEX =
+  const LEGEND_PLACEHOLDER_PATTERN =
     /<div\s+[^>]*class=(["'])[^"']*\blegend\b[^"']*\1[^>]*>\s*<\/div>/gi;
 
-  function buildContentParts(text = "") {
-    const html = marked(text || "");
+  function buildContentParts(html = "") {
     const parts = [];
     let cursor = 0;
-    let match;
+    const regex = new RegExp(
+      LEGEND_PLACEHOLDER_PATTERN.source,
+      LEGEND_PLACEHOLDER_PATTERN.flags,
+    );
+    const matches = html.matchAll(regex);
 
-    while ((match = LEGEND_PLACEHOLDER_REGEX.exec(html)) !== null) {
+    for (const match of matches) {
       parts.push({ type: "html", content: html.slice(cursor, match.index) });
       parts.push({ type: "legend" });
-      cursor = LEGEND_PLACEHOLDER_REGEX.lastIndex;
+      cursor = match.index + match[0].length;
     }
 
     parts.push({ type: "html", content: html.slice(cursor) });
     return parts;
   }
 
-  $: aboutParts = buildContentParts(data.about?.content?.text || "");
+  $: aboutParts = buildContentParts(data.about?.textHtml || "");
 </script>
 
 {#if data.about || true}
@@ -56,6 +58,11 @@
     display: flex;
     height: 100vh;
     width: 100%;
+  }
+
+  :global(.layout-container a) {
+    color: var(--color-primary);
+    text-decoration: underline;
   }
 
   .left-column {

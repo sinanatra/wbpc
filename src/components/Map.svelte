@@ -889,7 +889,6 @@
   {#if !isVisuallyReady}
     <div class="map-loader" aria-live="polite">
       <div class="map-loader__spinner" />
-      <div class="map-loader__text">Loading map...</div>
     </div>
   {/if}
 </div>
@@ -962,10 +961,6 @@
     border: 2px solid rgba(232, 232, 232, 0.3);
     border-top-color: #e8e8e8;
     animation: map-spin 1s linear infinite;
-  }
-
-  .map-loader__text {
-    font-family: Ronzino, sans-serif;
   }
 
   @keyframes map-spin {
